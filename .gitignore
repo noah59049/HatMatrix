@@ -8,3 +8,8 @@ wheels/
 
 # Virtual environments
 .venv
+podcasts/
+raw_voiceovers/
+transcripts/
+cache_dir/
+media/
