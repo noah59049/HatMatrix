@@ -35,9 +35,21 @@ class XSpan(VoiceoverScene):
             ...
         
         with self.voiceover("When I first heard about the hat matrix, I was amazed that there is a matrix that you can just multiply by Y to get Y hat. It's so powerful it almost feels illegal.") as tracker:
-            ...
+            hm_def_tex = MathTex("HY=\hat{Y}")
+            hm_def_tex.to_edge(UP)
+            self.play(Write(hm_def_tex))
         with self.voiceover("But let's talk about this step by step.") as tracker:
             ...
+
+        # TODO: n = 3, k = 2, make the X and Y matrices. Just choose arbitrarily for now.
+        # Setup the 3D axes with the span of X
+        bhat = ValueTracker() # TODO: it has 2 things in it
+        yhat = ValueTracker() # TODO: it's a value tracker of X beta hat
+        axes = ThreeDAxes()
+        point = always_redraw(Dot(axes.c2p(*yhat)))
+
+        bhat_tex = always_redraw().to_edge(RIGHT) # TODO: make this be math tex of the beta hat vector 
+
 
         with self.voiceover("X and Y are fixed at the time of data collection. But beta hat can vary.") as tracker:
             ...
