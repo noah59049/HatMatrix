@@ -101,7 +101,7 @@ class XSpan(VoiceoverScene, ThreeDScene):
             bhat.set_value(np.array([ 1, 0]))
             bhat.set_value(np.array([-1, 0]))
             bhat.set_value(np.array([ 0, 0]))
-        with self.voiceover("Y moves along this line in the direction of (1,1,1).") as tracker:
+        with self.voiceover("Y hat moves along this line in the direction of (1,1,1).") as tracker:
             X0_arr = Arrow(axes.c2p([0,0,0], axes.c2p(X[:, 0])))
             self.play(FadeIn(X0_arr))
         with self.voiceover("Now let's look at what happens if we vary beta one hat.") as tracker:
@@ -111,5 +111,5 @@ class XSpan(VoiceoverScene, ThreeDScene):
         with self.voiceover("Y hat moves along in the direction of X1.") as tracker:
             X1_arr = Arrow(axes.c2p([0,0,0], axes.c2p(X[:, 1])))
             self.play(FadeIn(X1_arr))
-        with self.voiceover("So you can see how, by varying both beta zero hat and beta 1 hat, Y hat can be anything that's in the span of the two columns of matrix X.") as tracker:
+        with self.voiceover("So you can see how, by varying both beta zero hat and beta 1 hat, Y hat can be anything that's in the span of the two columns of X.") as tracker:
             ...
