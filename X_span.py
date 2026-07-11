@@ -97,7 +97,7 @@ class XSpan(VoiceoverScene, ThreeDScene):
         bhat_tex.add_updater(_refresh_bhat_tex)
 
         with self.voiceover("X and Y are fixed at the time of data collection. But beta hat can vary.") as tracker:
-            ...
+            self.add(bhat_tex)
         with self.voiceover("If beta hat is the zero vector, so is y hat. Now let's look at what happens if") as tracker:
             self.add(graph_group)
         with self.voiceover("we vary beta zero hat. Y hat moves along this") as tracker:
