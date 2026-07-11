@@ -3,6 +3,7 @@ from manim import *
 from manim_voiceover import *
 from manim_voiceover.services.stitcher import _StitcherService as StitcherService
 import dir_config # type: ignore
+from N_Tools import *
 
 
 class ArrayValueTracker(ValueTracker):
@@ -75,14 +76,15 @@ class XSpan(VoiceoverScene, ThreeDScene):
         # TODO: Rotate the graph group so, instead of just guessing how to rotate it, it's rotated so the "camera angle" is orthogonal to both X0 and X1, for good viewing
         # Do not actually change the camera angle. Instead, just rotate the graph.
 
+        X_tex = MathTex("X = " + numpy_to_latex(X))
+        Y_tex = MathTex("Y = " + numpy_to_latex(Y))
+        X_tex.to_corner(UR)
+        Y_tex.next_to(X_tex, DOWN)
+        
         def make_bhat_tex():
             return MathTex(
-                r"\hat{\beta} = \begin{bmatrix}"
-                + f"{bhat.get_value()[0]:.2f}"
-                + r" \\ "
-                + f"{bhat.get_value()[1]:.2f}"
-                + r"\end{bmatrix}"
-            ).to_edge(RIGHT)
+                r"\hat{\beta} = " + numpy_to_latex(bhat)
+            ).next_to(Y_tex, DOWN)
 
         # always_redraw's mob.become(...) swaps in fresh submobjects each frame,
         # which drops out of add_fixed_in_frame_mobjects's tracked set, so we
@@ -96,8 +98,10 @@ class XSpan(VoiceoverScene, ThreeDScene):
 
         bhat_tex.add_updater(_refresh_bhat_tex)
 
-        with self.voiceover("X and Y are fixed at the time of data collection. But beta hat can vary.") as tracker:
-            self.add(bhat_tex)
+        with self.voiceover("X and Y are fixed at the time of data collection.") as tracker:
+            self.play(FadeIn(X_tex, Y_tex))
+        with self.voiceover("But beta hat can vary.") as tracker:
+            self.play(FadeIn(bhat_tex))
         with self.voiceover("If beta hat is the zero vector, so is y hat. Now let's look at what happens if") as tracker:
             self.add(graph_group)
         with self.voiceover("we vary beta zero hat. Y hat moves along this") as tracker:
