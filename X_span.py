@@ -68,6 +68,9 @@ class XSpan(VoiceoverScene, ThreeDScene):
         y_point = Dot3D(axes.c2p(*Y), color=WHITE, radius=0.1)
         y_label = MathTex("Y").next_to(y_point, UP)
         graph_group = VGroup(axes, point, y_point, y_label)
+        
+        # Rotate the graph group
+        graph_group.rotate(62 * DEGREES, axis = LEFT)
 
         def make_bhat_tex():
             return MathTex(
