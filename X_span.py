@@ -70,11 +70,16 @@ class XSpan(VoiceoverScene, ThreeDScene):
         y_label = MathTex("Y").next_to(y_point, UP)
         graph_group = VGroup(axes, point, y_point, y_label)
         
-        # Rotate the graph group
-        graph_group.rotate(50 * DEGREES, axis = UP)
-        graph_group.rotate(62 * DEGREES, axis = LEFT)
-        # TODO: Rotate the graph group so, instead of just guessing how to rotate it, it's rotated so the "camera angle" is orthogonal to both X0 and X1, for good viewing
-        # Do not actually change the camera angle. Instead, just rotate the graph.
+        # Rotate the graph group so the (unmoved) camera, which looks straight
+        # down the z-axis, ends up viewing the span of X0 and X1 face-on: we
+        # rotate the plane's normal onto the z-axis (OUT), instead of guessing
+        # rotation angles by hand.
+        origin = axes.c2p(0, 0, 0)
+        X0_dir = axes.c2p(*X[:, 0]) - origin
+        X1_dir = axes.c2p(*X[:, 1]) - origin
+        span_normal = get_unit_normal(X0_dir, X1_dir)
+        align_to_z = z_to_vector(span_normal).T  # rotation taking span_normal -> OUT
+        graph_group.apply_matrix(align_to_z, about_point=origin)
 
         X_tex = MathTex("X = " + numpy_to_latex(X))
         Y_tex = MathTex("Y = " + numpy_to_latex(Y))
