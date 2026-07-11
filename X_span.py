@@ -72,6 +72,8 @@ class XSpan(VoiceoverScene, ThreeDScene):
         # Rotate the graph group
         graph_group.rotate(50 * DEGREES, axis = UP)
         graph_group.rotate(62 * DEGREES, axis = LEFT)
+        # TODO: Rotate the graph group so, instead of just guessing how to rotate it, it's rotated so the "camera angle" is orthogonal to both X0 and X1, for good viewing
+        # Do not actually change the camera angle. Instead, just rotate the graph.
 
         def make_bhat_tex():
             return MathTex(
