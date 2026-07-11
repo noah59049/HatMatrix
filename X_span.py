@@ -70,16 +70,18 @@ class XSpan(VoiceoverScene, ThreeDScene):
         y_label = MathTex("Y").next_to(y_point, UP)
         graph_group = VGroup(axes, point, y_point, y_label)
         
-        # Rotate the graph group so the (unmoved) camera, which looks straight
-        # down the z-axis, ends up viewing the span of X0 and X1 face-on: we
-        # rotate the plane's normal onto the z-axis (OUT), instead of guessing
-        # rotation angles by hand.
+        # Orbit the camera instead of rotating the axes: a fixed generic
+        # elevation always keeps the axes reading as a normal 3D frame (no
+        # "which way is up" ambiguity like an arbitrary object rotation has),
+        # and we pick the azimuth from X so the X0/X1 span isn't edge-on,
+        # however X is chosen.
+        camera_phi = 70 * DEGREES
         origin = axes.c2p(0, 0, 0)
         X0_dir = axes.c2p(*X[:, 0]) - origin
         X1_dir = axes.c2p(*X[:, 1]) - origin
         span_normal = get_unit_normal(X0_dir, X1_dir)
-        align_to_z = z_to_vector(span_normal).T  # rotation taking span_normal -> OUT
-        graph_group.apply_matrix(align_to_z, about_point=origin)
+        camera_theta = angle_of_vector(span_normal)
+        self.set_camera_orientation(phi=camera_phi, theta=camera_theta)
 
         X_tex = MathTex("X = " + numpy_to_latex(X))
         Y_tex = MathTex("Y = " + numpy_to_latex(Y))
@@ -95,7 +97,6 @@ class XSpan(VoiceoverScene, ThreeDScene):
         # which drops out of add_fixed_in_frame_mobjects's tracked set, so we
         # re-register the fixed submobjects on every refresh instead.
         bhat_tex = make_bhat_tex()
-        # self.add_fixed_in_frame_mobjects(bhat_tex)
 
         def _refresh_bhat_tex(m):
             m.become(make_bhat_tex())
@@ -104,8 +105,10 @@ class XSpan(VoiceoverScene, ThreeDScene):
         bhat_tex.add_updater(_refresh_bhat_tex)
 
         with self.voiceover("X and Y are fixed at the time of data collection.") as tracker:
+            self.add_fixed_in_frame_mobjects(X_tex, Y_tex)
             self.play(FadeIn(X_tex, Y_tex))
         with self.voiceover("But beta hat can vary.") as tracker:
+            self.add_fixed_in_frame_mobjects(bhat_tex)
             self.play(FadeIn(bhat_tex))
         with self.voiceover("If beta hat is the zero vector, so is y hat. Now let's look at what happens if") as tracker:
             self.add(graph_group)
