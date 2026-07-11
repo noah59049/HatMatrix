@@ -86,7 +86,7 @@ class XSpan(VoiceoverScene, ThreeDScene):
         # which drops out of add_fixed_in_frame_mobjects's tracked set, so we
         # re-register the fixed submobjects on every refresh instead.
         bhat_tex = make_bhat_tex()
-        self.add_fixed_in_frame_mobjects(bhat_tex)
+        # self.add_fixed_in_frame_mobjects(bhat_tex)
 
         def _refresh_bhat_tex(m):
             m.become(make_bhat_tex())
