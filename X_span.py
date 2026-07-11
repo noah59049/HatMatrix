@@ -124,4 +124,14 @@ class XSpan(VoiceoverScene, ThreeDScene):
             X1_arr = Arrow(axes.c2p(0, 0, 0), axes.c2p(*X[:, 1]), buff=0)
             self.play(FadeIn(X1_arr))
         with self.voiceover("So you can see how, by varying both beta zero hat and beta 1 hat, Y hat can be anything that's in the span of the two columns of X.") as tracker:
-            ...
+            span_plane = Surface(
+                lambda u, v: axes.c2p(*(u * X[:, 0] + v * X[:, 1])),
+                u_range=[-1.5, 1.5],
+                v_range=[-1.5, 1.5],
+                resolution=(8, 8),
+                fill_color=GREEN,
+                fill_opacity=0.3,
+                checkerboard_colors=[GREEN, GREEN],
+                stroke_width=0,
+            )
+            self.play(FadeIn(span_plane))
