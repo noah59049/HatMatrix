@@ -99,16 +99,16 @@ class XSpan(VoiceoverScene, ThreeDScene):
         with self.voiceover("If beta hat is the zero vector, so is y hat.") as tracker:
             self.add(graph_group)
         with self.voiceover("Now let's look at what happens if we vary beta zero hat.") as tracker:
-            bhat.set_value(np.array([ 1, 0]))
-            bhat.set_value(np.array([-1, 0]))
-            bhat.set_value(np.array([ 0, 0]))
+            self.play(bhat.animate.set_value(np.array([ 1, 0])))
+            self.play(bhat.animate.set_value(np.array([-1, 0])))
+            self.play(bhat.animate.set_value(np.array([ 0, 0])))
         with self.voiceover("Y hat moves along this line in the direction of (1,1,1).") as tracker:
             X0_arr = Arrow(axes.c2p(0, 0, 0), axes.c2p(*X[:, 0]))
             self.play(FadeIn(X0_arr))
         with self.voiceover("Now let's look at what happens if we vary beta one hat.") as tracker:
-            bhat.set_value(np.array([0,  1]))
-            bhat.set_value(np.array([0, -1]))
-            bhat.set_value(np.array([0,  0]))
+            self.play(bhat.animate.set_value(np.array([0, 1])))
+            self.play(bhat.animate.set_value(np.array([0,-1])))
+            self.play(bhat.animate.set_value(np.array([0, 0])))
         with self.voiceover("Y hat moves along in the direction of X1.") as tracker:
             X1_arr = Arrow(axes.c2p(0, 0, 0), axes.c2p(*X[:, 1]))
             self.play(FadeIn(X1_arr))
