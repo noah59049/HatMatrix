@@ -83,7 +83,7 @@ class XSpan(VoiceoverScene, ThreeDScene):
         
         def make_bhat_tex():
             return MathTex(
-                r"\hat{\beta} = " + numpy_to_latex(bhat)
+                r"\hat{\beta} = " + numpy_to_latex(bhat.get_value())
             ).next_to(Y_tex, DOWN)
 
         # always_redraw's mob.become(...) swaps in fresh submobjects each frame,
