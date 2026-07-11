@@ -70,6 +70,7 @@ class XSpan(VoiceoverScene, ThreeDScene):
         graph_group = VGroup(axes, point, y_point, y_label)
         
         # Rotate the graph group
+        graph_group.rotate(50 * DEGREES, axis = UP)
         graph_group.rotate(62 * DEGREES, axis = LEFT)
 
         def make_bhat_tex():
