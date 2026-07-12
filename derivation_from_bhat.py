@@ -44,9 +44,24 @@ class DerivationFromBhat(StitcherScene):
         with self.voiceover("and X beta hat is Y hat.") as tracker:
             self.play(TransformByGlyphMap(tex6, tex7,
                                           ([12,13], [12])))
-        with self.voiceover("So this here is the hat matrix.") as tracker:
+        with self.voiceover("So this here is the hat matrix, which we call H.") as tracker:
             self.add(hm_formula)
-            hm_formula_box = SurroundingRectangle(hm_formula)
+            hm_formula_box = SurroundingRectangle(hm_formula, color = RED)
             self.play(Create(hm_formula_box))
             self.play(TransformByGlyphMap(hm_formula.copy(), hm_formula2,
                                           (FadeIn, [0,1])))
+        with self.voiceover("Here are some facts about the hat matrix.") as tracker:
+            self.play(
+                FadeOut(tex7, hm_formula, hm_formula_box),
+                hm_formula2.animate.to_edge(UP)
+            )
+        with self.voiceover("It's symmetric. By the spectral theorem, this means it must be orthogonally diagonalizable.") as tracker:
+            ...
+        with self.voiceover("It's idempotent, meaning that H squared equals H.") as tracker:
+            ...
+        with self.voiceover("H times X is X. Since H leaves the entire matrix X unchanged, it must leave each column of X unchanged.") as tracker:
+            ...
+        with self.voiceover("If you take H times any vector v orthogonal to X, this X transpose v makes the whole product turn out to zero.") as tracker:
+            ...
+        with self.voiceover("These last 2 facts are sort of an intuition for how H is a projection onto the column space of X.") as tracker:
+            ...
