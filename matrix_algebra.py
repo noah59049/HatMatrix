@@ -1,19 +1,10 @@
 import numpy as np
 from manim import *
-from manim_voiceover import *
-from manim_voiceover.services.stitcher import _StitcherService as StitcherService
-import dir_config # type: ignore
+from stitcher_scene import StitcherScene
 
 
-class MatrixAlgebra(VoiceoverScene):
-    def construct(self):
-        self.set_speech_service(StitcherService(
-            dir_config.path_to_podcast("matrix_algebra"),
-            cache_dir=dir_config.get_cache_dir(),
-            min_silence_len=2000,
-            keep_silence=(0, 0),
-        ))
-
+class MatrixAlgebra(StitcherScene):
+    def construct_scene(self):
         with self.voiceover("Now it's time to try to derive a formula for the hat matrix.") as tracker:
             ...
         with self.voiceover("As it happens, I want to give a series of logical derivations that end with the hat matrix, but") as tracker:

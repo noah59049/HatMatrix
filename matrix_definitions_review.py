@@ -1,18 +1,10 @@
 import numpy as np
 from manim import *
-from manim_voiceover import *
-from manim_voiceover.services.stitcher import _StitcherService as StitcherService
-import dir_config # type: ignore
+from stitcher_scene import StitcherScene
 
 
-class MatrixDefinitionsReview(VoiceoverScene):
-    def construct(self):
-        self.set_speech_service(StitcherService(
-            dir_config.path_to_podcast("matrix_definitions_review"),
-            cache_dir=dir_config.get_cache_dir(),
-            min_silence_len=2000,
-            keep_silence=(0, 0),
-        ))
+class MatrixDefinitionsReview(StitcherScene):
+    def construct_scene(self):
         
         with self.voiceover("Just to make sure that everyone is on the same page, I'm going to review our matrix definitions.") as tracker:
             ...

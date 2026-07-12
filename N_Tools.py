@@ -1,4 +1,5 @@
 import numpy as np
+from manim import *
 
 #Some useful helper methods
 def as_row(vec):
@@ -149,3 +150,36 @@ def numpy_to_latex(
             f"    {body}\n"
             "\\end{bmatrix}"
         )
+
+class ArrayValueTracker(ValueTracker):
+    """A ValueTracker that holds a numpy array of any shape instead of a single
+    scalar, so it can be animated the same way with `.animate.set_value(new_array)`.
+
+    Mobject (which ValueTracker subclasses) stores its state as `self.points`,
+    an (N, 3) array of render points. We pack the tracked array's values into
+    that same (N, 3) buffer (flattening/reshaping as needed) and remember the
+    original shape so get_value() can hand back an array shaped like the input.
+    """
+
+    def __init__(self, array=None, **kwargs):
+        Mobject.__init__(self, **kwargs)
+        array = np.zeros(1) if array is None else np.array(array, dtype=float)
+        self.array_shape = array.shape
+        n_rows = max(1, int(np.ceil(array.size / 3)))
+        self.points = np.zeros((n_rows, 3))
+        self.set_value(array)
+
+    def get_value(self):
+        flat = self.points.flatten()[: np.prod(self.array_shape, dtype=int)]
+        return flat.reshape(self.array_shape)
+
+    def set_value(self, array):
+        array = np.array(array, dtype=float)
+        flat = self.points.flatten()
+        flat[: array.size] = array.flatten()
+        self.points = flat.reshape(self.points.shape)
+        return self
+
+    def increment_value(self, d_array):
+        self.set_value(self.get_value() + np.array(d_array))
+        return self

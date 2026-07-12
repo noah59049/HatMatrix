@@ -13,3 +13,6 @@ raw_voiceovers/
 transcripts/
 cache_dir/
 media/
+
+# VSCode
+.vscode

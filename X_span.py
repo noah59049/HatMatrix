@@ -1,53 +1,11 @@
 import numpy as np
 from manim import *
-from manim_voiceover import *
-from manim_voiceover.services.stitcher import _StitcherService as StitcherService
-import dir_config # type: ignore
 from N_Tools import *
+from stitcher_scene import StitcherScene
 
 
-class ArrayValueTracker(ValueTracker):
-    """A ValueTracker that holds a numpy array of any shape instead of a single
-    scalar, so it can be animated the same way with `.animate.set_value(new_array)`.
-
-    Mobject (which ValueTracker subclasses) stores its state as `self.points`,
-    an (N, 3) array of render points. We pack the tracked array's values into
-    that same (N, 3) buffer (flattening/reshaping as needed) and remember the
-    original shape so get_value() can hand back an array shaped like the input.
-    """
-
-    def __init__(self, array=None, **kwargs):
-        Mobject.__init__(self, **kwargs)
-        array = np.zeros(1) if array is None else np.array(array, dtype=float)
-        self.array_shape = array.shape
-        n_rows = max(1, int(np.ceil(array.size / 3)))
-        self.points = np.zeros((n_rows, 3))
-        self.set_value(array)
-
-    def get_value(self):
-        flat = self.points.flatten()[: np.prod(self.array_shape, dtype=int)]
-        return flat.reshape(self.array_shape)
-
-    def set_value(self, array):
-        array = np.array(array, dtype=float)
-        flat = self.points.flatten()
-        flat[: array.size] = array.flatten()
-        self.points = flat.reshape(self.points.shape)
-        return self
-
-    def increment_value(self, d_array):
-        self.set_value(self.get_value() + np.array(d_array))
-        return self
-
-
-class XSpan(VoiceoverScene, ThreeDScene):
-    def construct(self):
-        self.set_speech_service(StitcherService(
-            dir_config.path_to_podcast("X_span"),
-            cache_dir=dir_config.get_cache_dir(),
-            min_silence_len=2000,
-            keep_silence=(0, 0),
-        ))
+class MatrixAlgebra(StitcherScene, ThreeDScene):
+    def construct_scene(self):
         
         # n = 3, k = 2. Chosen arbitrarily: first column of X is all ones (intercept).
         n, k = 3, 2
@@ -138,6 +96,7 @@ class XSpan(VoiceoverScene, ThreeDScene):
                 stroke_width=0,
             )
             self.play(FadeIn(span_plane))
+        return
         with self.voiceover("But out of all those possible values of Y hat, our model only uses one. Specifically, it uses the one that minimizes the sum of squared differences between Y hat and Y.") as tracker:
             ...
         with self.voiceover("Now here's the key idea. This is the same as minimizing the Euclidean distance between Y and Y hat.") as tracker:
