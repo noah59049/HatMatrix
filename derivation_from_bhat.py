@@ -55,6 +55,17 @@ class DerivationFromBhat(StitcherScene):
                 FadeOut(tex7, hm_formula, hm_formula_box),
                 hm_formula2.animate.to_edge(UP)
             )
+        
+        fact1 = MathTex("H^T = H")
+        fact2 = MathTex("H^2 = H")
+        fact3 = MathTex("H X = X")
+        fact4 = MathTex("v H X = X")
+
+        proof1 = MathTex("(X (X^T X)^{-1} X^T)^T = X^T^T (X^T X)^{-1}^T X^T")
+        proof2 = MathTex("")
+        proof3 = MathTex("H X = ")
+        proof4 = MathTex("")
+
         with self.voiceover("It's symmetric. By the spectral theorem, this means it must be orthogonally diagonalizable.") as tracker:
             ...
         with self.voiceover("It's idempotent, meaning that H squared equals H.") as tracker:
