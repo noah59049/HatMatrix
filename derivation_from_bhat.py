@@ -99,4 +99,8 @@ class DerivationFromBhat(StitcherScene):
             proof42 = MathTex(r"H \vec{v} = X (X^T X)^{-1} 0")
             proof43 = MathTex(r"H \vec{v} = 0")
         with self.voiceover("These last 2 facts are an intuition for how H is a projection onto the column space of X.") as tracker:
-            ...
+            boxes = VGroup(
+                SurroundingRectangle(fact3),
+                SurroundingRectangle(fact4)
+            )
+            self.play(Create(boxes))
