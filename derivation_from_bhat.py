@@ -25,7 +25,7 @@ class DerivationFromBhat(StitcherScene):
         with self.voiceover("X transpose e is zero. Then we") as tracker:
             self.play(TransformByGlyphMap(tex2, tex3,
                                           ([9,10,11,12], FadeOut, {"run_time": 0.5})))
-        with self.voiceover("left multiply by the inverse of X transpose X, and then we get our formula for beta hat. It's kind of amazing it has a closed form solution.") as tracker:
+        with self.voiceover("left multiply by the inverse of X transpose X, and then we get our formula for beta hat.") as tracker:
             self.play(TransformByGlyphMap(tex3, tex4,
                                           (FadeIn, range(0,7)),
                                           (FadeIn, range(11,18), {"run_time": 0.45, "delay":0.5},),
