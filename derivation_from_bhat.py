@@ -59,7 +59,7 @@ class DerivationFromBhat(StitcherScene):
         fact1 = MathTex(r"H^T = H")
         fact2 = MathTex(r"H^2 = H")
         fact3 = MathTex(r"H X = X")
-        fact4 = MathTex(r"v \perp X \implies H v = 0")
+        fact4 = MathTex(r"\vec{v} \perp X \implies H \vec{v} = 0")
 
         facts = VGroup(fact1, fact2, fact3, fact4).arrange(DOWN, aligned_edge=LEFT, buff=0.5)
         facts.next_to(hm_formula2, DOWN, buff=1.0)
@@ -75,18 +75,28 @@ class DerivationFromBhat(StitcherScene):
 
         checks = VGroup(*(make_checkmark().next_to(fact, LEFT, buff=0.35) for fact in facts))
 
-        proof1 = MathTex("(X (X^T X)^{-1} X^T)^T = X^T^T (X^T X)^{-1}^T X^T")
-        proof2 = MathTex("")
-        proof3 = MathTex("H X = X (X^T X)^{-1} X^T X = X")
-        proof4 = MathTex("")
 
         with self.voiceover("It's symmetric. By the spectral theorem, this means it must be orthogonally diagonalizable.") as tracker:
             self.play(LaggedStart(Create(checks[0]), Write(fact1), lag_ratio=0.6))
+            proof11 = MathTex("H^T = (X (X^T X)^{-1} X^T)^T")
+            proof12 = MathTex("H^T = X^T^T (X^T X)^{-1}^T X^T")
+            proof13 = MathTex("H^T = X (X^T X)^T^{-1} X^T")
+            proof14 = MathTex("H^T = X (X^T X^T^T)^{-1} X^T")
+            proof15 = MathTex("H^T = X (X^T X)^{-1} X^T")
+            proof16 = MathTex("H^T = H")
         with self.voiceover("It's idempotent, meaning that H squared equals H.") as tracker:
             self.play(LaggedStart(Create(checks[1]), Write(fact2), lag_ratio=0.6))
+            proof21 = MathTex("H^2 = X (X^T X)^{-1} X^T X (X^T X)^{-1} X^T")
+            proof22 = MathTex("H^2 = X (X^T X)^{-1} X^T")
+            proof23 = MathTex("H^2 = H")
         with self.voiceover("H times X is X. Since H leaves the entire matrix X unchanged, it must leave each column of X unchanged.") as tracker:
             self.play(LaggedStart(Create(checks[2]), Write(fact3), lag_ratio=0.6))
+            proof31 = MathTex("H X = X (X^T X)^{-1} X^T X")
+            proof32 = MathTex("H X = X")
         with self.voiceover("If you take H times any vector v orthogonal to X, this X transpose v makes the whole product turn out to zero.") as tracker:
             self.play(LaggedStart(Create(checks[3]), Write(fact4), lag_ratio=0.6))
+            proof41 = MathTex(r"H \vec{v} = X (X^T X)^{-1} X^T \vec{v}")
+            proof42 = MathTex(r"H \vec{v} = X (X^T X)^{-1} 0")
+            proof43 = MathTex(r"H \vec{v} = 0")
         with self.voiceover("These last 2 facts are an intuition for how H is a projection onto the column space of X.") as tracker:
             ...
