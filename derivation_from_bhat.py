@@ -75,18 +75,18 @@ class DerivationFromBhat(StitcherScene):
 
         checks = VGroup(*(make_checkmark().next_to(fact, LEFT, buff=0.35) for fact in facts))
 
-        # proof1 = MathTex("(X (X^T X)^{-1} X^T)^T = X^T^T (X^T X)^{-1}^T X^T")
-        # proof2 = MathTex("")
-        # proof3 = MathTex("H X = X (X^T X)^{-1} X^T X = X")
-        # proof4 = MathTex("")
+        proof1 = MathTex("(X (X^T X)^{-1} X^T)^T = X^T^T (X^T X)^{-1}^T X^T")
+        proof2 = MathTex("")
+        proof3 = MathTex("H X = X (X^T X)^{-1} X^T X = X")
+        proof4 = MathTex("")
 
         with self.voiceover("It's symmetric. By the spectral theorem, this means it must be orthogonally diagonalizable.") as tracker:
-            self.play(LaggedStart(Write(fact1), Create(checks[0]), lag_ratio=0.6))
+            self.play(LaggedStart(Create(checks[0]), Write(fact1), lag_ratio=0.6))
         with self.voiceover("It's idempotent, meaning that H squared equals H.") as tracker:
-            self.play(LaggedStart(Write(fact2), Create(checks[1]), lag_ratio=0.6))
+            self.play(LaggedStart(Create(checks[1]), Write(fact2), lag_ratio=0.6))
         with self.voiceover("H times X is X. Since H leaves the entire matrix X unchanged, it must leave each column of X unchanged.") as tracker:
-            self.play(LaggedStart(Write(fact3), Create(checks[2]), lag_ratio=0.6))
+            self.play(LaggedStart(Create(checks[2]), Write(fact3), lag_ratio=0.6))
         with self.voiceover("If you take H times any vector v orthogonal to X, this X transpose v makes the whole product turn out to zero.") as tracker:
-            self.play(LaggedStart(Write(fact4), Create(checks[3]), lag_ratio=0.6))
+            self.play(LaggedStart(Create(checks[3]), Write(fact4), lag_ratio=0.6))
         with self.voiceover("These last 2 facts are an intuition for how H is a projection onto the column space of X.") as tracker:
             ...
