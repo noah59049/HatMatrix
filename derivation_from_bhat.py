@@ -76,6 +76,15 @@ class DerivationFromBhat(StitcherScene):
         checks = VGroup(*(make_checkmark().next_to(fact, LEFT, buff=0.35) for fact in facts))
 
 
+        def make_proof_group(fact, *steps):
+            label = Tex("Proof:")
+            step_group = VGroup(*steps).arrange(DOWN, aligned_edge=LEFT, buff=0.15)
+            group = VGroup(label, step_group).arrange(DOWN, aligned_edge=LEFT, buff=0.2)
+            group.scale(0.55)
+            step_group.shift(RIGHT * 0.4)
+            group.next_to(fact, DOWN, aligned_edge=LEFT, buff=0.3).shift(RIGHT * 0.5)
+            return group
+
         with self.voiceover("It's symmetric. By the spectral theorem, this means it must be orthogonally diagonalizable.") as tracker:
             self.play(LaggedStart(Create(checks[0]), Write(fact1), lag_ratio=0.6))
             proof11 = MathTex("H^T = (X (X^T X)^{-1} X^T)^T")
@@ -84,21 +93,33 @@ class DerivationFromBhat(StitcherScene):
             proof14 = MathTex("H^T = X (X^T X^T^T)^{-1} X^T")
             proof15 = MathTex("H^T = X (X^T X)^{-1} X^T")
             proof16 = MathTex("H^T = H")
+            proof1_group = make_proof_group(fact1, proof11, proof12, proof13, proof14, proof15, proof16)
+            self.play(FadeIn(proof1_group))
         with self.voiceover("It's idempotent, meaning that H squared equals H.") as tracker:
+            self.play(FadeOut(proof1_group))
             self.play(LaggedStart(Create(checks[1]), Write(fact2), lag_ratio=0.6))
             proof21 = MathTex("H^2 = X (X^T X)^{-1} X^T X (X^T X)^{-1} X^T")
             proof22 = MathTex("H^2 = X (X^T X)^{-1} X^T")
             proof23 = MathTex("H^2 = H")
+            proof2_group = make_proof_group(fact2, proof21, proof22, proof23)
+            self.play(FadeIn(proof2_group))
         with self.voiceover("H times X is X. Since H leaves the entire matrix X unchanged, it must leave each column of X unchanged.") as tracker:
+            self.play(FadeOut(proof2_group))
             self.play(LaggedStart(Create(checks[2]), Write(fact3), lag_ratio=0.6))
             proof31 = MathTex("H X = X (X^T X)^{-1} X^T X")
             proof32 = MathTex("H X = X")
+            proof3_group = make_proof_group(fact3, proof31, proof32)
+            self.play(FadeIn(proof3_group))
         with self.voiceover("If you take H times any vector v orthogonal to X, this X transpose v makes the whole product turn out to zero.") as tracker:
+            self.play(FadeOut(proof3_group))
             self.play(LaggedStart(Create(checks[3]), Write(fact4), lag_ratio=0.6))
             proof41 = MathTex(r"H \vec{v} = X (X^T X)^{-1} X^T \vec{v}")
             proof42 = MathTex(r"H \vec{v} = X (X^T X)^{-1} 0")
             proof43 = MathTex(r"H \vec{v} = 0")
+            proof4_group = make_proof_group(fact4, proof41, proof42, proof43)
+            self.play(FadeIn(proof4_group))
         with self.voiceover("These last 2 facts are an intuition for how H is a projection onto the column space of X.") as tracker:
+            self.play(FadeOut(proof4_group))
             boxes = VGroup(
                 SurroundingRectangle(fact3),
                 SurroundingRectangle(fact4)
