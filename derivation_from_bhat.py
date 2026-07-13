@@ -18,7 +18,7 @@ class DerivationFromBhat(StitcherScene):
 
         with self.voiceover("Now we want to derive the formula for the hat matrix.") as tracker:
             pass
-        with self.voiceover("So we can represent as X beta hat plus e. e is our error vector, and it is orthogonal to all the columns of X. We want to isolate beta hat. The first step in here is to") as tracker:
+        with self.voiceover("We can represent as X beta hat plus e. e is our error vector, and it is orthogonal to all the columns of X. We want to isolate beta hat. The first step in here is to") as tracker:
             self.play(Write(tex1))
         with self.voiceover("left multiply by X transpose. Since e is orthogonal to every column of X,") as tracker:
             self.play(TransformByGlyphMap(tex1, tex2,
