@@ -88,9 +88,9 @@ class DerivationFromBhat(StitcherScene):
         with self.voiceover("It's symmetric. By the spectral theorem, this means it must be orthogonally diagonalizable.") as tracker:
             self.play(LaggedStart(Create(checks[0]), Write(fact1), lag_ratio=0.6))
             proof11 = MathTex("H^T = (X (X^T X)^{-1} X^T)^T")
-            proof12 = MathTex("H^T = X^T^T (X^T X)^{-1}^T X^T")
-            proof13 = MathTex("H^T = X (X^T X)^T^{-1} X^T")
-            proof14 = MathTex("H^T = X (X^T X^T^T)^{-1} X^T")
+            proof12 = MathTex("H^T = {X^T}^T {(X^T X)^{-1}}^T X^T")
+            proof13 = MathTex("H^T = X {(X^T X)^T}^{-1} X^T")
+            proof14 = MathTex("H^T = X (X^T {X^T}^T)^{-1} X^T")
             proof15 = MathTex("H^T = X (X^T X)^{-1} X^T")
             proof16 = MathTex("H^T = H")
             proof1_group = make_proof_group(fact1, proof11, proof12, proof13, proof14, proof15, proof16)
