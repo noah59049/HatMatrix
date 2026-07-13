@@ -183,3 +183,32 @@ class ArrayValueTracker(ValueTracker):
     def increment_value(self, d_array):
         self.set_value(self.get_value() + np.array(d_array))
         return self
+
+class FlashOn(Succession):
+    """
+    Fades a mobject in, holds it, then fades it out.
+
+    run_time can be:
+      - a single number  → split evenly into (in, hold, out)
+      - a 3-tuple        → (fade_in_time, hold_time, fade_out_time)
+    """
+    def __init__(
+        self,
+        mobject,
+        run_time=3.0,
+        fade_in=FadeIn,
+        fade_out=FadeOut,
+        **kwargs,
+    ):
+        if isinstance(run_time, (tuple, list)):
+            t_in, t_hold, t_out = run_time
+        else:
+            t_in = t_hold = t_out = run_time / 3
+
+        super().__init__(
+            fade_in(mobject, run_time=t_in),
+            Wait(t_hold),
+            fade_out(mobject, run_time=t_out),
+            **kwargs,
+        )
+
