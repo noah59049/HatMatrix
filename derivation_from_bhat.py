@@ -1,11 +1,13 @@
 import numpy as np
 from manim import *
 from MF_Tools import *
+from N_Tools import *
 from stitcher_scene import StitcherScene
 
 
 class DerivationFromBhat(StitcherScene):
     def construct_scene(self):
+        orth_fact = MathTex(r"e \perp X")
         tex1 = MathTex(r"Y = X \hat{\beta} + e")
         tex2 = MathTex(r"X^T Y = X^T X \hat{\beta} + X^T e")
         tex3 = MathTex(r"X^T Y = X^T X \hat{\beta}")
@@ -18,8 +20,9 @@ class DerivationFromBhat(StitcherScene):
 
         with self.voiceover("Now we want to derive the formula for the hat matrix.") as tracker:
             pass
-        with self.voiceover("We can represent Y as X beta hat plus e. e is our error vector, and it is orthogonal to all the columns of X. We want to isolate beta hat. The first step is to") as tracker:
+        with self.voiceover("We can represent Y as X beta hat plus e. e is our error vector, and it is orthogonal to all the columns of X. We want to isolate beta hat. First we") as tracker:
             self.play(Write(tex1))
+            self.play(FlashOn(orth_fact, duration = (0.4, tracker.duration - 2, 0.4)))
         with self.voiceover("left multiply by X transpose. Since e is orthogonal to every column of X,") as tracker:
             self.play(TransformByGlyphMap(tex1, tex2,
                                           (FadeIn, [0,1]),
@@ -29,11 +32,12 @@ class DerivationFromBhat(StitcherScene):
         with self.voiceover("X transpose e is zero. Then we") as tracker:
             self.play(TransformByGlyphMap(tex2, tex3,
                                           ([9,10,11,12], FadeOut, {"run_time": 0.5})))
-        with self.voiceover("left multiply by the inverse of X transpose X, and then we get our formula for beta hat.") as tracker:
+        with self.voiceover("left multiply by the inverse of X transpose X,") as tracker:
             self.play(TransformByGlyphMap(tex3, tex4,
                                           (FadeIn, range(0,7)),
                                           (FadeIn, range(11,18), {"run_time": 0.45, "delay":0.5},),
                                     ))
+        with self.voiceover("Cancel terms, and then we get our formula for beta hat.") as tracker:
             self.play(TransformByGlyphMap(tex4, tex5,
                                           (range(11,21), FadeOut, {"run_time":0.5})))
         
@@ -96,6 +100,8 @@ class DerivationFromBhat(StitcherScene):
             proof16 = MathTex("H^T = H")
             proof1_group = make_proof_group(fact1, proof11, proof12, proof13, proof14, proof15, proof16)
             self.play(FadeIn(proof1_group))
+            fact11 = Tex("$\implies X$ is orthogonally diagonalizable.").next_to(fact1, RIGHT)
+            self.play(FadeIn(fact11))
         with self.voiceover("It's idempotent, meaning that H squared equals H.") as tracker:
             self.play(FadeOut(proof1_group))
             self.play(LaggedStart(Create(checks[1]), Write(fact2), lag_ratio=0.6))
@@ -111,7 +117,7 @@ class DerivationFromBhat(StitcherScene):
             proof32 = MathTex("H X = X")
             proof3_group = make_proof_group(fact3, proof31, proof32)
             self.play(FadeIn(proof3_group))
-        with self.voiceover("If you take H times any vector v orthogonal to X, this X transpose v makes the whole product turn out to zero.") as tracker:
+        with self.voiceover("H times any vector orthogonal to X is zero.") as tracker:
             self.play(FadeOut(proof3_group))
             self.play(LaggedStart(Create(checks[3]), Write(fact4), lag_ratio=0.6))
             proof41 = MathTex(r"H \vec{v} = X (X^T X)^{-1} X^T \vec{v}")
@@ -119,7 +125,7 @@ class DerivationFromBhat(StitcherScene):
             proof43 = MathTex(r"H \vec{v} = 0")
             proof4_group = make_proof_group(fact4, proof41, proof42, proof43)
             self.play(FadeIn(proof4_group))
-        with self.voiceover("These last 2 facts are an intuition for how H is a projection onto the column space of X.") as tracker:
+        with self.voiceover("These last 2 facts intuit how H is a projection onto the column space of X.") as tracker:
             self.play(FadeOut(proof4_group))
             boxes = VGroup(
                 SurroundingRectangle(fact3),
