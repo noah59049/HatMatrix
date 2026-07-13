@@ -119,7 +119,6 @@ class DerivationFromBhat(StitcherScene):
             proof4_group = make_proof_group(fact4, proof41, proof42, proof43)
             self.play(FadeIn(proof4_group))
         with self.voiceover("These last 2 facts are an intuition for how H is a projection onto the column space of X.") as tracker:
-            self.play(FadeOut(proof4_group))
             boxes = VGroup(
                 SurroundingRectangle(fact3),
                 SurroundingRectangle(fact4)
