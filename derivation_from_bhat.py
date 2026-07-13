@@ -6,7 +6,6 @@ from stitcher_scene import StitcherScene
 
 class DerivationFromBhat(StitcherScene):
     def construct_scene(self):
-        self.silent = True
         tex1 = MathTex(r"Y = X \hat{\beta} + e")
         tex2 = MathTex(r"X^T Y = X^T X \hat{\beta} + X^T e")
         tex3 = MathTex(r"X^T Y = X^T X \hat{\beta}")
