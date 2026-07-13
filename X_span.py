@@ -27,18 +27,28 @@ class XSpan(StitcherScene, ThreeDScene):
         y_label = MathTex("Y").next_to(y_point, UP)
         graph_group = VGroup(axes, point, y_point, y_label)
         
-        # Orbit the camera instead of rotating the axes: a fixed generic
-        # elevation always keeps the axes reading as a normal 3D frame (no
-        # "which way is up" ambiguity like an arbitrary object rotation has),
-        # and we pick the azimuth from X so the X0/X1 span isn't edge-on,
-        # however X is chosen.
+        # Rotate the objects instead of orbiting the camera (camera stays at
+        # its default, identity-like pose). ThreeDCamera projects world points
+        # via rot_matrix @ (point - frame_center), where
+        # rot_matrix = Rz(gamma) @ Rx(-phi) @ Rz(-theta - 90°)
+        # (see ThreeDCamera.generate_rotation_matrix). With gamma=0 and the
+        # default frame_center=ORIGIN, pre-applying that same matrix to our
+        # objects and leaving the camera untouched renders identically to
+        # calling self.set_camera_orientation(phi=camera_phi, theta=camera_theta).
+        #
+        # Note this also keeps axes.c2p() correct for everything built from it
+        # afterwards (the always-redrawn point, the X0/X1 arrows, the span
+        # plane): apply_matrix rotates the axes' own NumberLines in place, and
+        # coords_to_point() reads their current (rotated) geometry, so c2p just
+        # keeps working in the rotated frame with no extra bookkeeping.
         camera_phi = 70 * DEGREES
         origin = axes.c2p(0, 0, 0)
         X0_dir = axes.c2p(*X[:, 0]) - origin
         X1_dir = axes.c2p(*X[:, 1]) - origin
         span_normal = get_unit_normal(X0_dir, X1_dir)
         camera_theta = angle_of_vector(span_normal)
-        self.set_camera_orientation(phi=camera_phi, theta=camera_theta)
+        camera_rotation = rotation_matrix(-camera_phi, RIGHT) @ rotation_about_z(-camera_theta - 90 * DEGREES)
+        graph_group.apply_matrix(camera_rotation, about_point=ORIGIN)
 
         X_tex = MathTex("X = " + numpy_to_latex(X))
         Y_tex = MathTex("Y = " + numpy_to_latex(Y))
