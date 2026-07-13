@@ -22,7 +22,7 @@ class DerivationFromBhat(StitcherScene):
             pass
         with self.voiceover("We can represent Y as X beta hat plus e. e is our error vector, and it is orthogonal to all the columns of X. We want to isolate beta hat. First we") as tracker:
             self.play(Write(tex1))
-            self.play(FlashOn(orth_fact, duration = (0.4, tracker.duration - 2, 0.4)))
+            self.play(FlashOn(orth_fact, run_time = (0.4, tracker.duration - 2, 0.4)))
         with self.voiceover("left multiply by X transpose. Since e is orthogonal to every column of X,") as tracker:
             self.play(TransformByGlyphMap(tex1, tex2,
                                           (FadeIn, [0,1]),
