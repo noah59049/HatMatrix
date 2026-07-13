@@ -44,7 +44,7 @@ class DerivationFromBhat(StitcherScene):
                                           ))
         with self.voiceover("and X beta hat is Y hat.") as tracker:
             self.play(TransformByGlyphMap(tex6, tex7,
-                                          ([12,13], [12])))
+                                          ([12,14], [13])))
         with self.voiceover("So this here is the hat matrix, which we call H.") as tracker:
             self.add(hm_formula)
             hm_formula_box = SurroundingRectangle(hm_formula, color = RED)
