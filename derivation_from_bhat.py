@@ -117,6 +117,8 @@ class DerivationFromBhat(StitcherScene):
             proof32 = MathTex("H X = X")
             proof3_group = make_proof_group(fact3, proof31, proof32)
             self.play(FadeIn(proof3_group))
+            fact31 = MathTex("\implies H X_{\cdot j} = X_{cdot j}").next_to(fact3, RIGHT)
+            self.play(FadeIn(fact31))
         with self.voiceover("H times any vector orthogonal to X is zero.") as tracker:
             self.play(FadeOut(proof3_group))
             self.play(LaggedStart(Create(checks[3]), Write(fact4), lag_ratio=0.6))
