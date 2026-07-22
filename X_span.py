@@ -6,6 +6,7 @@ from stitcher_scene import StitcherScene
 
 class XSpan(StitcherScene, ThreeDScene):
     def construct_scene(self):
+        self.silent = True
         # n = 3, k = 2. Chosen arbitrarily: first column of X is all ones (intercept).
         n, k = 3, 2
         X = np.array([
@@ -17,9 +18,16 @@ class XSpan(StitcherScene, ThreeDScene):
 
         # Setup the 3D axes with the span of X
         bhat = ArrayValueTracker([0.0, 0.0])
+        
         yhat = ArrayValueTracker(X @ bhat.get_value())
         yhat.add_updater(lambda m: m.set_value(X @ bhat.get_value()))
-        self.add(bhat, yhat)
+        
+        bhat_min = ArrayValueTracker(bhat.get_value())
+        bhat_min.add_updater(lambda m : m.set_value(np.minimum(bhat.get_value(), bhat_min.get_value())))
+        bhat_max = ArrayValueTracker(bhat.get_value())
+        bhat_max.add_updater(lambda m : m.set_value(np.maximum(bhat.get_value(), bhat_max.get_value())))
+
+        self.add(bhat, bhat_min, bhat_max, yhat)
 
         axes = ThreeDAxes()
         point = always_redraw(lambda: Dot3D(axes.c2p(*yhat.get_value()), color=YELLOW, radius=0.1))
@@ -67,19 +75,27 @@ class XSpan(StitcherScene, ThreeDScene):
 
         def _refresh_bhat_tex(m):
             m.become(make_bhat_tex())
-            self.add_fixed_in_frame_mobjects(m)
+            self.add(m)
 
         bhat_tex.add_updater(_refresh_bhat_tex)
 
         with self.voiceover("X and Y are fixed at the time of data collection.") as tracker:
-            self.add_fixed_in_frame_mobjects(X_tex, Y_tex)
+            # self.add_fixed_in_frame_mobjects(X_tex, Y_tex)
             self.play(FadeIn(X_tex, Y_tex))
         with self.voiceover("But beta hat can vary.") as tracker:
-            self.add_fixed_in_frame_mobjects(bhat_tex)
+            # self.add_fixed_in_frame_mobjects(bhat_tex)
             self.play(FadeIn(bhat_tex))
         with self.voiceover("If beta hat is the zero vector, so is y hat. Now let's look at what happens if") as tracker:
             self.add(graph_group)
         with self.voiceover("we vary beta zero hat. Y hat moves along this") as tracker:
+            X0_trace = always_redraw(
+                lambda : Line(
+                    axes.c2p(X[:, 0] * bhat_min.get_value()[0]), 
+                    axes.c2p(X[:, 0] * bhat_max.get_value()[0]), 
+                    color = GREEN
+                )
+            )
+            self.add(X0_trace)
             self.play(bhat.animate.set_value(np.array([ 1, 0])))
             self.play(bhat.animate.set_value(np.array([-1, 0])))
             self.play(bhat.animate.set_value(np.array([ 0, 0])))
@@ -87,6 +103,14 @@ class XSpan(StitcherScene, ThreeDScene):
             X0_arr = Arrow(axes.c2p(0, 0, 0), axes.c2p(*X[:, 0]), buff=0)
             self.play(FadeIn(X0_arr))
         with self.voiceover("we vary beta one hat. Y hat moves along") as tracker:
+            X1_trace = always_redraw(
+                lambda : Line(
+                    axes.c2p(X[:, 1] * bhat_min.get_value()[1]), 
+                    axes.c2p(X[:, 1] * bhat_max.get_value()[1]), 
+                    color = GREEN
+                )
+            )
+            self.add(X1_trace)
             self.play(bhat.animate.set_value(np.array([0, 1])))
             self.play(bhat.animate.set_value(np.array([0,-1])))
             self.play(bhat.animate.set_value(np.array([0, 0])))
