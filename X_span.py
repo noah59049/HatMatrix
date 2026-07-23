@@ -31,9 +31,8 @@ class XSpan(StitcherScene, ThreeDScene):
 
         axes = ThreeDAxes()
         point = always_redraw(lambda: Dot3D(axes.c2p(*yhat.get_value()), color=YELLOW, radius=0.1))
-        y_point = Dot3D(axes.c2p(*Y), color=WHITE, radius=0.1)
-        y_label = MathTex("Y").next_to(y_point, UP)
-        graph_group = VGroup(axes, point, y_point, y_label)
+        y_point = Dot3D(axes.c2p(*Y), color=ORANGE, radius=0.1)
+        graph_group = VGroup(axes, point, y_point)
         
         # Rotate the objects instead of orbiting the camera (camera stays at
         # its default, identity-like pose). ThreeDCamera projects world points
@@ -57,6 +56,11 @@ class XSpan(StitcherScene, ThreeDScene):
         camera_theta = angle_of_vector(span_normal)
         camera_rotation = rotation_matrix(-camera_phi, RIGHT) @ rotation_about_z(-camera_theta - 90 * DEGREES)
         graph_group.apply_matrix(camera_rotation, about_point=ORIGIN)
+
+        # Built after the rotation and kept out of graph_group, so it sits at
+        # the (already-rotated) y_point but stays flat/upright on screen
+        # instead of inheriting graph_group's 3D tilt like y_point does.
+        y_label = MathTex("Y", color=ORANGE).next_to(y_point, UP)
 
         # A 2D scatter/trendline plot on the left, showing the actual (X1, Y)
         # data next to the abstract 3D span picture.
@@ -114,7 +118,7 @@ class XSpan(StitcherScene, ThreeDScene):
             self.play(FadeIn(bhat_tex))
             self.play(FadeIn(trendline_2d))
         with self.voiceover("If beta hat is the zero vector, so is y hat. Now let's look at what happens if") as tracker:
-            self.add(graph_group)
+            self.add(graph_group, y_label)
         with self.voiceover("we vary beta zero hat. Y hat moves along this") as tracker:
             X0_trace = always_redraw(
                 lambda : Line(
