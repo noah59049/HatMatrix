@@ -62,7 +62,7 @@ class XSpan(StitcherScene, ThreeDScene):
         # Built after the rotation and kept out of graph_group, so it sits at
         # the (already-rotated) y_point but stays flat/upright on screen
         # instead of inheriting graph_group's 3D tilt like y_point does.
-        y_label = MathTex("Y", color=ORANGE).next_to(y_point, UP).set_z_index(10)
+        y_label = MathTex("Y", color=ORANGE).next_to(y_point, UP)
 
         GRID_STROKE_WIDTH = 4
         def sweep_variable(
@@ -105,12 +105,16 @@ class XSpan(StitcherScene, ThreeDScene):
             running_max.add_updater(lambda m: m.set_value(np.maximum(bhat.get_value(), m.get_value())))
             self.add(running_min, running_max)
 
+            # shade_in_3d=True is what makes ThreeDCamera depth-sort this
+            # against other 3D content (y_point, span_plane, ...) by actual
+            # position; plain Line/VMobjects default to False, which the
+            # camera treats as "always draw on top", regardless of depth.
             trace = always_redraw(lambda: Line(
                 axes.c2p(*(X @ running_min.get_value())),
                 axes.c2p(*(X @ running_max.get_value())),
                 color=color,
                 stroke_width = stroke_width,
-            ))
+            ).set_shade_in_3d(True))
             self.add(trace)
 
             bhat.set_value(base)
@@ -184,12 +188,12 @@ class XSpan(StitcherScene, ThreeDScene):
         with self.voiceover("we vary beta zero hat. Y hat moves along this") as tracker:
             sweep_variable(fixed_index=1, fixed_value=0.0)
         with self.voiceover("line in the direction of (1,1,1). Now let's look at what happens if") as tracker:
-            X0_arrow = Arrow(axes.c2p(0, 0, 0), axes.c2p(*X[:, 0]), buff=0)
+            X0_arrow = Arrow(axes.c2p(0, 0, 0), axes.c2p(*X[:, 0]), buff=0).set_shade_in_3d(True)
             self.play(FadeIn(X0_arrow))
         with self.voiceover("we vary beta one hat. Y hat moves along") as tracker:
             sweep_variable(fixed_index=0, fixed_value=0.0)
         with self.voiceover("in the direction of X1.") as tracker:
-            X1_arrow = Arrow(axes.c2p(0, 0, 0), axes.c2p(*X[:, 1]), buff=0)
+            X1_arrow = Arrow(axes.c2p(0, 0, 0), axes.c2p(*X[:, 1]), buff=0).set_shade_in_3d(True)
             self.play(FadeIn(X1_arrow))
         with self.voiceover("So you can see how, by varying both beta zero hat and beta 1 hat, Y hat can be anything that's in the span of the two columns of X.") as tracker:
             # Tunable constants: how many beta1 steps to draw gridlines at,
@@ -247,7 +251,7 @@ class XSpan(StitcherScene, ThreeDScene):
                     lo, hi = np.zeros(2), np.zeros(2)
                     lo[fixed_index] = hi[fixed_index] = val
                     lo[varying_index], hi[varying_index] = -radius, radius
-                    lines.add(Line(axes.c2p(*(X @ lo)), axes.c2p(*(X @ hi)), color=GREEN, stroke_width=stroke_width))
+                    lines.add(Line(axes.c2p(*(X @ lo)), axes.c2p(*(X @ hi)), color=GREEN, stroke_width=stroke_width).set_shade_in_3d(True))
                 drawn_steps[fixed_index].update(round(v, 6) for v in new_steps)
                 return lines
 
