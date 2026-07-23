@@ -222,17 +222,70 @@ class XSpan(StitcherScene, ThreeDScene):
                     hi = grid_radius,
                 )
 
-            span_plane = Surface(
-                lambda u, v: axes.c2p(*(u * X[:, 0] + v * X[:, 1])),
-                u_range=[-1.5, 1.5],
-                v_range=[-1.5, 1.5],
-                resolution=(8, 8),
-                fill_color=GREEN,
-                fill_opacity=0.3,
-                checkerboard_colors=[GREEN, GREEN],
-                stroke_width=0,
-            )
-            self.play(FadeIn(span_plane))
+            # Rather than just fading in a solid plane, sell "the span is
+            # literally every one of these lines" by 1) extending the grid
+            # we just swept out further along both directions, then 2)/3)
+            # repeatedly doubling its density in place until the lines are
+            # packed tightly enough to read as a solid surface. Each pass
+            # only draws the NEW rows/columns at that resolution (the ones
+            # from the previous pass are already on screen), batched into a
+            # single Create so we're not replaying the slow animated
+            # point-sweep for dozens of lines -- that visual already did its
+            # job during the sweeps above.
+            EXTENDED_RADIUS = 1.8   # how far the grid reaches after step 1
+            FINER_PASSES = 3        # how many doubling-density passes (steps 2, 3, ...)
+            FINER_RUN_TIME = 0.6    # time for the first doubling pass (halves each pass after)
+
+            drawn_steps = {1: set(np.round(beta1_steps, 6)), 0: set(np.round(beta0_steps, 6))}
+
+            def grid_lines_for_new_steps(fixed_index, all_steps, radius, stroke_width=2):
+                varying_index = 1 - fixed_index
+                new_steps = [v for v in all_steps if round(v, 6) not in drawn_steps[fixed_index]]
+                lines = VGroup()
+                for val in new_steps:
+                    lo, hi = np.zeros(2), np.zeros(2)
+                    lo[fixed_index] = hi[fixed_index] = val
+                    lo[varying_index], hi[varying_index] = -radius, radius
+                    lines.add(Line(axes.c2p(*(X @ lo)), axes.c2p(*(X @ hi)), color=GREEN, stroke_width=stroke_width))
+                drawn_steps[fixed_index].update(round(v, 6) for v in new_steps)
+                return lines
+
+            def add_grid_pass(radius, num_steps, run_time, stroke_width=2):
+                all_steps = np.linspace(-radius, radius, num_steps)
+                new_lines = VGroup(
+                    grid_lines_for_new_steps(1, all_steps, radius, stroke_width),
+                    grid_lines_for_new_steps(0, all_steps, radius, stroke_width),
+                )
+                self.play(Create(new_lines), run_time=run_time)
+
+            # 1) Extend: same spacing as the sweep above (not just the same
+            # step *count*, which over a wider radius would coarsen it),
+            # just covering more of the plane.
+            original_spacing = (2 * grid_radius) / (GRID_ROWS - 1)
+            extended_num_steps = int(round(2 * EXTENDED_RADIUS / original_spacing)) + 1
+            add_grid_pass(EXTENDED_RADIUS, extended_num_steps, run_time=1.0)
+
+            # 2)/3) Finer and finer: double the row count each pass (which
+            # keeps every previous line's position and only adds the
+            # in-between ones), speeding up as there's more to draw.
+            num_steps = extended_num_steps
+            run_time = FINER_RUN_TIME
+            for _ in range(FINER_PASSES):
+                num_steps = num_steps * 2 - 1
+                add_grid_pass(EXTENDED_RADIUS, num_steps, run_time=run_time, stroke_width=1.5)
+                run_time *= 0.6
+
+            # span_plane = Surface(
+            #     lambda u, v: axes.c2p(*(u * X[:, 0] + v * X[:, 1])),
+            #     u_range=[-EXTENDED_RADIUS, EXTENDED_RADIUS],
+            #     v_range=[-EXTENDED_RADIUS, EXTENDED_RADIUS],
+            #     resolution=(8, 8),
+            #     fill_color=GREEN,
+            #     fill_opacity=0.3,
+            #     checkerboard_colors=[GREEN, GREEN],
+            #     stroke_width=0,
+            # )
+            # self.play(FadeIn(span_plane))
         return
         with self.voiceover("But out of all those possible values of Y hat, our model only uses one. Specifically, it uses the one that minimizes the sum of squared differences between Y hat and Y.") as tracker:
             ...
