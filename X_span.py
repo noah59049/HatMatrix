@@ -186,12 +186,12 @@ class XSpan(StitcherScene, ThreeDScene):
         with self.voiceover("If beta hat is the zero vector, so is y hat. Now let's look at what happens if") as tracker:
             self.add(graph_group, y_label)
         with self.voiceover("we vary beta zero hat. Y hat moves along this") as tracker:
-            sweep_variable(fixed_index=1, fixed_value=0.0)
+            sweep_variable(fixed_index=1, fixed_value=0.0, lo = -1.8, hi = 1.8)
         with self.voiceover("line in the direction of (1,1,1). Now let's look at what happens if") as tracker:
             X0_arrow = Arrow(axes.c2p(0, 0, 0), axes.c2p(*X[:, 0]), buff=0).set_shade_in_3d(True)
             self.play(FadeIn(X0_arrow))
         with self.voiceover("we vary beta one hat. Y hat moves along") as tracker:
-            sweep_variable(fixed_index=0, fixed_value=0.0)
+            sweep_variable(fixed_index=0, fixed_value=0.0, lo = -1.8, hi = 1.8)
         with self.voiceover("in the direction of X1.") as tracker:
             X1_arrow = Arrow(axes.c2p(0, 0, 0), axes.c2p(*X[:, 1]), buff=0).set_shade_in_3d(True)
             self.play(FadeIn(X1_arrow))
