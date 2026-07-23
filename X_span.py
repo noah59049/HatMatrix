@@ -157,7 +157,7 @@ class XSpan(StitcherScene, ThreeDScene):
             # and how long each row's animated sweep across beta1 takes
             # (total time is roughly GRID_ROWS * GRID_ROW_RUN_TIME * 2).
             GRID_ROWS = 8
-            GRID_ROW_RUN_TIME = 0.15
+            GRID_ROW_RUN_TIME = 0.4
 
             # Only sweeping beta0 from 0 up to its max (not also down to its
             # min) builds half the grid, in the direction of positive X0; a
