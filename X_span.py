@@ -193,7 +193,7 @@ class XSpan(StitcherScene, ThreeDScene):
             # Do the sweeps
             # beta1_min, beta1_max = bhat_extremes(axes, X, np.array([0., 0.]), np.array([0., 1.]))
             grid_radius = 0.9
-            beta1_steps = np.linspace(-grid_radius, grid_radius, GRID_ROWS + 1)[1:]
+            beta1_steps = np.linspace(-grid_radius, grid_radius, GRID_ROWS)
             for beta1 in beta1_steps:
                 sweep_variable(
                     fixed_index=1, 
@@ -204,7 +204,7 @@ class XSpan(StitcherScene, ThreeDScene):
                 )
 
             # beta0_min, beta0_max = bhat_extremes(axes, X, np.array([0., 0.]), np.array([1., 0.]))
-            beta0_steps = np.linspace(-grid_radius, grid_radius, GRID_ROWS + 1)[1:]
+            beta0_steps = np.linspace(-grid_radius, grid_radius, GRID_ROWS)
             for beta0 in beta0_steps:
                 sweep_variable(
                     fixed_index=0, 
