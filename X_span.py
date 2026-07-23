@@ -288,12 +288,65 @@ class XSpan(StitcherScene, ThreeDScene):
             self.wait()
 
         with self.voiceover("But out of all those possible values of Y hat, our model uses the one that minimizes the sum of squared differences between Y hat and Y.") as tracker:
-            ... # TODO: on the 2D graph, draw dotted lines from Y to Y hat, and then draw squares at those lines. That's making residuals.
-            # TODO: Then set Y hat to be the OLS estimate.
+            self.add(yhat_point)
+
+            # One dashed segment + one square per data point, each square's
+            # side equal to that point's |residual| (in screen distance, so
+            # it reads as an actual square regardless of how graph_2d's x/y
+            # axes happen to be scaled relative to each other). Wrapped in
+            # always_redraw so they track bhat live, same as trendline_2d.
+            def residuals_group():
+                group = VGroup()
+                for x, y in zip(X1_vals, Y):
+                    yhat_val = bhat.get_value()[0] + bhat.get_value()[1] * x
+                    p_y = graph_2d.c2p(x, y)
+                    p_yhat = graph_2d.c2p(x, yhat_val)
+                    dashed = DashedLine(p_y, p_yhat, color=YELLOW, stroke_width=2)
+                    side = max(abs(p_y[1] - p_yhat[1]), 0.01)
+                    bottom = min(p_y[1], p_yhat[1])
+                    square = Square(side_length=side, color=YELLOW, fill_opacity=0.3, stroke_width=1)
+                    square.move_to([p_y[0] + side / 2, bottom + side / 2, 0])
+                    group.add(dashed, square)
+                return group
+
+            residuals = always_redraw(residuals_group)
+            self.play(FadeIn(residuals), run_time=self.get_current_voiceover_duration() / 3)
+
+            # Then set Y hat to be the OLS estimate: watch the residual
+            # squares shrink to their minimum total area as bhat gets there.
+            self.play(bhat.animate.set_value(bhat_ols), run_time=2 * self.get_current_voiceover_duration() / 3)
         with self.voiceover("Now here's the key idea. This is the same as minimizing the Euclidean distance between Y and Y hat.") as tracker:
-            ... # TODO: Draw a perpendicular dotted line from Y to Y hat
+            # bhat is at bhat_ols now, so this is exactly the (perpendicular,
+            # by construction of Y) residual vector e = Y - Y hat in R^3.
+            residual_3d_line = DashedLine(axes.c2p(*Y), axes.c2p(*yhat.get_value()), color=WHITE)
+            self.play(Create(residual_3d_line), run_time=tracker.duration)
         with self.voiceover("Now what point on this plane is the closest to Y? The orthogonal projection of Y onto this plane.") as tracker:
-            ... # TODO: Draw perpendicular symbol from that line to the plane 
+            # A small elbow marker built from raw 3D points rather than
+            # manim's Angle/RightAngle: those go through line_intersection,
+            # which only supports lines lying in the xy-plane (z=0) and would
+            # raise on our rotated 3D lines.
+            def right_angle_marker(corner, dir1, dir2, length=0.25, color=WHITE):
+                u, v = normalize(dir1), normalize(dir2)
+                marker = VMobject(color=color, stroke_width=3)
+                marker.set_points_as_corners([
+                    corner + length * u,
+                    corner + length * u + length * v,
+                    corner + length * v,
+                ])
+                return marker
+
+            # Direction vectors for the marker come from camera_rotation
+            # applied to the *raw* data-space vectors, not from axes.c2p():
+            # ThreeDAxes' default x/y/z ranges give it different unit_size
+            # per axis, so c2p() scales non-uniformly and doesn't preserve
+            # angles between non-axis-aligned vectors like these -- only the
+            # (data-space-exact) orthogonality between X's columns and the
+            # residual, carried through the angle-preserving rotation, does.
+            yhat_pos = axes.c2p(*yhat.get_value())
+            residual_true = camera_rotation @ (Y - X @ bhat.get_value())
+            X0_true = camera_rotation @ X[:, 0]
+            right_angle = right_angle_marker(yhat_pos, X0_true, residual_true)
+            self.play(Create(right_angle), run_time=tracker.duration)
         with self.voiceover("So we want the hat matrix, when multiplied by Y, to get the orthogonal projection of Y onto this plane.") as tracker:
             ...
         with self.voiceover("That would be an orthogonal projection matrix. It should have eigenvalues of 1 for all the columns of X, and 0 for everything orthogonal to all the columns of X.") as tracker:
