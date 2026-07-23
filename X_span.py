@@ -31,9 +31,9 @@ class XSpan(StitcherScene, ThreeDScene):
 
         axes = ThreeDAxes()
         axes.scale(0.7)
-        point = always_redraw(lambda: Dot3D(axes.c2p(*yhat.get_value()), color=YELLOW, radius=0.1))
+        yhat_point = always_redraw(lambda: Dot3D(axes.c2p(*yhat.get_value()), color=YELLOW, radius=0.1))
         y_point = Dot3D(axes.c2p(*Y), color=ORANGE, radius=0.1)
-        graph_group = VGroup(axes, point, y_point)
+        graph_group = VGroup(axes, yhat_point, y_point)
         
         # Rotate the objects instead of orbiting the camera (camera stays at
         # its default, identity-like pose). ThreeDCamera projects world points
@@ -231,7 +231,7 @@ class XSpan(StitcherScene, ThreeDScene):
                     hi = grid_radius,
                 )
 
-            self.remove(y_point)
+            self.remove(yhat_point)
             # Rather than just fading in a solid plane, sell "the span is
             # literally every one of these lines" by 1) extending the grid
             # we just swept out further along both directions, then 2)/3)
