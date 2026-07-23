@@ -234,13 +234,13 @@ class XSpan(StitcherScene, ThreeDScene):
             # job during the sweeps above.
             EXTENDED_RADIUS = 1.8   # how far the grid reaches after step 1
             FINER_PASSES = 3        # how many doubling-density passes (steps 2, 3, ...)
-            FINER_RUN_TIME = 0.6    # time for the first doubling pass (halves each pass after)
+            FINER_RUN_TIME = 0.6    # time for the first doubling pass (multiplies by 0.6 each pass after)
 
             drawn_steps = {1: set(np.round(beta1_steps, 6)), 0: set(np.round(beta0_steps, 6))}
 
-            def grid_lines_for_new_steps(fixed_index, all_steps, radius, stroke_width=2):
+            def grid_lines_for_new_steps(fixed_index, all_steps, radius, stroke_width=2, include_existing_lines = False):
                 varying_index = 1 - fixed_index
-                new_steps = [v for v in all_steps if round(v, 6) not in drawn_steps[fixed_index]]
+                new_steps = [v for v in all_steps if include_existing_lines or round(v, 6) not in drawn_steps[fixed_index]]
                 lines = VGroup()
                 for val in new_steps:
                     lo, hi = np.zeros(2), np.zeros(2)
@@ -250,11 +250,11 @@ class XSpan(StitcherScene, ThreeDScene):
                 drawn_steps[fixed_index].update(round(v, 6) for v in new_steps)
                 return lines
 
-            def add_grid_pass(radius, num_steps, run_time, stroke_width=2):
+            def add_grid_pass(radius, num_steps, run_time, stroke_width=2, include_existing_lines = False):
                 all_steps = np.linspace(-radius, radius, num_steps)
                 new_lines = VGroup(
-                    grid_lines_for_new_steps(1, all_steps, radius, stroke_width),
-                    grid_lines_for_new_steps(0, all_steps, radius, stroke_width),
+                    grid_lines_for_new_steps(1, all_steps, radius, stroke_width, include_existing_lines),
+                    grid_lines_for_new_steps(0, all_steps, radius, stroke_width, include_existing_lines),
                 )
                 self.play(Create(new_lines), run_time=run_time)
 
@@ -263,7 +263,7 @@ class XSpan(StitcherScene, ThreeDScene):
             # just covering more of the plane.
             original_spacing = (2 * grid_radius) / (GRID_ROWS - 1)
             extended_num_steps = int(round(2 * EXTENDED_RADIUS / original_spacing)) + 1
-            add_grid_pass(EXTENDED_RADIUS, extended_num_steps, run_time=1.0)
+            add_grid_pass(EXTENDED_RADIUS, extended_num_steps, run_time=1.0, include_existing_lines=True)
 
             # 2)/3) Finer and finer: double the row count each pass (which
             # keeps every previous line's position and only adds the
@@ -272,7 +272,7 @@ class XSpan(StitcherScene, ThreeDScene):
             run_time = FINER_RUN_TIME
             for _ in range(FINER_PASSES):
                 num_steps = num_steps * 2 - 1
-                add_grid_pass(EXTENDED_RADIUS, num_steps, run_time=run_time, stroke_width=1.5)
+                add_grid_pass(EXTENDED_RADIUS, num_steps, run_time=run_time, stroke_width=1.5, include_existing_lines=False)
                 run_time *= 0.6
 
             # span_plane = Surface(
