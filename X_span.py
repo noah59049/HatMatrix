@@ -236,7 +236,7 @@ class XSpan(StitcherScene, ThreeDScene):
             # point-sweep for dozens of lines -- that visual already did its
             # job during the sweeps above.
             EXTENDED_RADIUS = 1.8   # how far the grid reaches after step 1
-            FINER_PASSES = 3        # how many doubling-density passes (steps 2, 3, ...)
+            FINER_PASSES = 4        # how many doubling-density passes (steps 2, 3, ...)
             FINER_RUN_TIME = 0.6    # time for the first doubling pass (multiplies by 0.6 each pass after)
 
             drawn_steps = {1: set(np.round(beta1_steps, 6)), 0: set(np.round(beta0_steps, 6))}
