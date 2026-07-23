@@ -319,7 +319,7 @@ class XSpan(StitcherScene, ThreeDScene):
             # bhat is at bhat_ols now, so this is exactly the (perpendicular,
             # by construction of Y) residual vector e = Y - Y hat in R^3.
             residual_3d_line = DashedLine(axes.c2p(*Y), axes.c2p(*yhat.get_value()), color=WHITE)
-            self.play(Create(residual_3d_line), run_time=tracker.duration)
+            self.play(Create(residual_3d_line), run_time=self.get_current_voiceover_duration())
         with self.voiceover("Now what point on this plane is the closest to Y? The orthogonal projection of Y onto this plane.") as tracker:
             # A small elbow marker built from raw 3D points rather than
             # manim's Angle/RightAngle: those go through line_intersection,
@@ -346,7 +346,7 @@ class XSpan(StitcherScene, ThreeDScene):
             residual_true = camera_rotation @ (Y - X @ bhat.get_value())
             X0_true = camera_rotation @ X[:, 0]
             right_angle = right_angle_marker(yhat_pos, X0_true, residual_true)
-            self.play(Create(right_angle), run_time=tracker.duration)
+            self.play(Create(right_angle), run_time=self.get_current_voiceover_duration())
         with self.voiceover("So we want the hat matrix, when multiplied by Y, to get the orthogonal projection of Y onto this plane.") as tracker:
             ...
         with self.voiceover("That would be an orthogonal projection matrix. It should have eigenvalues of 1 for all the columns of X, and 0 for everything orthogonal to all the columns of X.") as tracker:
