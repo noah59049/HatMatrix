@@ -153,6 +153,7 @@ class XSpan(StitcherScene, ThreeDScene):
             X1_arr = Arrow(axes.c2p(0, 0, 0), axes.c2p(*X[:, 1]), buff=0)
             self.play(FadeIn(X1_arr))
         with self.voiceover("So you can see how, by varying both beta zero hat and beta 1 hat, Y hat can be anything that's in the span of the two columns of X.") as tracker:
+            # TODO: Move our Yhat tracker in a "grid", increasing bhat[0] by a little bit, then moving bhat[1] out to the minimum and maximum possible values for that bhat[0], leaving behind a "green trail" as we did before. Then repeat that for a lot of different values along the line. This will only build half of a grid in one direction, but just start with that for now. There should be easily tunable constants at the beginning to control how long this process takes and how many gridlines it makes.
             span_plane = Surface(
                 lambda u, v: axes.c2p(*(u * X[:, 0] + v * X[:, 1])),
                 u_range=[-1.5, 1.5],
