@@ -287,13 +287,13 @@ class XSpan(StitcherScene, ThreeDScene):
                 run_time *= 0.6
             self.wait()
 
-        return
-        with self.voiceover("But out of all those possible values of Y hat, our model only uses one. Specifically, it uses the one that minimizes the sum of squared differences between Y hat and Y.") as tracker:
-            ...
+        with self.voiceover("But out of all those possible values of Y hat, our model uses the one that minimizes the sum of squared differences between Y hat and Y.") as tracker:
+            ... # TODO: on the 2D graph, draw dotted lines from Y to Y hat, and then draw squares at those lines. That's making residuals.
+            # TODO: Then set Y hat to be the OLS estimate.
         with self.voiceover("Now here's the key idea. This is the same as minimizing the Euclidean distance between Y and Y hat.") as tracker:
-            ...
+            ... # TODO: Draw a perpendicular dotted line from Y to Y hat
         with self.voiceover("Now what point on this plane is the closest to Y? The orthogonal projection of Y onto this plane.") as tracker:
-            ...
+            ... # TODO: Draw perpendicular symbol from that line to the plane 
         with self.voiceover("So we want the hat matrix, when multiplied by Y, to get the orthogonal projection of Y onto this plane.") as tracker:
             ...
         with self.voiceover("That would be an orthogonal projection matrix. It should have eigenvalues of 1 for all the columns of X, and 0 for everything orthogonal to all the columns of X.") as tracker:
