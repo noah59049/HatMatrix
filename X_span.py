@@ -58,6 +58,33 @@ class XSpan(StitcherScene, ThreeDScene):
         camera_rotation = rotation_matrix(-camera_phi, RIGHT) @ rotation_about_z(-camera_theta - 90 * DEGREES)
         graph_group.apply_matrix(camera_rotation, about_point=ORIGIN)
 
+        # A 2D scatter/trendline plot on the left, showing the actual (X1, Y)
+        # data next to the abstract 3D span picture.
+        X1_vals = X[:, 1]
+        graph_2d = Axes(
+            x_range=[-0.5, X1_vals.max() + 0.5, 1],
+            y_range=[0, Y.max() + 1, 1],
+            x_length=4,
+            y_length=4,
+            tips=False,
+        )
+        graph_2d.to_edge(LEFT)
+        graph_2d_labels = graph_2d.get_axis_labels(x_label="X_1", y_label="Y")
+
+        X_ticks_2d = VGroup(*[
+            Line(DOWN * 0.1, UP * 0.1).move_to(graph_2d.c2p(x, 0))
+            for x in X1_vals
+        ])
+        data_points_2d = VGroup(*[
+            Dot(graph_2d.c2p(x, y), color=WHITE, radius=0.08)
+            for x, y in zip(X1_vals, Y)
+        ])
+        trendline_2d = always_redraw(lambda: graph_2d.plot(
+            lambda x: bhat.get_value()[0] + bhat.get_value()[1] * x,
+            color=YELLOW,
+        ))
+        graph_2d_group = VGroup(graph_2d, graph_2d_labels, X_ticks_2d, data_points_2d)
+
         X_tex = MathTex("X = " + numpy_to_latex(X))
         Y_tex = MathTex("Y = " + numpy_to_latex(Y))
         X_tex.to_corner(UR)
@@ -81,10 +108,11 @@ class XSpan(StitcherScene, ThreeDScene):
 
         with self.voiceover("X and Y are fixed at the time of data collection.") as tracker:
             # self.add_fixed_in_frame_mobjects(X_tex, Y_tex)
-            self.play(FadeIn(X_tex, Y_tex))
+            self.play(FadeIn(X_tex, Y_tex, graph_2d_group))
         with self.voiceover("But beta hat can vary.") as tracker:
             # self.add_fixed_in_frame_mobjects(bhat_tex)
             self.play(FadeIn(bhat_tex))
+            self.play(FadeIn(trendline_2d))
         with self.voiceover("If beta hat is the zero vector, so is y hat. Now let's look at what happens if") as tracker:
             self.add(graph_group)
         with self.voiceover("we vary beta zero hat. Y hat moves along this") as tracker:
