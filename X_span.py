@@ -58,7 +58,14 @@ class XSpan(StitcherScene, ThreeDScene):
         # instead of inheriting graph_group's 3D tilt like y_point does.
         y_label = MathTex("Y", color=ORANGE).next_to(y_point, UP)
 
-        def sweep_variable(fixed_index, fixed_value, run_time=1.0, color=GREEN):
+        def sweep_variable(
+                fixed_index, 
+                fixed_value, 
+                run_time=1.0, 
+                color=GREEN,
+                lo = None,
+                hi = None,
+            ):
             """Fixes bhat[fixed_index] = fixed_value and animates the other
             component of bhat out to its max, then its min, then back to this
             row's baseline (fixed_index stays put, the other component
@@ -78,7 +85,11 @@ class XSpan(StitcherScene, ThreeDScene):
             direction = np.zeros(2)
             direction[varying_index] = 1.0
 
-            lo, hi = bhat_extremes(axes, X, base, direction)
+            lo1, hi1 = bhat_extremes(axes, X, base, direction)
+            if lo is None:
+                lo = lo1
+            if hi is None:
+                hi = hi1
 
             running_min = ArrayValueTracker(base)
             running_max = ArrayValueTracker(base)
@@ -176,19 +187,31 @@ class XSpan(StitcherScene, ThreeDScene):
             # and how long each row's animated sweep across beta0 takes
             # (total time is roughly GRID_ROWS * GRID_ROW_RUN_TIME * 3, since
             # each row does the full increase/decrease/return-to-0 sweep).
-            GRID_ROWS = 7
-            GRID_ROW_RUN_TIME = 0.7
+            GRID_ROWS = 5
+            GRID_ROW_RUN_TIME = 0.3
 
             # Do the sweeps
-            beta1_min, beta1_max = bhat_extremes(axes, X, np.array([0., 0.]), np.array([0., 1.]))
+            beta1_min, beta1_max = -0.9, 0.9 # bhat_extremes(axes, X, np.array([0., 0.]), np.array([0., 1.]))
             beta1_steps = np.linspace(beta1_min[1], beta1_max[1], GRID_ROWS + 1)[1:]
             for beta1 in beta1_steps:
-                sweep_variable(fixed_index=1, fixed_value=beta1, run_time=GRID_ROW_RUN_TIME)
+                sweep_variable(
+                    fixed_index=1, 
+                    fixed_value=beta1, 
+                    run_time=GRID_ROW_RUN_TIME,
+                    lo = -0.9,
+                    hi = 0.9,
+                )
 
-            beta0_min, beta0_max = bhat_extremes(axes, X, np.array([0., 0.]), np.array([1., 0.]))
+            beta0_min, beta0_max = -0.9, 0.9 # bhat_extremes(axes, X, np.array([0., 0.]), np.array([1., 0.]))
             beta0_steps = np.linspace(beta0_min[0], beta0_max[0], GRID_ROWS + 1)[1:]
             for beta0 in beta0_steps:
-                sweep_variable(fixed_index=0, fixed_value=beta0, run_time=GRID_ROW_RUN_TIME)
+                sweep_variable(
+                    fixed_index=0, 
+                    fixed_value=beta0, 
+                    run_time=GRID_ROW_RUN_TIME,
+                    lo = -0.9,
+                    hi = 0.9,
+                )
 
             span_plane = Surface(
                 lambda u, v: axes.c2p(*(u * X[:, 0] + v * X[:, 1])),
