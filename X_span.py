@@ -19,7 +19,7 @@ class XSpan(StitcherScene, ThreeDScene):
         # projection, so adding get_unit_normal(X0, X1) (perpendicular to both
         # columns, since n - k = 1 here) to X @ bhat_ols leaves the fit alone.
         bhat_ols = np.array([0.3, 0.7])
-        Y_residual_scale = 1.25  # how far off the X0/X1 plane Y sits
+        Y_residual_scale = 3  # how far off the X0/X1 plane Y sits
         Y = X @ bhat_ols + Y_residual_scale * get_unit_normal(X[:, 0], X[:, 1])
 
         # Setup the 3D axes with the span of X
