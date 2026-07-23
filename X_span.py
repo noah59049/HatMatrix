@@ -85,11 +85,11 @@ class XSpan(StitcherScene, ThreeDScene):
             direction = np.zeros(2)
             direction[varying_index] = 1.0
 
-            lo1, hi1 = bhat_extremes(axes, X, base, direction)
-            if lo is None:
-                lo = lo1
-            if hi is None:
-                hi = hi1
+            lo_bhat, hi_bhat = bhat_extremes(axes, X, base, direction)
+            if lo is not None:
+                lo_bhat[varying_index] = lo
+            if hi is not None:
+                hi_bhat[varying_index] = hi
 
             running_min = ArrayValueTracker(base)
             running_max = ArrayValueTracker(base)
@@ -105,8 +105,8 @@ class XSpan(StitcherScene, ThreeDScene):
             self.add(trace)
 
             bhat.set_value(base)
-            self.play(bhat.animate.set_value(hi), run_time=run_time)
-            self.play(bhat.animate.set_value(lo), run_time=run_time)
+            self.play(bhat.animate.set_value(hi_bhat), run_time=run_time)
+            self.play(bhat.animate.set_value(lo_bhat), run_time=run_time)
             self.play(bhat.animate.set_value(base), run_time=run_time)
 
             running_min.clear_updaters()
