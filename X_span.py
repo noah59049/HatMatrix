@@ -179,14 +179,16 @@ class XSpan(StitcherScene, ThreeDScene):
             GRID_ROWS = 7
             GRID_ROW_RUN_TIME = 0.7
 
-            # Only sweeping beta1 from 0 up to its max (not also down to its
-            # min) builds half the grid, in the direction of positive X1; a
-            # second, symmetric pass could fill in the other half later.
+            # Do the sweeps
             beta1_min, beta1_max = bhat_extremes(axes, X, np.array([0., 0.]), np.array([0., 1.]))
             beta1_steps = np.linspace(beta1_min[1], beta1_max[1], GRID_ROWS + 1)[1:]
-
             for beta1 in beta1_steps:
                 sweep_variable(fixed_index=1, fixed_value=beta1, run_time=GRID_ROW_RUN_TIME)
+
+            beta0_min, beta0_max = bhat_extremes(axes, X, np.array([0., 0.]), np.array([1., 0.]))
+            beta0_steps = np.linspace(beta0_min[1], beta0_max[1], GRID_ROWS + 1)[1:]
+            for beta0 in beta0_steps:
+                sweep_variable(fixed_index=0, fixed_value=beta0, run_time=GRID_ROW_RUN_TIME)
 
             span_plane = Surface(
                 lambda u, v: axes.c2p(*(u * X[:, 0] + v * X[:, 1])),
