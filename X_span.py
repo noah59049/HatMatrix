@@ -18,16 +18,11 @@ class XSpan(StitcherScene, ThreeDScene):
 
         # Setup the 3D axes with the span of X
         bhat = ArrayValueTracker([0.0, 0.0])
-        
+
         yhat = ArrayValueTracker(X @ bhat.get_value())
         yhat.add_updater(lambda m: m.set_value(X @ bhat.get_value()))
-        
-        bhat_min = ArrayValueTracker(bhat.get_value())
-        bhat_min.add_updater(lambda m : m.set_value(np.minimum(bhat.get_value(), bhat_min.get_value())))
-        bhat_max = ArrayValueTracker(bhat.get_value())
-        bhat_max.add_updater(lambda m : m.set_value(np.maximum(bhat.get_value(), bhat_max.get_value())))
 
-        self.add(bhat, bhat_min, bhat_max, yhat)
+        self.add(bhat, yhat)
 
         axes = ThreeDAxes()
         axes.scale(0.7)
@@ -62,6 +57,51 @@ class XSpan(StitcherScene, ThreeDScene):
         # the (already-rotated) y_point but stays flat/upright on screen
         # instead of inheriting graph_group's 3D tilt like y_point does.
         y_label = MathTex("Y", color=ORANGE).next_to(y_point, UP)
+
+        def sweep_variable(fixed_index, fixed_value, run_time=1.0, color=GREEN):
+            """Fixes bhat[fixed_index] = fixed_value and animates the other
+            component of bhat out to its max, then its min, then back to this
+            row's baseline (fixed_index stays put, the other component
+            returns to 0) -- the same increase/decrease/return-to-0 motion
+            as the original single-axis "vary beta_i" animation.
+
+            Leaves behind a static green trace of the full swept range, via
+            fresh min/max trackers that get frozen (updaters cleared) once
+            the sweep finishes, so repeated calls (e.g. one per grid row)
+            don't contaminate each other's traces.
+
+            Returns the trace Line.
+            """
+            varying_index = 1 - fixed_index
+            base = np.zeros(2)
+            base[fixed_index] = fixed_value
+            direction = np.zeros(2)
+            direction[varying_index] = 1.0
+
+            lo, hi = bhat_extremes(axes, X, base, direction)
+
+            running_min = ArrayValueTracker(base)
+            running_max = ArrayValueTracker(base)
+            running_min.add_updater(lambda m: m.set_value(np.minimum(bhat.get_value(), m.get_value())))
+            running_max.add_updater(lambda m: m.set_value(np.maximum(bhat.get_value(), m.get_value())))
+            self.add(running_min, running_max)
+
+            trace = always_redraw(lambda: Line(
+                axes.c2p(*(X @ running_min.get_value())),
+                axes.c2p(*(X @ running_max.get_value())),
+                color=color,
+            ))
+            self.add(trace)
+
+            self.play(bhat.animate.set_value(hi), run_time=run_time)
+            self.play(bhat.animate.set_value(lo), run_time=run_time)
+            self.play(bhat.animate.set_value(base), run_time=run_time)
+
+            running_min.clear_updaters()
+            running_max.clear_updaters()
+            self.remove(running_min, running_max)
+
+            return trace
 
         # A 2D scatter/trendline plot on the left, showing the actual (X1, Y)
         # data next to the abstract 3D span picture.
@@ -121,60 +161,31 @@ class XSpan(StitcherScene, ThreeDScene):
         with self.voiceover("If beta hat is the zero vector, so is y hat. Now let's look at what happens if") as tracker:
             self.add(graph_group, y_label)
         with self.voiceover("we vary beta zero hat. Y hat moves along this") as tracker:
-            X0_trace = always_redraw(
-                lambda : Line(
-                    axes.c2p(X[:, 0] * bhat_min.get_value()[0]), 
-                    axes.c2p(X[:, 0] * bhat_max.get_value()[0]), 
-                    color = GREEN
-                )
-            )
-            self.add(X0_trace)
-            bhat0_min, bhat0_max = bhat_extremes(axes, X, bhat.get_value(), np.array([1., 0.]))
-            self.play(bhat.animate.set_value(bhat0_max))
-            self.play(bhat.animate.set_value(bhat0_min))
-            self.play(bhat.animate.set_value(np.array([ 0, 0])))
+            sweep_variable(fixed_index=1, fixed_value=0.0)
         with self.voiceover("line in the direction of (1,1,1). Now let's look at what happens if") as tracker:
             X0_arr = Arrow(axes.c2p(0, 0, 0), axes.c2p(*X[:, 0]), buff=0)
             self.play(FadeIn(X0_arr))
         with self.voiceover("we vary beta one hat. Y hat moves along") as tracker:
-            X1_trace = always_redraw(
-                lambda : Line(
-                    axes.c2p(X[:, 1] * bhat_min.get_value()[1]), 
-                    axes.c2p(X[:, 1] * bhat_max.get_value()[1]), 
-                    color = GREEN
-                )
-            )
-            self.add(X1_trace)
-            bhat1_min, bhat1_max = bhat_extremes(axes, X, bhat.get_value(), np.array([0., 1.]))
-            self.play(bhat.animate.set_value(bhat1_max))
-            self.play(bhat.animate.set_value(bhat1_min))
-            self.play(bhat.animate.set_value(np.array([0, 0])))
+            sweep_variable(fixed_index=0, fixed_value=0.0)
         with self.voiceover("in the direction of X1.") as tracker:
             X1_arr = Arrow(axes.c2p(0, 0, 0), axes.c2p(*X[:, 1]), buff=0)
             self.play(FadeIn(X1_arr))
         with self.voiceover("So you can see how, by varying both beta zero hat and beta 1 hat, Y hat can be anything that's in the span of the two columns of X.") as tracker:
-            # Tunable constants: how many beta0 steps to draw gridlines at,
-            # and how long each row's animated sweep across beta1 takes
-            # (total time is roughly GRID_ROWS * GRID_ROW_RUN_TIME * 2).
+            # Tunable constants: how many beta1 steps to draw gridlines at,
+            # and how long each row's animated sweep across beta0 takes
+            # (total time is roughly GRID_ROWS * GRID_ROW_RUN_TIME * 3, since
+            # each row does the full increase/decrease/return-to-0 sweep).
             GRID_ROWS = 8
             GRID_ROW_RUN_TIME = 0.4
 
-            # Only sweeping beta0 from 0 up to its max (not also down to its
-            # min) builds half the grid, in the direction of positive X0; a
+            # Only sweeping beta1 from 0 up to its max (not also down to its
+            # min) builds half the grid, in the direction of positive X1; a
             # second, symmetric pass could fill in the other half later.
-            _, bhat0_max = bhat_extremes(axes, X, np.array([0., 0.]), np.array([1., 0.]))
-            beta0_steps = np.linspace(0, bhat0_max[0], GRID_ROWS + 1)[1:]
+            _, beta1_max = bhat_extremes(axes, X, np.array([0., 0.]), np.array([0., 1.]))
+            beta1_steps = np.linspace(0, beta1_max[1], GRID_ROWS + 1)[1:]
 
-            for beta0 in beta0_steps:
-                row_base = np.array([beta0, 0.])
-                beta1_min, beta1_max = bhat_extremes(axes, X, row_base, np.array([0., 1.]))
-                self.play(bhat.animate.set_value(beta1_min), run_time=GRID_ROW_RUN_TIME)
-                row_line = Line(axes.c2p(*(X @ beta1_min)), axes.c2p(*(X @ beta1_max)), color=GREEN)
-                self.play(
-                    Create(row_line),
-                    bhat.animate.set_value(beta1_max),
-                    run_time=GRID_ROW_RUN_TIME,
-                )
+            for beta1 in beta1_steps:
+                sweep_variable(fixed_index=1, fixed_value=beta1, run_time=GRID_ROW_RUN_TIME)
 
             span_plane = Surface(
                 lambda u, v: axes.c2p(*(u * X[:, 0] + v * X[:, 1])),
