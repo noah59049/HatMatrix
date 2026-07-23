@@ -18,7 +18,7 @@ class XSpan(StitcherScene, ThreeDScene):
         # orthogonal to X's column span changes the residual but not the
         # projection, so adding get_unit_normal(X0, X1) (perpendicular to both
         # columns, since n - k = 1 here) to X @ bhat_ols leaves the fit alone.
-        bhat_ols = np.array([0.7, 0.3])
+        bhat_ols = np.array([0.3, 0.7])
         Y_residual_scale = 2.5  # how far off the X0/X1 plane Y sits
         Y = X @ bhat_ols + Y_residual_scale * get_unit_normal(X[:, 0], X[:, 1])
 
