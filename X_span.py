@@ -93,6 +93,7 @@ class XSpan(StitcherScene, ThreeDScene):
             ))
             self.add(trace)
 
+            bhat.set_value(base)
             self.play(bhat.animate.set_value(hi), run_time=run_time)
             self.play(bhat.animate.set_value(lo), run_time=run_time)
             self.play(bhat.animate.set_value(base), run_time=run_time)
