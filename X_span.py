@@ -153,7 +153,29 @@ class XSpan(StitcherScene, ThreeDScene):
             X1_arr = Arrow(axes.c2p(0, 0, 0), axes.c2p(*X[:, 1]), buff=0)
             self.play(FadeIn(X1_arr))
         with self.voiceover("So you can see how, by varying both beta zero hat and beta 1 hat, Y hat can be anything that's in the span of the two columns of X.") as tracker:
-            # TODO: Move our Yhat tracker in a "grid", increasing bhat[0] by a little bit, then moving bhat[1] out to the minimum and maximum possible values for that bhat[0], leaving behind a "green trail" as we did before. Then repeat that for a lot of different values along the line. This will only build half of a grid in one direction, but just start with that for now. There should be easily tunable constants at the beginning to control how long this process takes and how many gridlines it makes.
+            # Tunable constants: how many beta0 steps to draw gridlines at,
+            # and how long each row's animated sweep across beta1 takes
+            # (total time is roughly GRID_ROWS * GRID_ROW_RUN_TIME * 2).
+            GRID_ROWS = 8
+            GRID_ROW_RUN_TIME = 0.15
+
+            # Only sweeping beta0 from 0 up to its max (not also down to its
+            # min) builds half the grid, in the direction of positive X0; a
+            # second, symmetric pass could fill in the other half later.
+            _, bhat0_max = bhat_extremes(axes, X, np.array([0., 0.]), np.array([1., 0.]))
+            beta0_steps = np.linspace(0, bhat0_max[0], GRID_ROWS + 1)[1:]
+
+            for beta0 in beta0_steps:
+                row_base = np.array([beta0, 0.])
+                beta1_min, beta1_max = bhat_extremes(axes, X, row_base, np.array([0., 1.]))
+                self.play(bhat.animate.set_value(beta1_min), run_time=GRID_ROW_RUN_TIME)
+                row_line = Line(axes.c2p(*(X @ beta1_min)), axes.c2p(*(X @ beta1_max)), color=GREEN)
+                self.play(
+                    Create(row_line),
+                    bhat.animate.set_value(beta1_max),
+                    run_time=GRID_ROW_RUN_TIME,
+                )
+
             span_plane = Surface(
                 lambda u, v: axes.c2p(*(u * X[:, 0] + v * X[:, 1])),
                 u_range=[-1.5, 1.5],
