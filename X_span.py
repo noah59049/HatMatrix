@@ -71,6 +71,7 @@ class XSpan(StitcherScene, ThreeDScene):
                 fixed_value, 
                 run_time=1.0, 
                 color=GREEN,
+                stroke_width=4,
                 lo = None,
                 hi = None,
             ):
@@ -109,6 +110,7 @@ class XSpan(StitcherScene, ThreeDScene):
                 axes.c2p(*(X @ running_min.get_value())),
                 axes.c2p(*(X @ running_max.get_value())),
                 color=color,
+                stroke_width = stroke_width,
             ))
             self.add(trace)
 
@@ -238,7 +240,7 @@ class XSpan(StitcherScene, ThreeDScene):
 
             drawn_steps = {1: set(np.round(beta1_steps, 6)), 0: set(np.round(beta0_steps, 6))}
 
-            def grid_lines_for_new_steps(fixed_index, all_steps, radius, stroke_width=2, include_existing_lines = False):
+            def grid_lines_for_new_steps(fixed_index, all_steps, radius, stroke_width=4, include_existing_lines = False):
                 varying_index = 1 - fixed_index
                 new_steps = [v for v in all_steps if include_existing_lines or round(v, 6) not in drawn_steps[fixed_index]]
                 lines = VGroup()
@@ -250,7 +252,7 @@ class XSpan(StitcherScene, ThreeDScene):
                 drawn_steps[fixed_index].update(round(v, 6) for v in new_steps)
                 return lines
 
-            def add_grid_pass(radius, num_steps, run_time, stroke_width=2, include_existing_lines = False):
+            def add_grid_pass(radius, num_steps, run_time, stroke_width=4, include_existing_lines = False):
                 all_steps = np.linspace(-radius, radius, num_steps)
                 new_lines = VGroup(
                     grid_lines_for_new_steps(1, all_steps, radius, stroke_width, include_existing_lines),
@@ -272,7 +274,7 @@ class XSpan(StitcherScene, ThreeDScene):
             run_time = FINER_RUN_TIME
             for _ in range(FINER_PASSES):
                 num_steps = num_steps * 2 - 1
-                add_grid_pass(EXTENDED_RADIUS, num_steps, run_time=run_time, stroke_width=1.5, include_existing_lines=False)
+                add_grid_pass(EXTENDED_RADIUS, num_steps, run_time=run_time, stroke_width=4, include_existing_lines=False)
                 run_time *= 0.6
 
             # span_plane = Surface(
