@@ -175,13 +175,13 @@ class XSpan(StitcherScene, ThreeDScene):
         with self.voiceover("we vary beta zero hat. Y hat moves along this") as tracker:
             sweep_variable(fixed_index=1, fixed_value=0.0)
         with self.voiceover("line in the direction of (1,1,1). Now let's look at what happens if") as tracker:
-            X0_arr = Arrow(axes.c2p(0, 0, 0), axes.c2p(*X[:, 0]), buff=0)
-            self.play(FadeIn(X0_arr))
+            X0_arrow = Arrow(axes.c2p(0, 0, 0), axes.c2p(*X[:, 0]), buff=0)
+            self.play(FadeIn(X0_arrow))
         with self.voiceover("we vary beta one hat. Y hat moves along") as tracker:
             sweep_variable(fixed_index=0, fixed_value=0.0)
         with self.voiceover("in the direction of X1.") as tracker:
-            X1_arr = Arrow(axes.c2p(0, 0, 0), axes.c2p(*X[:, 1]), buff=0)
-            self.play(FadeIn(X1_arr))
+            X1_arrow = Arrow(axes.c2p(0, 0, 0), axes.c2p(*X[:, 1]), buff=0)
+            self.play(FadeIn(X1_arrow))
         with self.voiceover("So you can see how, by varying both beta zero hat and beta 1 hat, Y hat can be anything that's in the span of the two columns of X.") as tracker:
             # Tunable constants: how many beta1 steps to draw gridlines at,
             # and how long each row's animated sweep across beta0 takes
