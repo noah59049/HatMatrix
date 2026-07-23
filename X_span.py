@@ -33,9 +33,7 @@ class XSpan(StitcherScene, ThreeDScene):
         axes = ThreeDAxes()
         axes.scale(0.7)
         point = always_redraw(lambda: Dot3D(axes.c2p(*yhat.get_value()), color=YELLOW, radius=0.1))
-        # A high z_index keeps Y drawn in front of the grid lines and span
-        # plane added later, regardless of paint order.
-        y_point = Dot3D(axes.c2p(*Y), color=ORANGE, radius=0.1).set_z_index(10)
+        y_point = Dot3D(axes.c2p(*Y), color=ORANGE, radius=0.1)
         graph_group = VGroup(axes, point, y_point)
         
         # Rotate the objects instead of orbiting the camera (camera stays at
@@ -277,6 +275,7 @@ class XSpan(StitcherScene, ThreeDScene):
                 num_steps = num_steps * 2 - 1
                 add_grid_pass(EXTENDED_RADIUS, num_steps, run_time=run_time, stroke_width=GRID_STROKE_WIDTH, include_existing_lines=False)
                 run_time *= 0.6
+            self.wait()
 
             # span_plane = Surface(
             #     lambda u, v: axes.c2p(*(u * X[:, 0] + v * X[:, 1])),
