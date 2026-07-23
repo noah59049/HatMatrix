@@ -151,6 +151,34 @@ def numpy_to_latex(
             "\\end{bmatrix}"
         )
 
+def bhat_extremes(axes, X, base, direction):
+    """Finds how far bhat = base + t*direction can go, in either direction,
+    before X @ bhat leaves axes' plotted range (x_range/y_range/z_range) in
+    any dimension.
+
+    Returns (bhat_min, bhat_max): the two bhat vectors at the most negative
+    and most positive feasible t.
+    """
+    base = np.array(base, dtype=float)
+    direction = np.array(direction, dtype=float)
+    base_yhat = X @ base
+    step_yhat = X @ direction
+
+    t_min, t_max = -np.inf, np.inf
+    for axis_range, base_i, step_i in zip(
+        (axes.x_range, axes.y_range, axes.z_range), base_yhat, step_yhat
+    ):
+        lo, hi = axis_range[0], axis_range[1]
+        if step_i > 0:
+            t_min = max(t_min, (lo - base_i) / step_i)
+            t_max = min(t_max, (hi - base_i) / step_i)
+        elif step_i < 0:
+            t_min = max(t_min, (hi - base_i) / step_i)
+            t_max = min(t_max, (lo - base_i) / step_i)
+        # step_i == 0: this dimension doesn't constrain t
+
+    return base + t_min * direction, base + t_max * direction
+
 class ArrayValueTracker(ValueTracker):
     """A ValueTracker that holds a numpy array of any shape instead of a single
     scalar, so it can be animated the same way with `.animate.set_value(new_array)`.

@@ -128,8 +128,9 @@ class XSpan(StitcherScene, ThreeDScene):
                 )
             )
             self.add(X0_trace)
-            self.play(bhat.animate.set_value(np.array([ 1, 0])))
-            self.play(bhat.animate.set_value(np.array([-1, 0])))
+            bhat0_min, bhat0_max = bhat_extremes(axes, X, bhat.get_value(), np.array([1., 0.]))
+            self.play(bhat.animate.set_value(bhat0_max))
+            self.play(bhat.animate.set_value(bhat0_min))
             self.play(bhat.animate.set_value(np.array([ 0, 0])))
         with self.voiceover("line in the direction of (1,1,1). Now let's look at what happens if") as tracker:
             X0_arr = Arrow(axes.c2p(0, 0, 0), axes.c2p(*X[:, 0]), buff=0)
@@ -143,8 +144,9 @@ class XSpan(StitcherScene, ThreeDScene):
                 )
             )
             self.add(X1_trace)
-            self.play(bhat.animate.set_value(np.array([0, 1])))
-            self.play(bhat.animate.set_value(np.array([0,-1])))
+            bhat1_min, bhat1_max = bhat_extremes(axes, X, bhat.get_value(), np.array([0., 1.]))
+            self.play(bhat.animate.set_value(bhat1_max))
+            self.play(bhat.animate.set_value(bhat1_min))
             self.play(bhat.animate.set_value(np.array([0, 0])))
         with self.voiceover("in the direction of X1.") as tracker:
             X1_arr = Arrow(axes.c2p(0, 0, 0), axes.c2p(*X[:, 1]), buff=0)
