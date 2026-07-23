@@ -232,6 +232,7 @@ class XSpan(StitcherScene, ThreeDScene):
                     hi = grid_radius,
                 )
 
+            self.remove(y_point)
             # Rather than just fading in a solid plane, sell "the span is
             # literally every one of these lines" by 1) extending the grid
             # we just swept out further along both directions, then 2)/3)
