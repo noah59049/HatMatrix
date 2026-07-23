@@ -14,7 +14,13 @@ class XSpan(StitcherScene, ThreeDScene):
             [1.0, 1.0],
             [1.0, 3.0],
         ])
-        Y = np.array([1.0, 3.0, 4.0])
+        # Choose Y so that its OLS fit is exactly bhat_ols: any component of Y
+        # orthogonal to X's column span changes the residual but not the
+        # projection, so adding get_unit_normal(X0, X1) (perpendicular to both
+        # columns, since n - k = 1 here) to X @ bhat_ols leaves the fit alone.
+        bhat_ols = np.array([0.7, 0.3])
+        Y_residual_scale = 1.5  # how far off the X0/X1 plane Y sits
+        Y = X @ bhat_ols + Y_residual_scale * get_unit_normal(X[:, 0], X[:, 1])
 
         # Setup the 3D axes with the span of X
         bhat = ArrayValueTracker([0.0, 0.0])
@@ -27,7 +33,9 @@ class XSpan(StitcherScene, ThreeDScene):
         axes = ThreeDAxes()
         axes.scale(0.7)
         point = always_redraw(lambda: Dot3D(axes.c2p(*yhat.get_value()), color=YELLOW, radius=0.1))
-        y_point = Dot3D(axes.c2p(*Y), color=ORANGE, radius=0.1)
+        # A high z_index keeps Y drawn in front of the grid lines and span
+        # plane added later, regardless of paint order.
+        y_point = Dot3D(axes.c2p(*Y), color=ORANGE, radius=0.1).set_z_index(10)
         graph_group = VGroup(axes, point, y_point)
         
         # Rotate the objects instead of orbiting the camera (camera stays at
@@ -56,7 +64,7 @@ class XSpan(StitcherScene, ThreeDScene):
         # Built after the rotation and kept out of graph_group, so it sits at
         # the (already-rotated) y_point but stays flat/upright on screen
         # instead of inheriting graph_group's 3D tilt like y_point does.
-        y_label = MathTex("Y", color=ORANGE).next_to(y_point, UP)
+        y_label = MathTex("Y", color=ORANGE).next_to(y_point, UP).set_z_index(10)
 
         def sweep_variable(
                 fixed_index, 
