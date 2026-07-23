@@ -30,6 +30,7 @@ class XSpan(StitcherScene, ThreeDScene):
         self.add(bhat, bhat_min, bhat_max, yhat)
 
         axes = ThreeDAxes()
+        axes.scale(0.7)
         point = always_redraw(lambda: Dot3D(axes.c2p(*yhat.get_value()), color=YELLOW, radius=0.1))
         y_point = Dot3D(axes.c2p(*Y), color=ORANGE, radius=0.1)
         graph_group = VGroup(axes, point, y_point)
