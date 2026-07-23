@@ -286,17 +286,6 @@ class XSpan(StitcherScene, ThreeDScene):
                 run_time *= 0.6
             self.wait()
 
-            # span_plane = Surface(
-            #     lambda u, v: axes.c2p(*(u * X[:, 0] + v * X[:, 1])),
-            #     u_range=[-EXTENDED_RADIUS, EXTENDED_RADIUS],
-            #     v_range=[-EXTENDED_RADIUS, EXTENDED_RADIUS],
-            #     resolution=(8, 8),
-            #     fill_color=GREEN,
-            #     fill_opacity=0.3,
-            #     checkerboard_colors=[GREEN, GREEN],
-            #     stroke_width=0,
-            # )
-            # self.play(FadeIn(span_plane))
         return
         with self.voiceover("But out of all those possible values of Y hat, our model only uses one. Specifically, it uses the one that minimizes the sum of squared differences between Y hat and Y.") as tracker:
             ...
