@@ -6,7 +6,6 @@ from stitcher_scene import StitcherScene
 
 class XSpan(StitcherScene, ThreeDScene):
     def construct_scene(self):
-        self.silent = True
         # n = 3, k = 2. Chosen arbitrarily: first column of X is all ones (intercept).
         n, k = 3, 2
         X = np.array([
