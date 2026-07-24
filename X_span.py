@@ -376,7 +376,7 @@ class XSpan(StitcherScene, ThreeDScene):
         with self.voiceover("Now here's the key idea. This is the same as minimizing the Euclidean distance between Y and Y hat.") as tracker:
             # bhat is at bhat_ols now, so this is exactly the (perpendicular,
             # by construction of Y) residual vector e = Y - Y hat in R^3.
-            residual_3d_line = DashedLine(axes.c2p(*Y), axes.c2p(*yhat.get_value()), color=WHITE)
+            residual_3d_line = always_redraw(lambda: DashedLine(axes.c2p(*Y), axes.c2p(*yhat.get_value()), color=WHITE))
             graph_group.add(residual_3d_line)
             self.play(Create(residual_3d_line), run_time=self.get_current_voiceover_duration())
         with self.voiceover("Now what point on this plane is the closest to Y? The orthogonal projection of Y onto this plane.") as tracker:
@@ -403,10 +403,12 @@ class XSpan(StitcherScene, ThreeDScene):
             # only the (data-space-exact) orthogonality between X's columns
             # and the residual, carried through the angle-preserving
             # rotation, does.
-            yhat_pos = axes.c2p(*yhat.get_value())
-            residual_true = current_rotation["matrix"] @ (Y - X @ bhat.get_value())
-            X0_true = current_rotation["matrix"] @ X[:, 0]
-            right_angle = right_angle_marker(yhat_pos, X0_true, residual_true)
+            def make_right_angle():
+                yhat_pos = axes.c2p(*yhat.get_value())
+                X0_true = current_rotation["matrix"] @ X[:, 0]
+                residual_true = current_rotation["matrix"] @ (Y - X @ bhat.get_value())
+                return right_angle_marker(yhat_pos, X0_true, residual_true)
+            right_angle = always_redraw(make_right_angle)
             graph_group.add(right_angle)
             self.play(Create(right_angle), run_time=self.get_current_voiceover_duration())
         with self.voiceover("So we want the hat matrix, when multiplied by Y, to get the orthogonal projection of Y onto this plane.") as tracker:
