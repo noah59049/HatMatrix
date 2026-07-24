@@ -410,6 +410,8 @@ class XSpan(StitcherScene, ThreeDScene):
             graph_group.add(right_angle)
             # FadeIn, not Create -- same reason as residual_3d_line above.
             self.add(right_angle)
+
+        self.wait()
         with self.voiceover("So we want the hat matrix, when multiplied by Y, to get the orthogonal projection of Y onto this plane.") as tracker:
             ...
         with self.voiceover("That would be an orthogonal projection matrix. It should have eigenvalues of 1 for all the columns of X, and 0 for everything orthogonal to all the columns of X.") as tracker:
