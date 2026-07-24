@@ -376,9 +376,18 @@ class XSpan(StitcherScene, ThreeDScene):
         with self.voiceover("Now here's the key idea. This is the same as minimizing the Euclidean distance between Y and Y hat.") as tracker:
             # bhat is at bhat_ols now, so this is exactly the (perpendicular,
             # by construction of Y) residual vector e = Y - Y hat in R^3.
+            # FadeIn, not Create: Create reveals a growing prefix of a path
+            # frozen at the animation's start, while always_redraw's own
+            # updater keeps fully rebuilding this mobject every frame from
+            # the live (still-rotating) state -- the two fight over the same
+            # points each frame, and by the end the "grown" line's endpoint
+            # is stuck wherever the graph was when Create began, not where Y
+            # actually is now. FadeIn only touches opacity, so always_redraw
+            # stays the sole thing driving the geometry, correctly tracking
+            # the rotation the whole time.
             residual_3d_line = always_redraw(lambda: DashedLine(axes.c2p(*Y), axes.c2p(*yhat.get_value()), color=WHITE))
             graph_group.add(residual_3d_line)
-            self.play(Create(residual_3d_line), run_time=self.get_current_voiceover_duration())
+            self.play(FadeIn(residual_3d_line), run_time=self.get_current_voiceover_duration())
         with self.voiceover("Now what point on this plane is the closest to Y? The orthogonal projection of Y onto this plane.") as tracker:
             # A small elbow marker built from raw 3D points rather than
             # manim's Angle/RightAngle: those go through line_intersection,
@@ -410,7 +419,8 @@ class XSpan(StitcherScene, ThreeDScene):
                 return right_angle_marker(yhat_pos, X0_true, residual_true)
             right_angle = always_redraw(make_right_angle)
             graph_group.add(right_angle)
-            self.play(Create(right_angle), run_time=self.get_current_voiceover_duration())
+            # FadeIn, not Create -- same reason as residual_3d_line above.
+            self.play(FadeIn(right_angle), run_time=self.get_current_voiceover_duration())
         with self.voiceover("So we want the hat matrix, when multiplied by Y, to get the orthogonal projection of Y onto this plane.") as tracker:
             ...
         with self.voiceover("That would be an orthogonal projection matrix. It should have eigenvalues of 1 for all the columns of X, and 0 for everything orthogonal to all the columns of X.") as tracker:
