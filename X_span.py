@@ -32,7 +32,20 @@ class XSpan(StitcherScene, ThreeDScene):
 
         axes = ThreeDAxes()
         axes.scale(0.7)
-        yhat_point = always_redraw(lambda: Dot3D(axes.c2p(*yhat.get_value()), color=YELLOW, radius=0.1))
+        # A dict (not a plain bool) so the lambda below closes over a
+        # mutable cell we can flip later, instead of a snapshotted value.
+        # We hide/show yhat_point via this opacity flag rather than
+        # self.remove()/self.add() (or FadeOut, which removes by default):
+        # yhat_point is a submobject of graph_group, and Scene.remove()
+        # explicitly *dissolves* the parent group in self.mobjects when you
+        # remove one of its children (see restructure_mobjects's docstring).
+        # Once dissolved, graph_group stops being a tracked scene entity, so
+        # anything added to it later (rotate updater included) never
+        # actually gets touched by the scene's update loop again.
+        yhat_point_visible = {"value": True}
+        yhat_point = always_redraw(lambda: Dot3D(
+            axes.c2p(*yhat.get_value()), color=YELLOW, radius=0.1
+        ).set_opacity(1.0 if yhat_point_visible["value"] else 0.0))
         y_point = Dot3D(axes.c2p(*Y), color=ORANGE, radius=0.1)
         graph_group = VGroup(axes, yhat_point, y_point)
         
@@ -116,7 +129,9 @@ class XSpan(StitcherScene, ThreeDScene):
                 color=color,
                 stroke_width = stroke_width,
             ).set_shade_in_3d(True))
-            self.add(trace)
+            # Into graph_group (not just self.add) so this moves along with
+            # everything else if/when graph_group gets rotated further.
+            graph_group.add(trace)
 
             bhat.set_value(base)
             self.play(bhat.animate.set_value(hi_bhat), run_time=run_time)
@@ -195,11 +210,13 @@ class XSpan(StitcherScene, ThreeDScene):
             # z-fight around the tip. Left at the default, they just always
             # draw on top, intact.
             X0_arrow = Arrow(axes.c2p(0, 0, 0), axes.c2p(*X[:, 0]), buff=0)
+            graph_group.add(X0_arrow)
             self.play(FadeIn(X0_arrow))
         with self.voiceover("we vary beta one hat. Y hat moves along") as tracker:
             sweep_variable(fixed_index=0, fixed_value=0.0, lo = -1.8, hi = 1.8)
         with self.voiceover("in the direction of X1.") as tracker:
             X1_arrow = Arrow(axes.c2p(0, 0, 0), axes.c2p(*X[:, 1]), buff=0)
+            graph_group.add(X1_arrow)
             self.play(FadeIn(X1_arrow))
         with self.voiceover("So you can see how, by varying both beta zero hat and beta 1 hat, Y hat can be anything that's in the span of the two columns of X.") as tracker:
             # Tunable constants: how many beta1 steps to draw gridlines at,
@@ -233,7 +250,7 @@ class XSpan(StitcherScene, ThreeDScene):
                     hi = grid_radius,
                 )
 
-            self.remove(yhat_point)
+            yhat_point_visible["value"] = False
             # Rather than just fading in a solid plane, sell "the span is
             # literally every one of these lines" by 1) extending the grid
             # we just swept out further along both directions, then 2)/3)
@@ -268,6 +285,12 @@ class XSpan(StitcherScene, ThreeDScene):
                     grid_lines_for_new_steps(1, all_steps, radius, stroke_width, include_existing_lines),
                     grid_lines_for_new_steps(0, all_steps, radius, stroke_width, include_existing_lines),
                 )
+                # Into graph_group (not just self.add via Create) so these
+                # lines move along with everything else if/when graph_group
+                # gets rotated further -- confirmed this doesn't double-add
+                # or double-render, Scene.play() only auto-adds a mobject if
+                # it isn't already part of an on-screen family.
+                graph_group.add(new_lines)
                 self.play(Create(new_lines), run_time=run_time)
 
             # 1) Extend: same spacing as the sweep above (not just the same
@@ -289,7 +312,7 @@ class XSpan(StitcherScene, ThreeDScene):
             self.wait()
 
         with self.voiceover("But out of all those possible values of Y hat, our model uses the one that minimizes the sum of squared differences between Y hat and Y.") as tracker:
-            self.add(yhat_point)
+            yhat_point_visible["value"] = True
 
 
             # One dashed segment + one square per data point, each square's
@@ -319,14 +342,33 @@ class XSpan(StitcherScene, ThreeDScene):
             # but that also means displacement *along* that normal, like how
             # far Y sits off the plane, projects to almost no on-screen
             # distance at all: from here on we care about exactly that
-            # displacement, so tilt further to bring it into view. This
-            # mutates axes' own points same as the original rotation, so
-            # every subsequent axes.c2p() call automatically reflects it.
-            EXTRA_TILT_ANGLE = 30 * DEGREES
-            extra_rotation = rotation_matrix(EXTRA_TILT_ANGLE, RIGHT)
-            total_rotation = extra_rotation @ camera_rotation
+            # displacement, so keep rotating to bring it into view over time.
+            #
+            # graph_group.add_updater alone only rotates axes/yhat_point/
+            # y_point -- anything positioned via axes.c2p() but added to the
+            # *scene* directly (grid lines, arrows, ...) never actually
+            # becomes part of graph_group's family, so rotating graph_group
+            # doesn't touch it and it just sits frozen. Fixed at each of
+            # those call sites above by adding into graph_group instead of
+            # self.add()/Create()'s implicit add -- confirmed that doesn't
+            # double-render, since Scene only auto-adds a mobject if it
+            # isn't already part of an on-screen family.
+            #
+            # current_rotation tracks the actual accumulated rotation matrix
+            # (updated every frame alongside the real g.rotate() call) so
+            # that anything built later (e.g. the right-angle marker) can
+            # still get its direction vectors exactly right, the same way
+            # the one-shot version used a fixed total_rotation matrix.
+            SPIN_RATE = 0.2  # radians/second
             spin_axis = RIGHT
-            graph_group.add_updater(lambda g, dt: g.rotate(0.2 * dt, axis=spin_axis, about_point=ORIGIN))
+            current_rotation = {"matrix": camera_rotation}
+
+            def _spin(g, dt):
+                angle = SPIN_RATE * dt
+                g.rotate(angle, axis=spin_axis, about_point=ORIGIN)
+                current_rotation["matrix"] = rotation_matrix(angle, spin_axis) @ current_rotation["matrix"]
+
+            graph_group.add_updater(_spin)
 
             # Then set Y hat to be the OLS estimate: watch the residual
             # squares shrink to their minimum total area as bhat gets there.
@@ -335,6 +377,7 @@ class XSpan(StitcherScene, ThreeDScene):
             # bhat is at bhat_ols now, so this is exactly the (perpendicular,
             # by construction of Y) residual vector e = Y - Y hat in R^3.
             residual_3d_line = DashedLine(axes.c2p(*Y), axes.c2p(*yhat.get_value()), color=WHITE)
+            graph_group.add(residual_3d_line)
             self.play(Create(residual_3d_line), run_time=self.get_current_voiceover_duration())
         with self.voiceover("Now what point on this plane is the closest to Y? The orthogonal projection of Y onto this plane.") as tracker:
             # A small elbow marker built from raw 3D points rather than
@@ -351,18 +394,20 @@ class XSpan(StitcherScene, ThreeDScene):
                 ])
                 return marker
 
-            # Direction vectors for the marker come from total_rotation
-            # (camera_rotation plus the extra tilt above) applied to the
-            # *raw* data-space vectors, not from axes.c2p(): ThreeDAxes'
-            # default x/y/z ranges give it different unit_size per axis, so
-            # c2p() scales non-uniformly and doesn't preserve angles between
-            # non-axis-aligned vectors like these -- only the (data-space-
-            # exact) orthogonality between X's columns and the residual,
-            # carried through the angle-preserving rotation, does.
+            # Direction vectors for the marker come from current_rotation's
+            # matrix (the live accumulated rotation, since graph_group keeps
+            # spinning) applied to the *raw* data-space vectors, not from
+            # axes.c2p(): ThreeDAxes' default x/y/z ranges give it different
+            # unit_size per axis, so c2p() scales non-uniformly and doesn't
+            # preserve angles between non-axis-aligned vectors like these --
+            # only the (data-space-exact) orthogonality between X's columns
+            # and the residual, carried through the angle-preserving
+            # rotation, does.
             yhat_pos = axes.c2p(*yhat.get_value())
-            residual_true = total_rotation @ (Y - X @ bhat.get_value())
-            X0_true = total_rotation @ X[:, 0]
+            residual_true = current_rotation["matrix"] @ (Y - X @ bhat.get_value())
+            X0_true = current_rotation["matrix"] @ X[:, 0]
             right_angle = right_angle_marker(yhat_pos, X0_true, residual_true)
+            graph_group.add(right_angle)
             self.play(Create(right_angle), run_time=self.get_current_voiceover_duration())
         with self.voiceover("So we want the hat matrix, when multiplied by Y, to get the orthogonal projection of Y onto this plane.") as tracker:
             ...
