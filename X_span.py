@@ -325,7 +325,8 @@ class XSpan(StitcherScene, ThreeDScene):
             EXTRA_TILT_ANGLE = 30 * DEGREES
             extra_rotation = rotation_matrix(EXTRA_TILT_ANGLE, RIGHT)
             total_rotation = extra_rotation @ camera_rotation
-            self.play(Rotate(graph_group, angle=EXTRA_TILT_ANGLE, axis=RIGHT, about_point=ORIGIN), run_time=1.5)
+            spin_axis = RIGHT
+            graph_group.add_updater(lambda g, dt: g.rotate(0.2 * dt, axis=spin_axis, about_point=ORIGIN))
 
             # Then set Y hat to be the OLS estimate: watch the residual
             # squares shrink to their minimum total area as bhat gets there.
