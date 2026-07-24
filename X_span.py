@@ -59,10 +59,11 @@ class XSpan(StitcherScene, ThreeDScene):
         camera_rotation = rotation_matrix(-camera_phi, RIGHT) @ rotation_about_z(-camera_theta - 90 * DEGREES)
         graph_group.apply_matrix(camera_rotation, about_point=ORIGIN)
 
-        # Built after the rotation and kept out of graph_group, so it sits at
-        # the (already-rotated) y_point but stays flat/upright on screen
+        # always_redraw (rather than a one-time .next_to()) so this keeps
+        # tracking y_point through any later rotations of graph_group too.
+        # Kept out of graph_group itself so it stays flat/upright on screen
         # instead of inheriting graph_group's 3D tilt like y_point does.
-        y_label = MathTex("Y", color=ORANGE).next_to(y_point, UP)
+        y_label = always_redraw(lambda: MathTex("Y", color=ORANGE).next_to(y_point, UP))
 
         GRID_STROKE_WIDTH = 4
         def sweep_variable(
@@ -290,6 +291,19 @@ class XSpan(StitcherScene, ThreeDScene):
         with self.voiceover("But out of all those possible values of Y hat, our model uses the one that minimizes the sum of squared differences between Y hat and Y.") as tracker:
             self.add(yhat_point)
 
+            # The grid's viewing angle looks almost exactly down the plane's
+            # normal (deliberately, so the grid itself isn't foreshortened) --
+            # but that also means displacement *along* that normal, like how
+            # far Y sits off the plane, projects to almost no on-screen
+            # distance at all: from here on we care about exactly that
+            # displacement, so tilt further to bring it into view. This
+            # mutates axes' own points same as the original rotation, so
+            # every subsequent axes.c2p() call automatically reflects it.
+            EXTRA_TILT_ANGLE = 30 * DEGREES
+            extra_rotation = rotation_matrix(EXTRA_TILT_ANGLE, RIGHT)
+            total_rotation = extra_rotation @ camera_rotation
+            self.play(Rotate(graph_group, angle=EXTRA_TILT_ANGLE, axis=RIGHT, about_point=ORIGIN), run_time=1.5)
+
             # One dashed segment + one square per data point, each square's
             # side equal to that point's |residual| (in screen distance, so
             # it reads as an actual square regardless of how graph_2d's x/y
@@ -335,16 +349,17 @@ class XSpan(StitcherScene, ThreeDScene):
                 ])
                 return marker
 
-            # Direction vectors for the marker come from camera_rotation
-            # applied to the *raw* data-space vectors, not from axes.c2p():
-            # ThreeDAxes' default x/y/z ranges give it different unit_size
-            # per axis, so c2p() scales non-uniformly and doesn't preserve
-            # angles between non-axis-aligned vectors like these -- only the
-            # (data-space-exact) orthogonality between X's columns and the
-            # residual, carried through the angle-preserving rotation, does.
+            # Direction vectors for the marker come from total_rotation
+            # (camera_rotation plus the extra tilt above) applied to the
+            # *raw* data-space vectors, not from axes.c2p(): ThreeDAxes'
+            # default x/y/z ranges give it different unit_size per axis, so
+            # c2p() scales non-uniformly and doesn't preserve angles between
+            # non-axis-aligned vectors like these -- only the (data-space-
+            # exact) orthogonality between X's columns and the residual,
+            # carried through the angle-preserving rotation, does.
             yhat_pos = axes.c2p(*yhat.get_value())
-            residual_true = camera_rotation @ (Y - X @ bhat.get_value())
-            X0_true = camera_rotation @ X[:, 0]
+            residual_true = total_rotation @ (Y - X @ bhat.get_value())
+            X0_true = total_rotation @ X[:, 0]
             right_angle = right_angle_marker(yhat_pos, X0_true, residual_true)
             self.play(Create(right_angle), run_time=self.get_current_voiceover_duration())
         with self.voiceover("So we want the hat matrix, when multiplied by Y, to get the orthogonal projection of Y onto this plane.") as tracker:
