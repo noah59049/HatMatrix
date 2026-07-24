@@ -291,18 +291,6 @@ class XSpan(StitcherScene, ThreeDScene):
         with self.voiceover("But out of all those possible values of Y hat, our model uses the one that minimizes the sum of squared differences between Y hat and Y.") as tracker:
             self.add(yhat_point)
 
-            # The grid's viewing angle looks almost exactly down the plane's
-            # normal (deliberately, so the grid itself isn't foreshortened) --
-            # but that also means displacement *along* that normal, like how
-            # far Y sits off the plane, projects to almost no on-screen
-            # distance at all: from here on we care about exactly that
-            # displacement, so tilt further to bring it into view. This
-            # mutates axes' own points same as the original rotation, so
-            # every subsequent axes.c2p() call automatically reflects it.
-            EXTRA_TILT_ANGLE = 30 * DEGREES
-            extra_rotation = rotation_matrix(EXTRA_TILT_ANGLE, RIGHT)
-            total_rotation = extra_rotation @ camera_rotation
-            self.play(Rotate(graph_group, angle=EXTRA_TILT_ANGLE, axis=RIGHT, about_point=ORIGIN), run_time=1.5)
 
             # One dashed segment + one square per data point, each square's
             # side equal to that point's |residual| (in screen distance, so
@@ -325,6 +313,19 @@ class XSpan(StitcherScene, ThreeDScene):
 
             residuals = always_redraw(residuals_group)
             self.play(FadeIn(residuals), run_time=self.get_current_voiceover_duration() / 3)
+
+            # The grid's viewing angle looks almost exactly down the plane's
+            # normal (deliberately, so the grid itself isn't foreshortened) --
+            # but that also means displacement *along* that normal, like how
+            # far Y sits off the plane, projects to almost no on-screen
+            # distance at all: from here on we care about exactly that
+            # displacement, so tilt further to bring it into view. This
+            # mutates axes' own points same as the original rotation, so
+            # every subsequent axes.c2p() call automatically reflects it.
+            EXTRA_TILT_ANGLE = 30 * DEGREES
+            extra_rotation = rotation_matrix(EXTRA_TILT_ANGLE, RIGHT)
+            total_rotation = extra_rotation @ camera_rotation
+            self.play(Rotate(graph_group, angle=EXTRA_TILT_ANGLE, axis=RIGHT, about_point=ORIGIN), run_time=1.5)
 
             # Then set Y hat to be the OLS estimate: watch the residual
             # squares shrink to their minimum total area as bhat gets there.
