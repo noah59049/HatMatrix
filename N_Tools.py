@@ -240,3 +240,46 @@ class FlashOn(Succession):
             **kwargs,
         )
 
+# Created by GniLudio
+class Combine(AnimationGroup):
+    def _setup_scene(self, scene: Scene) -> None:
+        super()._setup_scene(scene)
+        self._scene = scene
+        self._initial_mobjects = {
+            mob: mob.copy()
+            for mob in self.group
+            if type(mob).interpolate_color != Mobject.interpolate_color
+        }
+
+    def interpolate(self, alpha: float) -> None:
+        for mobject, initial_mobject in self._initial_mobjects.items():
+            mobject.become(initial_mobject)
+        for animation in self.animations:
+            animation._setup_scene(self._scene)
+            animation.begin()
+            animation.interpolate(alpha)
+
+class Testing3(ThreeDScene):
+    def construct(self):
+        sq = Cube(
+            side_length=1,
+            )
+
+        self.add(
+            sq,
+        )
+
+        self.wait()
+
+        self.play(
+            Combine(
+                Rotate(
+                    sq, angle=2*PI, axis=UP
+                ),
+                sq.animate.shift(RIGHT),
+            ),
+            run_time=2,
+            rate_func=smooth,
+        )
+
+        self.wait()
