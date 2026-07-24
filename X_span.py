@@ -360,7 +360,7 @@ class XSpan(StitcherScene, ThreeDScene):
             # still get its direction vectors exactly right, the same way
             # the one-shot version used a fixed total_rotation matrix.
             SPIN_RATE = 0.2  # radians/second
-            spin_axis = RIGHT
+            spin_axis = UP
             current_rotation = {"matrix": camera_rotation}
 
             def _spin(g, dt):
