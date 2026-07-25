@@ -43,9 +43,20 @@ class XSpan(StitcherScene, ThreeDScene):
         # anything added to it later (rotate updater included) never
         # actually gets touched by the scene's update loop again.
         yhat_point_visible = {"value": True}
+        # shade_in_3d=False (Dot3D's family defaults to True): yhat_point's
+        # position is axes.c2p(X @ bhat), and every grid line is also built
+        # from X @ (something), so yhat_point is *exactly* coplanar with the
+        # entire grid at all times -- not an approximation, a structural
+        # fact. Depth-sorting a point against a plane it's always sitting
+        # exactly on is degenerate; with real depth-sort enabled it loses
+        # essentially every near-tie against the ~100+ grid lines (added to
+        # graph_group's family well after it, so stable-sort ties resolve
+        # against it) and renders permanently buried underneath. It never
+        # needed real depth-compositing here -- like the arrows, it should
+        # just always draw on top.
         yhat_point = always_redraw(lambda: Dot3D(
             axes.c2p(*yhat.get_value()), color=YELLOW, radius=0.1
-        ).set_opacity(1.0 if yhat_point_visible["value"] else 0.0))
+        ).set_opacity(1.0 if yhat_point_visible["value"] else 0.0).set_shade_in_3d(False))
         y_point = Dot3D(axes.c2p(*Y), color=ORANGE, radius=0.1)
         graph_group = VGroup(axes, yhat_point, y_point)
         
