@@ -216,7 +216,7 @@ class XSpan(StitcherScene, ThreeDScene):
             ... # TODO: Fade in the beta hat.
 
         with self.voiceover("X, on the other hand, is represented as a matrix. Each column has one of our X variables, and on the very left there's this column of ones.") as tracker:
-            ... # TODO: Add the X matrix
+            ... # TODO: First transform the X column into a column vector, then add a column of ones on the left.
 
         with self.voiceover("It's defined like this because X beta hat is equal to Y hat this way, where Y hat is a vector in the same manner as Y.") as tracker:
             ... # TODO: Don't add any animations here
