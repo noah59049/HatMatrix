@@ -198,16 +198,16 @@ class XSpan(StitcherScene, ThreeDScene):
             include_outer_lines=True,
         ).next_to(graph_2d_group, RIGHT)
 
-        def make_bhat_tex():
+        def get_bhat_string():
             text = r"\hat{\beta} = " + numpy_to_latex(bhat.get_value())
             if np.isnan(bhat.get_value()[0]):
                 text = text.replace("nan", r"\hat{\beta}_0", count = 1)
             if np.isnan(bhat.get_value()[1]):
                 text = text.replace("nan", r"\hat{\beta}_1", count = 1)
-            
-            return MathTex(
-                r"\hat{\beta} = " + numpy_to_latex(bhat.get_value())
-            ).next_to(Y_tex, DOWN)
+            return text
+        
+        def make_bhat_tex():
+            return MathTex(get_bhat_string()).next_to(Y_tex, DOWN)
 
         # always_redraw's mob.become(...) swaps in fresh submobjects each frame,
         # which drops out of add_fixed_in_frame_mobjects's tracked set, so we
