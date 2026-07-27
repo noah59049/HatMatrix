@@ -266,16 +266,14 @@ class XSpan(StitcherScene, ThreeDScene):
 
         return # TODO: Remove
 
-        with self.voiceover("X and Y are fixed at the time of data collection.") as tracker:
-            ... # X_tex, Y_tex, and graph_2d_group are already on screen from the intro above.
-        with self.voiceover("But beta hat can vary.") as tracker:
+        with self.voiceover("So let's look at what happens to Y hat if we vary beta hat. And we'll show a trendline for that.") as tracker:
             # bhat_tex is already on screen from the intro above.
             self.play(FadeIn(trendline_2d))
-        with self.voiceover("If beta hat is the zero vector, so is y hat. Now let's look at what happens if") as tracker:
+        with self.voiceover("If beta hat is the zero vector, so is y hat.") as tracker:
             self.add(graph_group, y_label)
-        with self.voiceover("we vary beta zero hat. Y hat moves along this") as tracker:
+        with self.voiceover("Now if we vary beta 0 hat, all of the Y hats increase by the same amount. So representing Y hat as a vector,") as tracker:
             sweep_variable(fixed_index=1, fixed_value=0.0, lo = -1.8, hi = 1.8)
-        with self.voiceover("line in the direction of (1,1,1). Now let's look at what happens if") as tracker:
+        with self.voiceover("that's moving along (1,1,1).") as tracker:
             # Not shade_in_3d: these are static reference arrows, not part of
             # the Y-vs-plane depth story, and being long relative to the grid
             # they cross makes Manim's per-object (not per-pixel) depth-sort
@@ -284,9 +282,9 @@ class XSpan(StitcherScene, ThreeDScene):
             X0_arrow = Arrow(axes.c2p(0, 0, 0), axes.c2p(*X[:, 0]), buff=0)
             graph_group.add(X0_arrow)
             self.play(FadeIn(X0_arrow))
-        with self.voiceover("we vary beta one hat. Y hat moves along") as tracker:
+        with self.voiceover("Now if we vary beta one hat, the Y hat that’s at X=0 doesn’t change at all, and the Y hat that’s at X = 1 changes a little bit, and the Y hat that’s at X = 3 changes 3 times as much.") as tracker:
             sweep_variable(fixed_index=0, fixed_value=0.0, lo = -1.8, hi = 1.8)
-        with self.voiceover("in the direction of X1.") as tracker:
+        with self.voiceover("On the other graph, Y hat moves in the direction of (0,1,3), or X1.") as tracker:
             X1_arrow = Arrow(axes.c2p(0, 0, 0), axes.c2p(*X[:, 1]), buff=0)
             graph_group.add(X1_arrow)
             self.play(FadeIn(X1_arrow))
@@ -449,7 +447,7 @@ class XSpan(StitcherScene, ThreeDScene):
             residual_3d_line = always_redraw(lambda: DashedLine(axes.c2p(*Y), axes.c2p(*yhat.get_value()), color=WHITE))
             graph_group.add(residual_3d_line)
             self.add(residual_3d_line)
-        with self.voiceover("Now what point on this plane is the closest to Y? The orthogonal projection of Y onto this plane.") as tracker:
+        with self.voiceover("And the length of the line between Y and Y hat is minimized precisely when that line is perpendicular to the span of X.") as tracker:
             # A small elbow marker built from raw 3D points rather than
             # manim's Angle/RightAngle: those go through line_intersection,
             # which only supports lines lying in the xy-plane (z=0) and would
@@ -484,7 +482,9 @@ class XSpan(StitcherScene, ThreeDScene):
             self.add(right_angle)
 
         self.wait()
-        with self.voiceover("So we want the hat matrix, when multiplied by Y, to get the orthogonal projection of Y onto this plane.") as tracker:
+        with self.voiceover("In linear algebra jargon, this is called an orthogonal projection.") as tracker:
             ...
-        with self.voiceover("That would be an orthogonal projection matrix. It should have eigenvalues of 1 for all the columns of X, and 0 for everything orthogonal to all the columns of X.") as tracker:
+        with self.voiceover("Y hat is the orthogonal projection of Y onto the column space of X.") as tracker:
+            ...
+        with self.voiceover("Therefore, the hat matrix is going to be an orthogonal projection matrix onto the column space of X.") as tracker:
             ...
