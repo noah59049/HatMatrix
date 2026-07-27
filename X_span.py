@@ -489,7 +489,7 @@ class XSpan(StitcherScene, ThreeDScene):
         with self.voiceover("In linear algebra jargon, this is called an orthogonal projection.") as tracker:
             label = Text("Orthogonal Projection").to_corner(UL)
             self.play(FlashOn(label, run_time = [0.4, self.get_current_voiceover_duration() - 1, 0.4]))
-        with self.voiceover("Y hat is the orthogonal projection of Y onto the column space of X.") as tracker:
+        with self.voiceover("Y hat is the orthogonal projection of Y onto the column space of X. Therefore, the hat matrix is going to be an orthogonal projection matrix onto the column space of X.") as tracker:
             # A 3D lattice of unit-spaced points/lines "scaffolding" ambient
             # space, then collapsed onto col(X) via the actual orthogonal
             # projection matrix H = X(X'X)^-1 X' -- this *is* the hat
@@ -549,5 +549,3 @@ class XSpan(StitcherScene, ThreeDScene):
             half_time = self.get_current_voiceover_duration() / 2
             self.play(FadeIn(scaffold), run_time=half_time)
             self.play(project_alpha.animate.set_value(1.0), run_time=half_time)
-        with self.voiceover("Therefore, the hat matrix is going to be an orthogonal projection matrix onto the column space of X.") as tracker:
-            ...
