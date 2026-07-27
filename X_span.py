@@ -486,10 +486,11 @@ class XSpan(StitcherScene, ThreeDScene):
             # FadeIn, not Create -- same reason as residual_3d_line above.
             self.add(right_angle)
 
-        self.wait()
         with self.voiceover("In linear algebra jargon, this is called an orthogonal projection.") as tracker:
-            ...
+            label = Text("Orthogonal Projection")
+            self.play(FlashOn(label, run_time = [0.4, self.get_current_voiceover_duration() - 1, 0.4]))
         with self.voiceover("Y hat is the orthogonal projection of Y onto the column space of X.") as tracker:
-            ...
+            ... # TODO: Show a 3D grid of lines "scaffolding" at unit spacings, and also a set of points where they intersect
+            # Then show them all being orthogonally projected onto the plane.
         with self.voiceover("Therefore, the hat matrix is going to be an orthogonal projection matrix onto the column space of X.") as tracker:
             ...
