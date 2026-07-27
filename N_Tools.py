@@ -517,3 +517,123 @@ def get_matrix_element_indices(tex, row: int, col: int) -> list[int]:
     if not (0 <= col < len(grid[row])):
         raise IndexError(f"col {col} out of range for {len(grid[row])}-col matrix")
     return grid[row][col]
+
+
+def _matrix_entry_strings(tex) -> list[list[str]]:
+    """Parse the LaTeX of a single matrix environment into a 2D list of the
+    per-cell source strings (e.g. "1.5", "-2"), matching the layout used by
+    get_matrix_grid_indices. These are reused verbatim when building the product
+    expression, so each cell renders to the same glyph count it had in `tex`.
+    """
+    import re
+
+    if hasattr(tex, 'tex_strings'):
+        latex = "".join(tex.tex_strings)
+    else:
+        latex = tex.tex_string
+
+    env_match = re.search(r'\\begin\{([^}]+)\}(.*?)\\end\{[^}]+\}', latex, re.DOTALL)
+    if not env_match:
+        raise ValueError("No matrix environment found in LaTeX")
+    inner = env_match.group(2)
+    row_strs = re.split(r'\\\\(?:\[[^\]]*\])?', inner)
+    return [[cell.strip() for cell in r.split('&')] for r in row_strs if r.strip()]
+
+
+def _column_content_glyph_indices(tex) -> list[int]:
+    """Ordered glyph indices of a bmatrix column vector's *content*, brackets
+    removed. Unlike get_matrix_grid_indices this keeps parentheses (which trip
+    that function's h/w bracket test): the bmatrix brackets span every row so
+    they are far taller than any in-entry glyph, and we split on height instead.
+    Render order already runs entry-by-entry, top to bottom and left to right,
+    so the returned list is in reading order.
+    """
+    glyphs = tex[0]
+    max_h = max(g.height for g in glyphs)
+    # Real matrix brackets are ~n_rows tall; the tallest content glyph (a paren)
+    # is ~1 line, so 0.7*max_h sits comfortably between them for n_rows >= 2.
+    return [i for i, g in enumerate(glyphs) if g.height <= 0.7 * max_h]
+
+
+def animate_matrix_vector_product(matrix_tex, vector_tex, buff=0.6, **glyph_map_kwargs):
+    """Animate `matrix_tex @ vector_tex` into an expanded product column vector.
+
+    Builds a column vector whose i-th entry is the un-summed dot product
+    ``(M_i0)(v_0) + (M_i1)(v_1) + ...`` using the *exact* source strings from the
+    two inputs, and returns a TransformByGlyphMap that leaves `matrix_tex` and
+    `vector_tex` in place while copies of each element fly into the result:
+    every matrix element is used once, every vector element once per row.
+
+    Inputs are the two on-screen MathTex objects (each a single bmatrix, with or
+    without a "X = " style prefix). The result is placed to the right of
+    `vector_tex`; grab it afterwards via the returned animation's `.mobB`.
+    """
+    # 1. Source glyph indices (one re-render each) and shapes.
+    grid_M = get_matrix_grid_indices(matrix_tex)
+    grid_v = get_matrix_grid_indices(vector_tex)
+    n, k = len(grid_M), len(grid_M[0])
+    if len(grid_v) != k or len(grid_v[0]) != 1:
+        raise ValueError(
+            f"shape mismatch: matrix is {n}x{k} so vector must be {k}x1, "
+            f"but got {len(grid_v)}x{len(grid_v[0])}"
+        )
+
+    # 2. Source strings, reused verbatim so glyph counts carry over.
+    M_str = _matrix_entry_strings(matrix_tex)
+    v_str = [row[0] for row in _matrix_entry_strings(vector_tex)]
+
+    # 3. Build the expanded product vector, positioned at its final spot (the
+    #    TransformByGlyphMap reads target positions now, so it must be placed).
+    entries = [
+        " + ".join(f"({M_str[i][j]})({v_str[j]})" for j in range(k))
+        for i in range(n)
+    ]
+    result_tex = MathTex(r"\begin{bmatrix}" + r" \\ ".join(entries) + r"\end{bmatrix}")
+    result_tex.next_to(vector_tex, RIGHT, buff=buff)
+
+    # 4. Walk the result's content glyphs in reading order, slicing out the
+    #    target range of each copied factor by its known glyph count. Structural
+    #    glyphs -- '(' ')' '+' -- are one glyph each and are skipped over.
+    content = _column_content_glyph_indices(result_tex)
+    pos = 0
+
+    def take(count):
+        nonlocal pos
+        idxs = content[pos:pos + count]
+        pos += count
+        return idxs
+
+    m_targets = [[None] * k for _ in range(n)]  # result glyphs for each matrix element copy
+    v_targets = [[None] * k for _ in range(n)]  # result glyphs for each vector element copy
+    for i in range(n):
+        for j in range(k):
+            if j > 0:
+                take(1)                              # '+'
+            take(1)                                  # '('
+            m_targets[i][j] = take(len(grid_M[i][j]))
+            take(1)                                  # ')'
+            take(1)                                  # '('
+            v_targets[i][j] = take(len(grid_v[j][0]))
+            take(1)                                  # ')'
+    if pos != len(content):
+        raise RuntimeError(
+            f"result glyph slicing mismatch: consumed {pos} of {len(content)} "
+            f"content glyphs -- the built product vector isn't shaped as expected"
+        )
+
+    # 5. Wire copies: matrix element (i,j) -> its slot in row i; vector element j
+    #    -> its slot in every row. from_copy keeps the originals untouched, and
+    #    TransformByGlyphMap auto-copies any source index reused across rows.
+    source = CombineTex(matrix_tex, vector_tex)
+    len_M = len(matrix_tex[0])
+    glyph_map = []
+    for i in range(n):
+        for j in range(k):
+            glyph_map.append((grid_M[i][j], m_targets[i][j]))
+            glyph_map.append(([len_M + p for p in grid_v[j][0]], v_targets[i][j]))
+
+    return TransformByGlyphMap(
+        source, result_tex, *glyph_map,
+        from_copy=True, auto_fade=True,
+        **glyph_map_kwargs,
+    )
