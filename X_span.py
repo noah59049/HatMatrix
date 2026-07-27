@@ -252,13 +252,16 @@ class XSpan(StitcherScene, ThreeDScene):
             )
             
         with self.voiceover("and I'll leave up an animation for the intuition and a more rigorous proof onscreen.") as tracker:
-            self.play(
-                animate_matrix_vector_product(
-                    xbhat_tex[3], 
-                    xbhat_tex[4], 
-                    buff=0.6,
-                )
+            matmul_animation = animate_matrix_vector_product(
+                xbhat_tex[3], 
+                xbhat_tex[4], 
+                buff=0.6,
+                place = lambda x : x.next_to(xbhat_tex, DOWN)
             )
+
+            self.play(matmul_animation)
+            lower_down_equals = MathTex("=").next_to(matmul_animation.mobB, LEFT)
+            self.add(lower_down_equals)
 
         return # TODO: Remove
 
