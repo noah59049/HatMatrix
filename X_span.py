@@ -203,6 +203,27 @@ class XSpan(StitcherScene, ThreeDScene):
 
         bhat_tex.add_updater(_refresh_bhat_tex)
 
+        with self.voiceover("Let's start by looking at a very simple example, linear regression with just 1 independent variable and 3 predictors. Let's show the scatterplot") as tracker:
+            ... # TODO: show the scatterplot now.
+
+        with self.voiceover("and a data table. Right now we have our Ys as separate quantities, but") as tracker:
+            ... # TODO: Show a table with X and Y. X is on the left and Y is on the right.
+
+        with self.voiceover("it's useful to think of them as a vector, a column vector, for reasons that will become apparent.") as tracker:
+            ... # TODO: Transform the Y column into a vector.
+
+        with self.voiceover("Beta hat is also a column vector.") as tracker:
+            ... # TODO: Fade in the beta hat.
+
+        with self.voiceover("X, on the other hand, is represented as a matrix. Each column has one of our X variables, and on the very left there's this column of ones.") as tracker:
+            ... # TODO: Add the X matrix
+
+        with self.voiceover("It's defined like this because X beta hat is equal to Y hat this way, where Y hat is a vector in the same manner as Y.") as tracker:
+            ... # TODO: Don't add any animations here
+
+        with self.voiceover("and I'll leave up an animation for the intuition and a more rigorous proof onscreen.") as tracker:
+            ... # TODO: Don't add any animations here
+
         with self.voiceover("X and Y are fixed at the time of data collection.") as tracker:
             # self.add_fixed_in_frame_mobjects(X_tex, Y_tex)
             self.play(FadeIn(X_tex, Y_tex, graph_2d_group))
