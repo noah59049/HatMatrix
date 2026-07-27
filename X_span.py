@@ -252,7 +252,13 @@ class XSpan(StitcherScene, ThreeDScene):
             )
             
         with self.voiceover("and I'll leave up an animation for the intuition and a more rigorous proof onscreen.") as tracker:
-            ... # Intentionally no animation -- narration only.
+            self.play(
+                animate_matrix_vector_product(
+                    xbhat_tex[3], 
+                    xbhat_tex[4], 
+                    buff=0.6,
+                )
+            )
 
         return # TODO: Remove
 
