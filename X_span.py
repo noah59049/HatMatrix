@@ -242,7 +242,7 @@ class XSpan(StitcherScene, ThreeDScene):
                 r"=",
                 numpy_to_latex(X),
                 numpy_to_latex(bhat.get_value())
-            )
+            ).move_to(RIGHT * 0.34)
             self.play(
                 TransformFromCopy(X_tex[0][0], xbhat_tex[0]),
                 TransformFromCopy(bhat_tex[0][0:2], xbhat_tex[1]),
@@ -262,6 +262,7 @@ class XSpan(StitcherScene, ThreeDScene):
             self.play(matmul_animation)
             lower_down_equals = MathTex("=").next_to(matmul_animation.mobB, LEFT)
             self.add(lower_down_equals)
+            # TODO: Put the more rigorous proof onscreen too
 
         return # TODO: Remove
 
