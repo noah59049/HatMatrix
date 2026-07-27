@@ -23,7 +23,7 @@ class XSpan(StitcherScene, ThreeDScene):
         Y = X @ bhat_ols + Y_residual_scale * get_unit_normal(X[:, 0], X[:, 1])
 
         # Setup the 3D axes with the span of X
-        bhat = ArrayValueTracker([0.0, 0.0])
+        bhat = ArrayValueTracker([np.nan, np.nan])
 
         yhat = ArrayValueTracker(X @ bhat.get_value())
         yhat.add_updater(lambda m: m.set_value(X @ bhat.get_value()))
@@ -199,6 +199,12 @@ class XSpan(StitcherScene, ThreeDScene):
         ).next_to(graph_2d_group, RIGHT)
 
         def make_bhat_tex():
+            text = r"\hat{\beta} = " + numpy_to_latex(bhat.get_value())
+            if np.isnan(bhat.get_value()[0]):
+                text = text.replace("nan", r"\hat{\beta}_0", count = 1)
+            if np.isnan(bhat.get_value()[1]):
+                text = text.replace("nan", r"\hat{\beta}_1", count = 1)
+            
             return MathTex(
                 r"\hat{\beta} = " + numpy_to_latex(bhat.get_value())
             ).next_to(Y_tex, DOWN)
@@ -266,10 +272,10 @@ class XSpan(StitcherScene, ThreeDScene):
 
         return # TODO: Remove
 
-        with self.voiceover("So let's look at what happens to Y hat if we vary beta hat. And we'll show a trendline for that.") as tracker:
-            # bhat_tex is already on screen from the intro above.
+        with self.voiceover("Let's show how Y hat depends on beta hat, starting with if beta hat is zero. Then all the Y hats are zero,") as tracker:
+            self.play(FadeOut(matmul_animation.mobB, lower_down_equals, xbhat_tex))
             self.play(FadeIn(trendline_2d))
-        with self.voiceover("If beta hat is the zero vector, so is y hat.") as tracker:
+        with self.voiceover("or in other words, the y hat vector is zero.") as tracker:
             self.add(graph_group, y_label)
         with self.voiceover("Now if we vary beta 0 hat, all of the Y hats increase by the same amount. So representing Y hat as a vector,") as tracker:
             sweep_variable(fixed_index=1, fixed_value=0.0, lo = -1.8, hi = 1.8)
@@ -282,7 +288,7 @@ class XSpan(StitcherScene, ThreeDScene):
             X0_arrow = Arrow(axes.c2p(0, 0, 0), axes.c2p(*X[:, 0]), buff=0)
             graph_group.add(X0_arrow)
             self.play(FadeIn(X0_arrow))
-        with self.voiceover("Now if we vary beta one hat, the Y hat that’s at X=0 doesn’t change at all, and the Y hat that’s at X = 1 changes a little bit, and the Y hat that’s at X = 3 changes 3 times as much.") as tracker:
+        with self.voiceover("Now if we vary beta one hat, the Y hat that's at X=0 doesn't change at all, and the Y hat that's at X = 1 changes a little bit, and the Y hat that's at X = 3 changes 3 times as much.") as tracker:
             sweep_variable(fixed_index=0, fixed_value=0.0, lo = -1.8, hi = 1.8)
         with self.voiceover("On the other graph, Y hat moves in the direction of (0,1,3), or X1.") as tracker:
             X1_arrow = Arrow(axes.c2p(0, 0, 0), axes.c2p(*X[:, 1]), buff=0)
