@@ -197,7 +197,6 @@ class XSpan(StitcherScene, ThreeDScene):
             col_labels=[MathTex("X"), MathTex("Y")],
             include_outer_lines=True,
         ).next_to(graph_2d_group, RIGHT)
-        X1_vector_tex = MathTex("X = " + numpy_to_latex(X1_vals))
 
         def make_bhat_tex():
             return MathTex(
@@ -222,16 +221,19 @@ class XSpan(StitcherScene, ThreeDScene):
             self.play(FadeIn(data_table))
 
         with self.voiceover("it's useful to think of them as a vector, a column vector, for reasons that will become apparent.") as tracker:
-            y_column = data_table.get_columns()[1]
+            y_column = data_table.get_columns()[1].copy()
             self.play(TransformMatchingShapes(y_column, Y_tex))
 
         with self.voiceover("Beta hat is also a column vector.") as tracker:
             self.play(FadeIn(bhat_tex))
 
         with self.voiceover("X, on the other hand, is represented as a matrix. Each column has one of our X variables, and on the very left there's this column of ones.") as tracker:
-            x_column = data_table.get_columns()[0]
-            self.play(TransformMatchingShapes(x_column, X1_vector_tex))
-            self.play(TransformMatchingShapes(X1_vector_tex, X_tex))
+            X1_vector_tex = MathTex("X = " + numpy_to_latex(X1_vals))
+            X_tex_moved = X_tex.copy().move_to(X1_vector_tex, aligned_edge=RIGHT)
+            x_column = data_table.get_columns()[0].copy()
+            self.play(FadeOut(data_table, run_time = 0.5), TransformMatchingShapes(x_column, X1_vector_tex))
+            self.play(TransformMatchingShapes(X1_vector_tex, X_tex_moved))
+            self.play(TransformMatchingShapes(X_tex_moved, X_tex))
 
         with self.voiceover("It's defined like this because X beta hat is equal to Y hat this way, where Y hat is a vector in the same manner as Y.") as tracker:
             ... # Intentionally no animation -- narration only.
