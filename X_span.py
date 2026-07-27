@@ -490,7 +490,64 @@ class XSpan(StitcherScene, ThreeDScene):
             label = Text("Orthogonal Projection")
             self.play(FlashOn(label, run_time = [0.4, self.get_current_voiceover_duration() - 1, 0.4]))
         with self.voiceover("Y hat is the orthogonal projection of Y onto the column space of X.") as tracker:
-            ... # TODO: Show a 3D grid of lines "scaffolding" at unit spacings, and also a set of points where they intersect
-            # Then show them all being orthogonally projected onto the plane.
+            # A 3D lattice of unit-spaced points/lines "scaffolding" ambient
+            # space, then collapsed onto col(X) via the actual orthogonal
+            # projection matrix H = X(X'X)^-1 X' -- this *is* the hat
+            # matrix, just not named as such until the next line.
+            H = X @ np.linalg.inv(X.T @ X) @ X.T
+            LATTICE_HALF_RANGE = 1  # lattice runs -LATTICE_HALF_RANGE..+LATTICE_HALF_RANGE
+            steps = list(range(-LATTICE_HALF_RANGE, LATTICE_HALF_RANGE + 1))
+
+            # alpha=0 -> original lattice position, alpha=1 -> its orthogonal
+            # projection onto col(X). Shared across the whole scaffold so one
+            # animation moves everything at once. Interpolating in data space
+            # and only converting via axes.c2p() inside always_redraw (rather
+            # than animating .move_to()/.put_start_and_end_on() targets
+            # computed once up front) is deliberate: graph_group is still
+            # continuously rotating (the _spin updater above), and a
+            # snapshot-based position animation would fight that the same
+            # way Create fought always_redraw earlier in this file -- it'd
+            # freeze these points relative to wherever the rotation was when
+            # the animation began, leaving them visibly detached from the
+            # rest of the (still-rotating) scene by the time it finishes.
+            project_alpha = ValueTracker(0.0)
+
+            def lattice_pos(alpha, original):
+                return (1 - alpha) * original + alpha * (H @ original)
+
+            scaffold_dots = VGroup(*[
+                always_redraw(lambda p=np.array([i, j, k], dtype=float): Dot3D(
+                    axes.c2p(*lattice_pos(project_alpha.get_value(), p)), color=BLUE, radius=0.04
+                ).set_shade_in_3d(True))
+                for i in steps for j in steps for k in steps
+            ])
+
+            def scaffold_line(fixed_axes, fixed_vals):
+                def build():
+                    lo, hi = np.zeros(3), np.zeros(3)
+                    for axis, val in zip(fixed_axes, fixed_vals):
+                        lo[axis] = hi[axis] = val
+                    varying_axis = ({0, 1, 2} - set(fixed_axes)).pop()
+                    lo[varying_axis], hi[varying_axis] = steps[0], steps[-1]
+                    alpha = project_alpha.get_value()
+                    return Line(
+                        axes.c2p(*lattice_pos(alpha, lo)),
+                        axes.c2p(*lattice_pos(alpha, hi)),
+                        color=BLUE, stroke_width=2,
+                    ).set_shade_in_3d(True)
+                return always_redraw(build)
+
+            scaffold_lines = VGroup(*[
+                scaffold_line(fixed_axes, (i, j))
+                for i in steps for j in steps
+                for fixed_axes in [(1, 2), (0, 2), (0, 1)]
+            ])
+
+            scaffold = VGroup(scaffold_lines, scaffold_dots)
+            graph_group.add(scaffold)
+
+            half_time = self.get_current_voiceover_duration() / 2
+            self.play(FadeIn(scaffold), run_time=half_time)
+            self.play(project_alpha.animate.set_value(1.0), run_time=half_time)
         with self.voiceover("Therefore, the hat matrix is going to be an orthogonal projection matrix onto the column space of X.") as tracker:
             ...
