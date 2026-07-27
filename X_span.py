@@ -495,7 +495,9 @@ class XSpan(StitcherScene, ThreeDScene):
             # projection matrix H = X(X'X)^-1 X' -- this *is* the hat
             # matrix, just not named as such until the next line.
             H = X @ np.linalg.inv(X.T @ X) @ X.T
-            LATTICE_SIZE = 7  # points per axis (odd, so it centers on the origin); e.g. 5 -> a 5x5x5 lattice
+            LATTICE_SIZE = 3  # points per axis (odd, so it centers on the origin); e.g. 5 -> a 5x5x5 lattice
+            # Keep at 3 for testing, increase to 7 or more for production
+
             steps = list(range(-(LATTICE_SIZE // 2), LATTICE_SIZE // 2 + 1))
 
             # alpha=0 -> original lattice position, alpha=1 -> its orthogonal
