@@ -519,6 +519,14 @@ def get_matrix_element_indices(tex, row: int, col: int) -> list[int]:
     return grid[row][col]
 
 
+def _tex_glyphs(tex):
+    """The flat glyph container of a MathTex (its tex[0]) or of a MathTexPart
+    slice like MathTex(...)[1] (the slice itself, whose submobjects are glyphs).
+    Lets the matrix helpers accept either a full MathTex or an isolated part.
+    """
+    return tex[0] if hasattr(tex, 'tex_strings') else tex
+
+
 def _matrix_entry_strings(tex) -> list[list[str]]:
     """Parse the LaTeX of a single matrix environment into a 2D list of the
     per-cell source strings (e.g. "1.5", "-2"), matching the layout used by
@@ -624,8 +632,11 @@ def animate_matrix_vector_product(matrix_tex, vector_tex, buff=0.6, **glyph_map_
     # 5. Wire copies: matrix element (i,j) -> its slot in row i; vector element j
     #    -> its slot in every row. from_copy keeps the originals untouched, and
     #    TransformByGlyphMap auto-copies any source index reused across rows.
-    source = CombineTex(matrix_tex, vector_tex)
-    len_M = len(matrix_tex[0])
+    # Flatten both inputs' glyphs into one container (matrix first, then vector)
+    # so a single index space addresses source[0]; works for full MathTex or a
+    # MathTexPart slice, unlike CombineTex which assumes a full MathTex.
+    source = VGroup(VGroup(*_tex_glyphs(matrix_tex), *_tex_glyphs(vector_tex)))
+    len_M = len(_tex_glyphs(matrix_tex))
     glyph_map = []
     for i in range(n):
         for j in range(k):
