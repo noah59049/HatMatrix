@@ -245,7 +245,7 @@ class XSpan(StitcherScene, ThreeDScene):
             )
             self.play(
                 TransformFromCopy(X_tex[0][0], xbhat_tex[0]),
-                TransformFromCopy(bhat_tex[0][0:1], xbhat_tex[1]),
+                TransformFromCopy(bhat_tex[0][0:2], xbhat_tex[1]),
                 TransformFromCopy(bhat_tex[0][2], xbhat_tex[2]),
                 TransformFromCopy(X_tex[0][2:], xbhat_tex[3]),
                 TransformFromCopy(bhat_tex[0][3:], xbhat_tex[4]),
