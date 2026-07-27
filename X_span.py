@@ -186,7 +186,19 @@ class XSpan(StitcherScene, ThreeDScene):
         Y_tex = MathTex("Y = " + numpy_to_latex(Y))
         X_tex.to_corner(UR)
         Y_tex.next_to(X_tex, DOWN)
-        
+
+        # Raw-data table (X1, Y side by side) and the intermediate "X as a
+        # plain vector, before the ones column" step -- both only exist to
+        # be morphed into Y_tex/X_tex during the intro, so their starting
+        # position doesn't matter; Transform animates them to wherever the
+        # target already is.
+        data_table = Table(
+            [[f"{x:.4g}", f"{y:.4g}"] for x, y in zip(X1_vals, Y)],
+            col_labels=[MathTex("X"), MathTex("Y")],
+            include_outer_lines=True,
+        ).move_to(RIGHT * 3)
+        X1_vector_tex = MathTex("X = " + numpy_to_latex(X1_vals))
+
         def make_bhat_tex():
             return MathTex(
                 r"\hat{\beta} = " + numpy_to_latex(bhat.get_value())
@@ -204,32 +216,33 @@ class XSpan(StitcherScene, ThreeDScene):
         bhat_tex.add_updater(_refresh_bhat_tex)
 
         with self.voiceover("Let's start by looking at a very simple example, linear regression with just 1 independent variable and 3 predictors. Let's show the scatterplot") as tracker:
-            ... # TODO: show the scatterplot now.
+            self.play(FadeIn(graph_2d_group))
 
         with self.voiceover("and a data table. Right now we have our Ys as separate quantities, but") as tracker:
-            ... # TODO: Show a table with X and Y. X is on the left and Y is on the right.
+            self.play(FadeIn(data_table))
 
         with self.voiceover("it's useful to think of them as a vector, a column vector, for reasons that will become apparent.") as tracker:
-            ... # TODO: Transform the Y column into a vector.
+            y_column = data_table.get_columns()[1]
+            self.play(ReplacementTransform(y_column, Y_tex))
 
         with self.voiceover("Beta hat is also a column vector.") as tracker:
-            ... # TODO: Fade in the beta hat.
+            self.play(FadeIn(bhat_tex))
 
         with self.voiceover("X, on the other hand, is represented as a matrix. Each column has one of our X variables, and on the very left there's this column of ones.") as tracker:
-            ... # TODO: First transform the X column into a column vector, then add a column of ones on the left.
+            x_column = data_table.get_columns()[0]
+            self.play(ReplacementTransform(x_column, X1_vector_tex))
+            self.play(ReplacementTransform(X1_vector_tex, X_tex))
 
         with self.voiceover("It's defined like this because X beta hat is equal to Y hat this way, where Y hat is a vector in the same manner as Y.") as tracker:
-            ... # TODO: Don't add any animations here
+            ... # Intentionally no animation -- narration only.
 
         with self.voiceover("and I'll leave up an animation for the intuition and a more rigorous proof onscreen.") as tracker:
-            ... # TODO: Don't add any animations here
+            ... # Intentionally no animation -- narration only.
 
         with self.voiceover("X and Y are fixed at the time of data collection.") as tracker:
-            # self.add_fixed_in_frame_mobjects(X_tex, Y_tex)
-            self.play(FadeIn(X_tex, Y_tex, graph_2d_group))
+            ... # X_tex, Y_tex, and graph_2d_group are already on screen from the intro above.
         with self.voiceover("But beta hat can vary.") as tracker:
-            # self.add_fixed_in_frame_mobjects(bhat_tex)
-            self.play(FadeIn(bhat_tex))
+            # bhat_tex is already on screen from the intro above.
             self.play(FadeIn(trendline_2d))
         with self.voiceover("If beta hat is the zero vector, so is y hat. Now let's look at what happens if") as tracker:
             self.add(graph_group, y_label)
