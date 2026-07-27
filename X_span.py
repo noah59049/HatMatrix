@@ -270,10 +270,9 @@ class XSpan(StitcherScene, ThreeDScene):
             self.add(lower_down_equals)
             # TODO: Put the more rigorous proof onscreen too
 
-        return # TODO: Remove
-
         with self.voiceover("Let's show how Y hat depends on beta hat, starting with if beta hat is zero. Then all the Y hats are zero,") as tracker:
             self.play(FadeOut(matmul_animation.mobB, lower_down_equals, xbhat_tex))
+            bhat.set_value(np.array([0.0,0.0]))
             self.play(FadeIn(trendline_2d))
         with self.voiceover("or in other words, the y hat vector is zero.") as tracker:
             self.add(graph_group, y_label)
