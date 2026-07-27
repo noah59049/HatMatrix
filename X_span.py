@@ -196,7 +196,7 @@ class XSpan(StitcherScene, ThreeDScene):
             [[f"{x:.4g}", f"{y:.4g}"] for x, y in zip(X1_vals, Y)],
             col_labels=[MathTex("X"), MathTex("Y")],
             include_outer_lines=True,
-        ).move_to(RIGHT * 3)
+        ).next_to(graph_2d_group, RIGHT)
         X1_vector_tex = MathTex("X = " + numpy_to_latex(X1_vals))
 
         def make_bhat_tex():
@@ -238,6 +238,8 @@ class XSpan(StitcherScene, ThreeDScene):
 
         with self.voiceover("and I'll leave up an animation for the intuition and a more rigorous proof onscreen.") as tracker:
             ... # Intentionally no animation -- narration only.
+
+        return # TODO: Remove
 
         with self.voiceover("X and Y are fixed at the time of data collection.") as tracker:
             ... # X_tex, Y_tex, and graph_2d_group are already on screen from the intro above.
