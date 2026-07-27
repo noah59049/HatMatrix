@@ -487,7 +487,7 @@ class XSpan(StitcherScene, ThreeDScene):
             self.add(right_angle)
 
         with self.voiceover("In linear algebra jargon, this is called an orthogonal projection.") as tracker:
-            label = Text("Orthogonal Projection")
+            label = Text("Orthogonal Projection").to_corner(UL)
             self.play(FlashOn(label, run_time = [0.4, self.get_current_voiceover_duration() - 1, 0.4]))
         with self.voiceover("Y hat is the orthogonal projection of Y onto the column space of X.") as tracker:
             # A 3D lattice of unit-spaced points/lines "scaffolding" ambient
