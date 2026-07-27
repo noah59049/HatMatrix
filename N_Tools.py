@@ -366,3 +366,117 @@ def get_matching_cell_map(table1, table2):
 
 def TransformMatchingCells(table1, table2):
     return TransformByGlyphMap(table1, table2, *get_matching_cell_map(table1, table2))
+
+def get_matrix_element_indices(tex, row: int, col: int) -> list[int]:
+    """
+    Return the glyph indices for the element at (row, col), both 0-indexed,
+    of a MathTex (or MathTexPart slice like MathTex(...)[2]) containing only
+    a single matrix environment.
+
+    Indices are into the glyph container: tex[0] for a full MathTex, or tex
+    itself for a MathTexPart (e.g. the result of MathTex(...)[n]).
+
+    Works by re-rendering the same matrix with row_sep=100pt so that row
+    gaps are enormous and detection is trivially reliable. The returned indices
+    are valid for the original tex because same LaTeX → same glyph count and
+    rendering order; only y-positions differ.
+    """
+    import re
+
+    # MathTex stores tex_strings as a list — when substrings_to_isolate is active
+    # (e.g. ColoredMathTex) the list is the original string split at every isolated
+    # symbol.  Joining reconstructs the full LaTeX.  MathTexPart has tex_string (str).
+    if hasattr(tex, 'tex_strings'):
+        latex = "".join(tex.tex_strings)
+    else:
+        latex = tex.tex_string
+
+    # --- 1. Parse matrix dimensions from LaTeX ---
+    # Use a capturing regex so that surrounding content (e.g. "$...$" from Tex objects)
+    # is ignored — only the body between \begin{env} and \end{env} is extracted.
+    env_match = re.search(r'\\begin\{([^}]+)\}(.*?)\\end\{[^}]+\}', latex, re.DOTALL)
+    if not env_match:
+        raise ValueError("No matrix environment found in LaTeX")
+    bracket = env_match.group(1)
+    inner = env_match.group(2)
+    # \\[optional_length] is the row separator; strip the optional part when splitting
+    row_strs = [r.strip() for r in re.split(r'\\\\(?:\[[^\]]*\])?', inner)]
+    n_rows = len(row_strs)
+    n_cols = max(len(r.split('&')) for r in row_strs)
+
+    if not (0 <= row < n_rows):
+        raise IndexError(f"row {row} out of range for {n_rows}-row matrix")
+    if not (0 <= col < n_cols):
+        raise IndexError(f"col {col} out of range for {n_cols}-col matrix")
+
+    # --- 2. Re-render with huge row_sep so geometric detection is reliable ---
+    # Note: very tall brackets may render as multiple stacked glyph pieces (more glyphs
+    # in temp than in original), so we track POSITION in the non-bracket content list
+    # rather than raw glyph indices, then remap to the original at the end.
+    temp_body = " \\\\[100pt]\n".join(row_strs)
+    temp = MathTex(f"\\begin{{{bracket}}}{temp_body}\\end{{{bracket}}}")
+    temp_glyphs = temp[0]
+
+    # --- 3. Identify bracket glyphs in temp (h/w > 3, very reliable at 100pt spacing) ---
+    temp_bracket_set = {
+        i for i, g in enumerate(temp_glyphs)
+        if g.width > 0 and g.height / g.width > 3
+    }
+    # content_list: (position_in_content_list, glyph_obj) — NOT temp glyph indices
+    content = list(enumerate(
+        g for i, g in enumerate(temp_glyphs) if i not in temp_bracket_set
+    ))
+
+    # --- 4. Split content into matrix rows via largest y-gaps ---
+    content_by_y = sorted(content, key=lambda x: -x[1].get_center()[1])
+    ys = [g.get_center()[1] for _, g in content_by_y]
+
+    if n_rows > 1:
+        gaps = sorted(
+            ((ys[k] - ys[k + 1], k) for k in range(len(ys) - 1)),
+            reverse=True
+        )
+        split_pts = sorted(k for _, k in gaps[:n_rows - 1])
+        rows_content: list[list] = []
+        prev = 0
+        for sp in split_pts:
+            rows_content.append(content_by_y[prev:sp + 1])
+            prev = sp + 1
+        rows_content.append(content_by_y[prev:])
+    else:
+        rows_content = [content_by_y]
+
+    # Sort each row's glyphs left-to-right
+    for r in rows_content:
+        r.sort(key=lambda x: x[1].get_center()[0])
+
+    # --- 5. Split target row into columns via largest x-gaps ---
+    target = rows_content[row]
+
+    if n_cols == 1 or len(target) <= 1:
+        target_positions = [k for k, _ in target]
+    else:
+        xs = [g.get_center()[0] for _, g in target]
+        x_gaps = sorted(
+            ((xs[j + 1] - xs[j], j) for j in range(len(xs) - 1)),
+            reverse=True
+        )
+        split_pts_x = sorted(j for _, j in x_gaps[:n_cols - 1])
+
+        col_groups: list[list] = []
+        prev = 0
+        for sp in split_pts_x:
+            col_groups.append(target[prev:sp + 1])
+            prev = sp + 1
+        col_groups.append(target[prev:])
+        target_positions = [k for k, _ in col_groups[col]]
+
+    # --- 6. Map content-list positions back to original glyph indices ---
+    orig_glyphs = tex[0] if hasattr(tex, 'tex_strings') else tex
+    orig_bracket_set = {
+        i for i, g in enumerate(orig_glyphs)
+        if g.width > 0 and g.height / g.width > 3
+    }
+    orig_content_by_pos = [i for i in range(len(orig_glyphs)) if i not in orig_bracket_set]
+
+    return [orig_content_by_pos[k] for k in target_positions]
