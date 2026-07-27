@@ -367,18 +367,24 @@ def get_matching_cell_map(table1, table2):
 def TransformMatchingCells(table1, table2):
     return TransformByGlyphMap(table1, table2, *get_matching_cell_map(table1, table2))
 
-def get_matrix_element_indices(tex, row: int, col: int) -> list[int]:
+def get_matrix_grid_indices(tex) -> list[list[list[int]]]:
     """
-    Return the glyph indices for the element at (row, col), both 0-indexed,
-    of a MathTex (or MathTexPart slice like MathTex(...)[2]) containing only
-    a single matrix environment.
+    Return the glyph indices for *every* element of a single matrix environment
+    in `tex`, as a nested list: grid[row][col] is the list of glyph indices for
+    the element at (row, col), both 0-indexed. A column vector is just the
+    n_cols == 1 case, so grid[i][0] is the i-th entry.
 
     Indices are into the glyph container: tex[0] for a full MathTex, or tex
     itself for a MathTexPart (e.g. the result of MathTex(...)[n]).
 
-    Works by re-rendering the same matrix with row_sep=100pt so that row
-    gaps are enormous and detection is trivially reliable. The returned indices
-    are valid for the original tex because same LaTeX → same glyph count and
+    This is the all-elements generalization of get_matrix_element_indices: it
+    does the (comparatively expensive) huge-row_sep re-render + geometric
+    splitting ONCE for the whole matrix instead of once per element, so building
+    a full multiplication animation is a single render rather than n*m of them.
+
+    Works by re-rendering the same matrix with row_sep=100pt so that row gaps
+    are enormous and detection is trivially reliable. The returned indices are
+    valid for the original tex because same LaTeX → same glyph count and
     rendering order; only y-positions differ.
     """
     import re
@@ -403,11 +409,6 @@ def get_matrix_element_indices(tex, row: int, col: int) -> list[int]:
     row_strs = [r.strip() for r in re.split(r'\\\\(?:\[[^\]]*\])?', inner)]
     n_rows = len(row_strs)
     n_cols = max(len(r.split('&')) for r in row_strs)
-
-    if not (0 <= row < n_rows):
-        raise IndexError(f"row {row} out of range for {n_rows}-row matrix")
-    if not (0 <= col < n_cols):
-        raise IndexError(f"col {col} out of range for {n_cols}-col matrix")
 
     # --- 2. Re-render with huge row_sep so geometric detection is reliable ---
     # Note: very tall brackets may render as multiple stacked glyph pieces (more glyphs
@@ -450,33 +451,69 @@ def get_matrix_element_indices(tex, row: int, col: int) -> list[int]:
     for r in rows_content:
         r.sort(key=lambda x: x[1].get_center()[0])
 
-    # --- 5. Split target row into columns via largest x-gaps ---
-    target = rows_content[row]
-
-    if n_cols == 1 or len(target) <= 1:
-        target_positions = [k for k, _ in target]
-    else:
-        xs = [g.get_center()[0] for _, g in target]
-        x_gaps = sorted(
-            ((xs[j + 1] - xs[j], j) for j in range(len(xs) - 1)),
-            reverse=True
-        )
-        split_pts_x = sorted(j for _, j in x_gaps[:n_cols - 1])
-
-        col_groups: list[list] = []
-        prev = 0
-        for sp in split_pts_x:
-            col_groups.append(target[prev:sp + 1])
-            prev = sp + 1
-        col_groups.append(target[prev:])
-        target_positions = [k for k, _ in col_groups[col]]
-
-    # --- 6. Map content-list positions back to original glyph indices ---
+    # --- 5. Map content-list positions back to original glyph indices ---
+    # The temp re-render is ONLY the matrix environment, but the original tex may
+    # carry prefix/suffix glyphs around it (e.g. "X = [matrix]").  Restrict to the
+    # glyphs strictly between the first and last bracket glyph so those extras are
+    # excluded and the k-th temp entry lines up with the k-th original entry.
     orig_glyphs = tex[0] if hasattr(tex, 'tex_strings') else tex
-    orig_bracket_set = {
+    orig_bracket_indices = [
         i for i, g in enumerate(orig_glyphs)
         if g.width > 0 and g.height / g.width > 3
-    }
-    orig_content_by_pos = [i for i in range(len(orig_glyphs)) if i not in orig_bracket_set]
+    ]
+    if orig_bracket_indices:
+        lo, hi = min(orig_bracket_indices), max(orig_bracket_indices)
+        orig_bracket_set = set(orig_bracket_indices)
+        orig_content_by_pos = [
+            i for i in range(lo, hi + 1) if i not in orig_bracket_set
+        ]
+    else:
+        # No brackets detected (unusual) — fall back to all glyphs, no prefix trim.
+        orig_content_by_pos = list(range(len(orig_glyphs)))
 
-    return [orig_content_by_pos[k] for k in target_positions]
+    if len(orig_content_by_pos) != len(content):
+        raise RuntimeError(
+            f"glyph count mismatch: original matrix has {len(orig_content_by_pos)} "
+            f"content glyphs but re-render has {len(content)}; cannot map indices"
+        )
+
+    # --- 6. Split every row into columns via largest x-gaps ---
+    def split_row_into_cols(target):
+        if n_cols == 1 or len(target) <= 1:
+            groups = [target]
+        else:
+            xs = [g.get_center()[0] for _, g in target]
+            x_gaps = sorted(
+                ((xs[j + 1] - xs[j], j) for j in range(len(xs) - 1)),
+                reverse=True
+            )
+            split_pts_x = sorted(j for _, j in x_gaps[:n_cols - 1])
+            groups = []
+            prev = 0
+            for sp in split_pts_x:
+                groups.append(target[prev:sp + 1])
+                prev = sp + 1
+            groups.append(target[prev:])
+        # Guarantee exactly n_cols groups so grid[row][col] never IndexErrors,
+        # even for a degenerate row with fewer glyphs than columns.
+        while len(groups) < n_cols:
+            groups.append([])
+        return [[orig_content_by_pos[k] for k, _ in group] for group in groups]
+
+    return [split_row_into_cols(row) for row in rows_content]
+
+
+def get_matrix_element_indices(tex, row: int, col: int) -> list[int]:
+    """
+    Return the glyph indices for the element at (row, col), both 0-indexed, of a
+    MathTex (or MathTexPart slice) containing a single matrix environment.
+
+    Thin wrapper around get_matrix_grid_indices; prefer that directly when you
+    need more than one element, since this re-renders the matrix on every call.
+    """
+    grid = get_matrix_grid_indices(tex)
+    if not (0 <= row < len(grid)):
+        raise IndexError(f"row {row} out of range for {len(grid)}-row matrix")
+    if not (0 <= col < len(grid[row])):
+        raise IndexError(f"col {col} out of range for {len(grid[row])}-col matrix")
+    return grid[row][col]
