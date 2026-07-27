@@ -495,8 +495,8 @@ class XSpan(StitcherScene, ThreeDScene):
             # projection matrix H = X(X'X)^-1 X' -- this *is* the hat
             # matrix, just not named as such until the next line.
             H = X @ np.linalg.inv(X.T @ X) @ X.T
-            LATTICE_HALF_RANGE = 1  # lattice runs -LATTICE_HALF_RANGE..+LATTICE_HALF_RANGE
-            steps = list(range(-LATTICE_HALF_RANGE, LATTICE_HALF_RANGE + 1))
+            LATTICE_SIZE = 7  # points per axis (odd, so it centers on the origin); e.g. 5 -> a 5x5x5 lattice
+            steps = list(range(-(LATTICE_SIZE // 2), LATTICE_SIZE // 2 + 1))
 
             # alpha=0 -> original lattice position, alpha=1 -> its orthogonal
             # projection onto col(X). Shared across the whole scaffold so one
