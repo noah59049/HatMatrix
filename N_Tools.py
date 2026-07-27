@@ -563,7 +563,8 @@ def _column_content_glyph_indices(tex) -> list[int]:
     return [i for i, g in enumerate(glyphs) if g.height <= 0.7 * max_h]
 
 
-def animate_matrix_vector_product(matrix_tex, vector_tex, buff=0.6, **glyph_map_kwargs):
+def animate_matrix_vector_product(matrix_tex, vector_tex, buff=0.6, place=None,
+                                  **glyph_map_kwargs):
     """Animate `matrix_tex @ vector_tex` into an expanded product column vector.
 
     Builds a column vector whose i-th entry is the un-summed dot product
@@ -573,8 +574,14 @@ def animate_matrix_vector_product(matrix_tex, vector_tex, buff=0.6, **glyph_map_
     every matrix element is used once, every vector element once per row.
 
     Inputs are the two on-screen MathTex objects (each a single bmatrix, with or
-    without a "X = " style prefix). The result is placed to the right of
-    `vector_tex`; grab it afterwards via the returned animation's `.mobB`.
+    without a "X = " style prefix), or MathTexPart slices of them.
+
+    Positioning: the copies fly to wherever the result sits when the animation is
+    *built*, so it must be placed up front. By default it goes to the right of
+    `vector_tex` with `buff` spacing. Pass `place`, a callable taking the freshly
+    built result MathTex, to put it anywhere instead, e.g.
+    ``place=lambda r: r.next_to(eq_sign, RIGHT)`` or ``place=lambda r: r.move_to(pt)``.
+    Grab the result afterwards via the returned animation's `.mobB`.
     """
     # 1. Source glyph indices (one re-render each) and shapes.
     grid_M = get_matrix_grid_indices(matrix_tex)
@@ -597,7 +604,10 @@ def animate_matrix_vector_product(matrix_tex, vector_tex, buff=0.6, **glyph_map_
         for i in range(n)
     ]
     result_tex = MathTex(r"\begin{bmatrix}" + r" \\ ".join(entries) + r"\end{bmatrix}")
-    result_tex.next_to(vector_tex, RIGHT, buff=buff)
+    if place is not None:
+        place(result_tex)
+    else:
+        result_tex.next_to(vector_tex, RIGHT, buff=buff)
 
     # 4. Walk the result's content glyphs in reading order, slicing out the
     #    target range of each copied factor by its known glyph count. Structural
