@@ -614,11 +614,7 @@ class XSpan(StitcherScene, ThreeDScene):
             equation_tex = VGroup(
                 MathTex("Y"), MathTex("="), MathTex(r"\hat{Y}"), MathTex("+"), MathTex("e")
             ).arrange(RIGHT, buff=0.4).move_to(ORIGIN)
-            self.play(
-                ReplacementTransform(equation[0], equation_tex[0]),
-                ReplacementTransform(equation[2], equation_tex[2]),
-                ReplacementTransform(equation[4], equation_tex[4]),
-            )
+            self.play(TransformIndices(equation, equation_tex))
             self.play(
                 TransformMatchingShapes(equation, hm_derivations[0]),
                 FlashOn(orth_fact, run_time = (0.4, self.get_current_voiceover_duration() - 2, 0.4)),
