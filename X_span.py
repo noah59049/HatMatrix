@@ -580,11 +580,20 @@ class XSpan(StitcherScene, ThreeDScene):
 
             # Fade out everything except those 3 arrows -- we're leaving the
             # rotating 3D visualization behind for the symbolic derivation
-            # below, so also stop the (now-invisible) spin updater rather
-            # than let it keep recomputing the whole grid/scaffold every
-            # frame for the rest of the derivation.
-            graph_group.remove_updater(_spin)
+            # below.
             scene_to_fade = VGroup(graph_group, graph_2d_group, X_tex, Y_tex, bhat_tex, y_label)
+            # A lot of this (the graph_group spin updater, yhat_point, the
+            # sweep traces, the scaffold lattice, residual_3d_line,
+            # right_angle, trendline_2d, y_label, bhat_tex) is always_redraw
+            # or has its own per-frame updater, which rebuilds each of them
+            # fresh -- at full opacity -- every single frame. FadeOut
+            # animates opacity down, but those updaters would keep
+            # overwriting it back to full each frame, fighting the fade
+            # exactly like Create fought always_redraw earlier in this
+            # file. clear_updaters(recursive=True, the default) stops every
+            # updater in the whole family tree first (graph_group's own
+            # _spin included), so FadeOut's opacity change actually sticks.
+            scene_to_fade.clear_updaters()
             self.play(FadeOut(scene_to_fade))
 
             # {arrow to Y} = {arrow to Y hat} + {arrow from Y hat to Y}
