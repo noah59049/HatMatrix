@@ -9,51 +9,53 @@ class DerivationFromBhat(StitcherScene):
     def construct_scene(self):
         self.silent = True
         orth_fact = Tex(r"$e \perp$ all cols of $X$").to_corner(UR)
-        tex0 = MathTex(r"Y =   \hat{Y} + e")
-        tex1 = MathTex(r"Y = X \hat{\beta} + e")
-        tex2 = MathTex(r"X^T Y = X^T X \hat{\beta} + X^T e")
-        tex3 = MathTex(r"X^T Y = X^T X \hat{\beta}")
-        tex4 = MathTex(r"(X^T X)^{-1} X^T Y = (X^T X)^{-1} X^T X \hat{\beta}")
-        tex5 = MathTex(r"(X^T X)^{-1} X^T Y = \hat{\beta}")
-        tex6 = MathTex(r"X (X^T X)^{-1} X^T Y = X \hat{\beta}")
-        tex7 = MathTex(r"X (X^T X)^{-1} X^T Y = \hat{Y}")
-        hm_formula  = MathTex(r"     X (X^T X)^{-1} X^T").move_to(tex7, aligned_edge=LEFT)
+        hm_derivations = [
+            MathTex(r"Y =   \hat{Y} + e"),
+            MathTex(r"Y = X \hat{\beta} + e"),
+            MathTex(r"X^T Y = X^T X \hat{\beta} + X^T e"),
+            MathTex(r"X^T Y = X^T X \hat{\beta}"),
+            MathTex(r"(X^T X)^{-1} X^T Y = (X^T X)^{-1} X^T X \hat{\beta}"),
+            MathTex(r"(X^T X)^{-1} X^T Y = \hat{\beta}"),
+            MathTex(r"X (X^T X)^{-1} X^T Y = X \hat{\beta}"),
+            MathTex(r"X (X^T X)^{-1} X^T Y = \hat{Y}"),
+        ]
+        hm_formula  = MathTex(r"     X (X^T X)^{-1} X^T").move_to(hm_derivations[-1], aligned_edge=LEFT)
         hm_formula2 = MathTex(r" H = X (X^T X)^{-1} X^T").next_to(hm_formula, DOWN, aligned_edge = RIGHT)
 
         with self.voiceover("So we know what the hat matrix is supposed to do, but now we're going to focus on finding a formula for it.") as tracker:
             pass
         with self.voiceover("For this it's going to be useful to decompose Y into a component that's in the column space of X, and a component that's orthogonal to the column space of X. Luckily for us, these vectors have names: The component in the column space is Y hat, and the component orthogonal to the column space is e, our residual vector. Now we can simplify. Since X beta hat is") as tracker:
-            self.play(Write(tex0))
+            self.play(Write(hm_derivations[0]))
             self.play(FlashOn(orth_fact, run_time = (0.4, self.get_current_voiceover_duration() - 2, 0.4)))
         with self.voiceover("equal to Y hat, we'll substitute that in. Then we") as tracker:
-            self.play(TransformByGlyphMap(tex0, tex1,
+            self.play(TransformByGlyphMap(hm_derivations[0], hm_derivations[1],
                                           ([3],[3,4]),
                                           ))
         with self.voiceover("left multiply by X transpose. Since e is orthogonal to every column of X,") as tracker:
-            self.play(TransformByGlyphMap(tex1, tex2,
+            self.play(TransformByGlyphMap(hm_derivations[1], hm_derivations[2],
                                           (FadeIn, [0,1]),
                                           (FadeIn, [4,5]),
                                           (FadeIn, [10,11]),
                                           ))
         with self.voiceover("X transpose e is zero. Then we") as tracker:
-            self.play(TransformByGlyphMap(tex2, tex3,
+            self.play(TransformByGlyphMap(hm_derivations[2], hm_derivations[3],
                                           ([9,10,11,12], FadeOut, {"run_time": 0.5})))
         with self.voiceover("left multiply by the inverse of X transpose X,") as tracker:
-            self.play(TransformByGlyphMap(tex3, tex4,
+            self.play(TransformByGlyphMap(hm_derivations[3], hm_derivations[4],
                                           (FadeIn, range(0,7)),
                                           (FadeIn, range(11,18), {"run_time": 0.45, "delay":0.5},),
                                     ))
         with self.voiceover("Cancel terms, and then we get our formula for beta hat.") as tracker:
-            self.play(TransformByGlyphMap(tex4, tex5,
+            self.play(TransformByGlyphMap(hm_derivations[4], hm_derivations[5],
                                           (range(11,21), FadeOut, {"run_time":0.5})))
         
         with self.voiceover("Now we can left multiply by X") as tracker:
-            self.play(TransformByGlyphMap(tex5, tex6,
+            self.play(TransformByGlyphMap(hm_derivations[5], hm_derivations[6],
                                           (FadeIn, [0]),
                                           (FadeIn, [12]),
                                           ))
         with self.voiceover("and X beta hat is Y hat.") as tracker:
-            self.play(TransformByGlyphMap(tex6, tex7,
+            self.play(TransformByGlyphMap(hm_derivations[6], hm_derivations[7],
                                           ([12,14], [13])))
         with self.voiceover("So this here is the hat matrix, which we call H.") as tracker:
             self.add(hm_formula)
@@ -63,7 +65,7 @@ class DerivationFromBhat(StitcherScene):
                                           (FadeIn, [0,1])))
         with self.voiceover("Here are some facts about the hat matrix.") as tracker:
             self.play(
-                FadeOut(tex7, hm_formula, hm_formula_box),
+                FadeOut(hm_derivations[7], hm_formula, hm_formula_box),
                 hm_formula2.animate.to_edge(UP)
             )
         
