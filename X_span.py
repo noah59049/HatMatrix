@@ -551,3 +551,141 @@ class XSpan(StitcherScene, ThreeDScene):
             half_time = self.get_current_voiceover_duration() / 2
             self.play(FadeIn(scaffold), run_time=half_time)
             self.play(project_alpha.animate.set_value(1.0), run_time=half_time)
+
+        orth_fact = Tex(r"$e \perp$ all cols of $X$").to_corner(UR)
+        hm_derivations = [
+            MathTex(r"Y =   \hat{Y} + e"),
+            MathTex(r"Y = X \hat{\beta} + e"),
+            MathTex(r"X^T Y = X^T X \hat{\beta} + X^T e"),
+            MathTex(r"X^T Y = X^T X \hat{\beta}"),
+            MathTex(r"(X^T X)^{-1} X^T Y = (X^T X)^{-1} X^T X \hat{\beta}"),
+            MathTex(r"(X^T X)^{-1} X^T Y = \hat{\beta}"),
+            MathTex(r"X (X^T X)^{-1} X^T Y = X \hat{\beta}"),
+            MathTex(r"X (X^T X)^{-1} X^T Y = \hat{Y}"),
+        ]
+        hm_formula  = MathTex(r"     X (X^T X)^{-1} X^T").move_to(hm_derivations[-1], aligned_edge=LEFT)
+        hm_formula2 = MathTex(r" H = X (X^T X)^{-1} X^T").next_to(hm_formula, DOWN, aligned_edge = RIGHT)
+
+        with self.voiceover("So we know what the hat matrix is supposed to do, but now we're going to focus on finding a formula for it.") as tracker:
+            pass
+        with self.voiceover("For this it's going to be useful to decompose Y into a component that's in the column space of X, and a component that's orthogonal to the column space of X.") as tracker:
+            ... # TODO: Draw an arrow to Y. Draw an arrow to the y hat dot. Then draw an arrow from y hat to Y.
+            # TODO: Then fade out the rest of the scene except those arrows, and show {arrow to Y} = {arrow to y hat} + {arrow from Y hat to Y}
+        with self.voiceover("Luckily for us, these vectors have names: The component in the column space is Y hat, and the component orthogonal to the column space is e, our residual vector. Now we can simplify. Since X beta hat is") as tracker:
+            self.play(Write(hm_derivations[0]))
+            self.play(FlashOn(orth_fact, run_time = (0.4, self.get_current_voiceover_duration() - 2, 0.4)))
+        with self.voiceover("equal to Y hat, we'll substitute that in. Then we") as tracker:
+            self.play(TransformByGlyphMap(hm_derivations[0], hm_derivations[1],
+                                          ([3],[3,4]),
+                                          ))
+        with self.voiceover("left multiply by X transpose. Since e is orthogonal to every column of X,") as tracker:
+            self.play(TransformByGlyphMap(hm_derivations[1], hm_derivations[2],
+                                          (FadeIn, [0,1]),
+                                          (FadeIn, [4,5]),
+                                          (FadeIn, [10,11]),
+                                          ))
+        with self.voiceover("X transpose e is zero. Then we") as tracker:
+            self.play(TransformByGlyphMap(hm_derivations[2], hm_derivations[3],
+                                          ([9,10,11,12], FadeOut, {"run_time": 0.5})))
+        with self.voiceover("left multiply by the inverse of X transpose X,") as tracker:
+            self.play(TransformByGlyphMap(hm_derivations[3], hm_derivations[4],
+                                          (FadeIn, range(0,7)),
+                                          (FadeIn, range(11,18), {"run_time": 0.45, "delay":0.5},),
+                                    ))
+        with self.voiceover("Cancel terms, and then we get our formula for beta hat.") as tracker:
+            self.play(TransformByGlyphMap(hm_derivations[4], hm_derivations[5],
+                                          (range(11,21), FadeOut, {"run_time":0.5})))
+        
+        with self.voiceover("Now we can left multiply by X") as tracker:
+            self.play(TransformByGlyphMap(hm_derivations[5], hm_derivations[6],
+                                          (FadeIn, [0]),
+                                          (FadeIn, [12]),
+                                          ))
+        with self.voiceover("and X beta hat is Y hat.") as tracker:
+            self.play(TransformByGlyphMap(hm_derivations[6], hm_derivations[7],
+                                          ([12,14], [13])))
+        with self.voiceover("So this here is the hat matrix, which we call H.") as tracker:
+            self.add(hm_formula)
+            hm_formula_box = SurroundingRectangle(hm_formula, color = RED)
+            self.play(Create(hm_formula_box))
+            self.play(TransformByGlyphMap(hm_formula.copy(), hm_formula2,
+                                          (FadeIn, [0,1])))
+        with self.voiceover("Here are some facts about the hat matrix.") as tracker:
+            self.play(
+                FadeOut(hm_derivations[7], hm_formula, hm_formula_box),
+                hm_formula2.animate.to_edge(UP)
+            )
+        
+        fact1 = MathTex(r"H^T = H")
+        fact2 = MathTex(r"H^2 = H")
+        fact3 = MathTex(r"H X = X")
+        fact4 = MathTex(r"\vec{v} \perp X \implies H \vec{v} = 0")
+
+        facts = VGroup(fact1, fact2, fact3, fact4).arrange(DOWN, aligned_edge=LEFT, buff=0.5)
+        facts.next_to(hm_formula2, DOWN, buff=1.0)
+
+        def make_checkmark():
+            checkmark = VMobject(stroke_color=GREEN, stroke_width=7)
+            checkmark.set_points_as_corners([
+                [-0.18, 0.02, 0],
+                [-0.04, -0.16, 0],
+                [0.22, 0.2, 0],
+            ])
+            return checkmark
+
+        checks = VGroup(*(make_checkmark().next_to(fact, LEFT, buff=0.35) for fact in facts))
+
+
+        def make_proof_group(fact, *steps):
+            label = Tex("Proof:")
+            step_group = VGroup(*steps).arrange(DOWN, aligned_edge=LEFT, buff=0.15)
+            group = VGroup(label, step_group).arrange(DOWN, aligned_edge=LEFT, buff=0.2)
+            group.scale(0.55)
+            step_group.shift(RIGHT * 0.4)
+            group.next_to(fact, DOWN, aligned_edge=LEFT, buff=0.3).shift(RIGHT * 0.5)
+            return group
+
+        with self.voiceover("It's symmetric. By the spectral theorem, this means it must be orthogonally diagonalizable.") as tracker:
+            self.play(LaggedStart(Create(checks[0]), Write(fact1), lag_ratio=0.6))
+            proof11 = MathTex("H^T = (X (X^T X)^{-1} X^T)^T")
+            proof12 = MathTex("H^T = {X^T}^T {(X^T X)^{-1}}^T X^T")
+            proof13 = MathTex("H^T = X {(X^T X)^T}^{-1} X^T")
+            proof14 = MathTex("H^T = X (X^T {X^T}^T)^{-1} X^T")
+            proof15 = MathTex("H^T = X (X^T X)^{-1} X^T")
+            proof16 = MathTex("H^T = H")
+            proof1_group = make_proof_group(fact1, proof11, proof12, proof13, proof14, proof15, proof16)
+            self.play(FadeIn(proof1_group))
+            fact11 = Tex("$\implies H$ is orthogonally diagonalizable.").next_to(fact1, RIGHT)
+            self.play(FadeIn(fact11))
+        with self.voiceover("It's idempotent, meaning that H squared equals H.") as tracker:
+            self.play(FadeOut(proof1_group))
+            self.play(LaggedStart(Create(checks[1]), Write(fact2), lag_ratio=0.6))
+            proof21 = MathTex("H^2 = X (X^T X)^{-1} X^T X (X^T X)^{-1} X^T")
+            proof22 = MathTex("H^2 = X (X^T X)^{-1} X^T")
+            proof23 = MathTex("H^2 = H")
+            proof2_group = make_proof_group(fact2, proof21, proof22, proof23)
+            self.play(FadeIn(proof2_group))
+        with self.voiceover("H times X is X. Since H leaves the entire matrix X unchanged, it must leave each column of X unchanged.") as tracker:
+            self.play(FadeOut(proof2_group))
+            self.play(LaggedStart(Create(checks[2]), Write(fact3), lag_ratio=0.6))
+            proof31 = MathTex("H X = X (X^T X)^{-1} X^T X")
+            proof32 = MathTex("H X = X")
+            proof3_group = make_proof_group(fact3, proof31, proof32)
+            self.play(FadeIn(proof3_group))
+            fact31 = MathTex("\implies H X_{\cdot j} = X_{\cdot j}").next_to(fact3, RIGHT)
+            self.play(FadeIn(fact31))
+        with self.voiceover("H times any vector orthogonal to X is zero.") as tracker:
+            self.play(FadeOut(proof3_group))
+            self.play(LaggedStart(Create(checks[3]), Write(fact4), lag_ratio=0.6))
+            proof41 = MathTex(r"H \vec{v} = X (X^T X)^{-1} X^T \vec{v}")
+            proof42 = MathTex(r"H \vec{v} = X (X^T X)^{-1} 0")
+            proof43 = MathTex(r"H \vec{v} = 0")
+            proof4_group = make_proof_group(fact4, proof41, proof42, proof43)
+            self.play(FadeIn(proof4_group))
+        with self.voiceover("These last 2 facts intuit how H is a projection onto the column space of X.") as tracker:
+            self.play(FadeOut(proof4_group))
+            boxes = VGroup(
+                SurroundingRectangle(fact3),
+                SurroundingRectangle(fact4)
+            )
+            self.play(Create(boxes))
