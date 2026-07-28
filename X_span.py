@@ -611,8 +611,18 @@ class XSpan(StitcherScene, ThreeDScene):
                 Write(equation[3]),
             )
         with self.voiceover("Luckily for us, these vectors have names: The component in the column space is Y hat, and the component orthogonal to the column space is e, our residual vector. Now we can simplify. Since X beta hat is") as tracker:
-            self.play(Write(hm_derivations[0]))
-            self.play(FlashOn(orth_fact, run_time = (0.4, self.get_current_voiceover_duration() - 2, 0.4)))
+            equation_tex = VGroup(
+                MathTex("Y"), MathTex("="), MathTex(r"\hat{Y}"), MathTex("+"), MathTex("e")
+            ).arrange(RIGHT, buff=0.4).move_to(ORIGIN)
+            self.play(
+                ReplacementTransform(equation[0], equation_tex[0]),
+                ReplacementTransform(equation[2], equation_tex[2]),
+                ReplacementTransform(equation[4], equation_tex[4]),
+            )
+            self.play(
+                TransformMatchingShapes(equation, hm_derivations[0]),
+                FlashOn(orth_fact, run_time = (0.4, self.get_current_voiceover_duration() - 2, 0.4)),
+            )
         with self.voiceover("equal to Y hat, we'll substitute that in. Then we") as tracker:
             self.play(TransformByGlyphMap(hm_derivations[0], hm_derivations[1],
                                           ([3],[3,4]),
