@@ -8,6 +8,7 @@ from stitcher_scene import StitcherScene
 class DerivationFromBhat(StitcherScene):
     def construct_scene(self):
         orth_fact = Tex(r"$e \perp$ all cols of $X$").to_corner(UR)
+        tex0 = MathTex(r"Y =   \hat{Y} + e")
         tex1 = MathTex(r"Y = X \hat{\beta} + e")
         tex2 = MathTex(r"X^T Y = X^T X \hat{\beta} + X^T e")
         tex3 = MathTex(r"X^T Y = X^T X \hat{\beta}")
@@ -21,10 +22,12 @@ class DerivationFromBhat(StitcherScene):
         with self.voiceover("So we know what the hat matrix is supposed to do, but now we're going to focus on finding a formula for it.") as tracker:
             pass
         with self.voiceover("For this it's going to be useful to decompose Y into a component that's in the column space of X, and a component that's orthogonal to the column space of X. Luckily for us, these vectors have names: The component in the column space is Y hat, and the component orthogonal to the column space is e, our residual vector. Now we can simplify. Since X beta hat is") as tracker:
-            self.play(Write(tex1))
+            self.play(Write(tex0))
             self.play(FlashOn(orth_fact, run_time = (0.4, tracker.duration - 2, 0.4)))
         with self.voiceover("equal to Y hat, we'll substitute that in. Then we") as tracker:
-            ...
+            self.play(TransformByGlyphMap(tex0, tex1,
+                                          ([3],[3,4]),
+                                          ))
         with self.voiceover("left multiply by X transpose. Since e is orthogonal to every column of X,") as tracker:
             self.play(TransformByGlyphMap(tex1, tex2,
                                           (FadeIn, [0,1]),
