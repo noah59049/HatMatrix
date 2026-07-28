@@ -604,9 +604,9 @@ class XSpan(StitcherScene, ThreeDScene):
                 eq_Y, MathTex("="), eq_yhat, MathTex("+"), eq_e
             ).arrange(RIGHT, buff=0.4).move_to(ORIGIN)
             self.play(
-                TransformFromCopy(arrow_to_Y, eq_Y),
-                TransformFromCopy(arrow_to_yhat, eq_yhat),
-                TransformFromCopy(arrow_yhat_to_Y, eq_e),
+                ReplacementTransform(arrow_to_Y, eq_Y),
+                ReplacementTransform(arrow_to_yhat, eq_yhat),
+                ReplacementTransform(arrow_yhat_to_Y, eq_e),
                 Write(equation[1]),
                 Write(equation[3]),
             )
