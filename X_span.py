@@ -274,6 +274,7 @@ class XSpan(StitcherScene, ThreeDScene):
             self.play(FadeOut(matmul_animation.mobB, lower_down_equals, xbhat_tex))
             bhat.set_value(np.array([0.0,0.0]))
             self.play(FadeIn(trendline_2d))
+            graph_2d_group.add(trendline_2d)
         with self.voiceover("or in other words, the y hat vector is zero.") as tracker:
             self.add(graph_group, y_label)
         with self.voiceover("Now if we vary beta 0 hat, all of the Y hats increase by the same amount. So representing Y hat as a vector,") as tracker:
@@ -411,6 +412,7 @@ class XSpan(StitcherScene, ThreeDScene):
 
             residuals = always_redraw(residuals_group)
             self.play(FadeIn(residuals), run_time=self.get_current_voiceover_duration() / 3)
+            graph_2d_group.add(residuals)
 
             # The grid's viewing angle looks almost exactly down the plane's
             # normal (deliberately, so the grid itself isn't foreshortened) --
