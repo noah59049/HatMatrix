@@ -205,11 +205,9 @@ class XSpan(StitcherScene, ThreeDScene):
             if np.isnan(bhat.get_value()[1]):
                 text = text.replace("nan", r"\hat{\beta}_1", count = 1)
             return text
-        
-        bhat_tex_opacity = ValueTracker(1.0)
 
         def make_bhat_tex():
-            return MathTex(r"\hat{\beta} = " + get_bhat_string()).next_to(Y_tex, DOWN).set_opacity(bhat_tex_opacity.get_value())
+            return MathTex(r"\hat{\beta} = " + get_bhat_string()).next_to(Y_tex, DOWN)
 
         bhat_tex = always_redraw(make_bhat_tex)
 
