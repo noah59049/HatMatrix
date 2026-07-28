@@ -596,6 +596,7 @@ class XSpan(StitcherScene, ThreeDScene):
             # updater in the whole family tree first (graph_group's own
             # _spin included), so FadeOut's opacity change actually sticks.
             scene_to_fade.clear_updaters()
+            assert len(bhat_tex.updaters) == 0
             self.play(FadeOut(scene_to_fade))
 
             # {arrow to Y} = {arrow to Y hat} + {arrow from Y hat to Y}
