@@ -569,8 +569,38 @@ class XSpan(StitcherScene, ThreeDScene):
         with self.voiceover("So we know what the hat matrix is supposed to do, but now we're going to focus on finding a formula for it.") as tracker:
             pass
         with self.voiceover("For this it's going to be useful to decompose Y into a component that's in the column space of X, and a component that's orthogonal to the column space of X.") as tracker:
-            ... # TODO: Draw an arrow to Y. Draw an arrow to the y hat dot. Then draw an arrow from y hat to Y.
-            # TODO: Then fade out the rest of the scene except those arrows, and show {arrow to Y} = {arrow to y hat} + {arrow from Y hat to Y}
+            origin_pos = axes.c2p(0, 0, 0)
+            Y_pos = axes.c2p(*Y)
+            yhat_pos = axes.c2p(*yhat.get_value())
+
+            arrow_to_Y = Arrow(origin_pos, Y_pos, buff=0, color=ORANGE)
+            arrow_to_yhat = Arrow(origin_pos, yhat_pos, buff=0, color=YELLOW)
+            arrow_yhat_to_Y = Arrow(yhat_pos, Y_pos, buff=0, color=WHITE)
+            self.play(GrowArrow(arrow_to_Y), GrowArrow(arrow_to_yhat), GrowArrow(arrow_yhat_to_Y))
+
+            # Fade out everything except those 3 arrows -- we're leaving the
+            # rotating 3D visualization behind for the symbolic derivation
+            # below, so also stop the (now-invisible) spin updater rather
+            # than let it keep recomputing the whole grid/scaffold every
+            # frame for the rest of the derivation.
+            graph_group.remove_updater(_spin)
+            scene_to_fade = VGroup(graph_group, graph_2d_group, X_tex, Y_tex, bhat_tex, y_label)
+            self.play(FadeOut(scene_to_fade))
+
+            # {arrow to Y} = {arrow to Y hat} + {arrow from Y hat to Y}
+            eq_Y = arrow_to_Y.copy()
+            eq_yhat = arrow_to_yhat.copy()
+            eq_e = arrow_yhat_to_Y.copy()
+            equation = VGroup(
+                eq_Y, MathTex("="), eq_yhat, MathTex("+"), eq_e
+            ).arrange(RIGHT, buff=0.4).move_to(ORIGIN)
+            self.play(
+                TransformFromCopy(arrow_to_Y, eq_Y),
+                TransformFromCopy(arrow_to_yhat, eq_yhat),
+                TransformFromCopy(arrow_yhat_to_Y, eq_e),
+                Write(equation[1]),
+                Write(equation[3]),
+            )
         with self.voiceover("Luckily for us, these vectors have names: The component in the column space is Y hat, and the component orthogonal to the column space is e, our residual vector. Now we can simplify. Since X beta hat is") as tracker:
             self.play(Write(hm_derivations[0]))
             self.play(FlashOn(orth_fact, run_time = (0.4, self.get_current_voiceover_duration() - 2, 0.4)))
