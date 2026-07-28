@@ -658,3 +658,45 @@ def animate_matrix_vector_product(matrix_tex, vector_tex, buff=0.6, place=None,
         from_copy=True, auto_fade=True,
         **glyph_map_kwargs,
     )
+
+class TransformIndices(AnimationGroup):
+    def __init__(
+        self,
+        src_group,
+        dst_group,
+        lag_ratio=0,
+        check_length=True,
+        transform = ReplacementTransform,
+        **kwargs
+    ):
+        if check_length and len(src_group) != len(dst_group):
+            raise ValueError(
+                f"Groups must have same length "
+                f"({len(src_group)} != {len(dst_group)})"
+            )
+
+        self._src_group = src_group
+        self._dst_group = dst_group
+        self._dst_list = list(dst_group)
+
+        super().__init__(
+            *[
+                transform(src, dst)
+                for src, dst in zip(src_group, dst_group)
+            ],
+            lag_ratio=lag_ratio,
+            **kwargs
+        )
+
+    def clean_up_from_scene(self, scene):
+        super().clean_up_from_scene(scene)
+        # ReplacementTransform may have added individual dst submobjects as
+        # top-level scene objects; remove them so the parent group owns them.
+        for dst in self._dst_list:
+            if dst in scene.mobjects:
+                scene.remove(dst)
+        # Swap src_group for dst_group at the scene level.
+        if self._src_group in scene.mobjects:
+            scene.remove(self._src_group)
+        if self._dst_group not in scene.mobjects:
+            scene.add(self._dst_group)
