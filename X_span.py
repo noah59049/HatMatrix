@@ -661,8 +661,9 @@ class XSpan(StitcherScene, ThreeDScene):
         fact2 = MathTex(r"H^2 = H")
         fact3 = MathTex(r"H X = X")
         fact4 = MathTex(r"\vec{v} \perp X \implies H \vec{v} = 0")
+        fact5 = MathTex(r"\lambda \in \{0,1\}.")
 
-        facts = VGroup(fact1, fact2, fact3, fact4).arrange(DOWN, aligned_edge=LEFT, buff=0.5)
+        facts = VGroup(fact1, fact2, fact3, fact4, fact5).arrange(DOWN, aligned_edge=LEFT, buff=0.5)
         facts.next_to(hm_formula2, DOWN, buff=1.0)
 
         def make_checkmark():
@@ -723,10 +724,14 @@ class XSpan(StitcherScene, ThreeDScene):
             proof43 = MathTex(r"H \vec{v} = 0")
             proof4_group = make_proof_group(fact4, proof41, proof42, proof43)
             self.play(FadeIn(proof4_group))
-        with self.voiceover("These last 2 facts intuit how H is a projection onto the column space of X.") as tracker:
+        with self.voiceover("All the eigenvalues of the hat matrix are 0 or 1.") as tracker:
             self.play(FadeOut(proof4_group))
-            boxes = VGroup(
-                SurroundingRectangle(fact3),
-                SurroundingRectangle(fact4)
-            )
-            self.play(Create(boxes))
+            self.play(LaggedStart(Create(checks[4]), Write(fact5), lag_ratio=0.6))
+            proof51 = MathTex(r"H^2=H, H\vec{v}=\lambda\vec{v}")
+            proof52 = MathTex(r"H^2\vec{v}=H\vec{v}")
+            proof53 = MathTex(r"\lambda^2\vec{v}=\lambda\vec{v}")
+            proof54 = MathTex(r"\lambda^2=\lambda")
+            proof55 = MathTex(r"\lambda \in \{0,1\}")
+            proof5_group = make_proof_group(fact5, proof51, proof52, proof53, proof54, proof55)
+            self.play(FadeIn(proof5_group))
+        
