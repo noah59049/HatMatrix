@@ -651,7 +651,7 @@ class XSpan(StitcherScene, ThreeDScene):
             self.play(Create(hm_formula_box))
             self.play(TransformByGlyphMap(hm_formula.copy(), hm_formula2,
                                           (FadeIn, [0,1])))
-        with self.voiceover("Here are some facts about the hat matrix.") as tracker:
+        with self.voiceover("Here are some facts about the hat matrix. I'll leave up proofs on screen if you're curious, but the most important thing about these facts is how they relate to each other and to what the hat matrix is supposed to do.") as tracker:
             self.play(
                 FadeOut(hm_derivations[7], hm_formula, hm_formula_box),
                 hm_formula2.animate.to_edge(UP)
@@ -724,7 +724,7 @@ class XSpan(StitcherScene, ThreeDScene):
             proof43 = MathTex(r"H \vec{v} = 0")
             proof4_group = make_proof_group(fact4, proof41, proof42, proof43)
             self.play(FadeIn(proof4_group))
-        with self.voiceover("All the eigenvalues of the hat matrix are 0 or 1.") as tracker:
+        with self.voiceover("All the eigenvalues of the hat matrix are 0 or 1, and in fact, our previous facts have been hinting at where the eigenvalues of 0 and 1 are.") as tracker:
             self.play(FadeOut(proof4_group))
             self.play(LaggedStart(Create(checks[4]), Write(fact5), lag_ratio=0.6))
             proof51 = MathTex(r"H^2=H, H\vec{v}=\lambda\vec{v}")
@@ -734,4 +734,9 @@ class XSpan(StitcherScene, ThreeDScene):
             proof55 = MathTex(r"\lambda \in \{0,1\}")
             proof5_group = make_proof_group(fact5, proof51, proof52, proof53, proof54, proof55)
             self.play(FadeIn(proof5_group))
-        
+        with self.voiceover("The eigenvectors with eigenvalue 1 are the columns of X and anything in their span.") as tracker:
+            ...
+        with self.voiceover("The eigenvectors with eigenvalue 0 are everything orthogonal to X.") as tracker:
+            ...
+        with self.voiceover("And the eigenspace of 0 is orthogonal to the eigenspace of 1, which is consistent with the hat matrix being orthogonally diagonalizable.") as tracker:
+            ...
