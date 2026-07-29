@@ -559,6 +559,8 @@ class XSpan(StitcherScene, ThreeDScene):
         hm_formula  = MathTex(r"     X (X^T X)^{-1} X^T").move_to(hm_derivations[-1], aligned_edge=LEFT)
         hm_formula2 = MathTex(r" H = X (X^T X)^{-1} X^T").next_to(hm_formula, DOWN, aligned_edge = RIGHT)
 
+        with self.voiceover("If we have more datapoints, and possibly more variables, the graph of Y and Y hat will be more than 3 dimensions, so we can't really visualize it. But the same idea applies. Y hat can be anything in the column space of X. It's going to be the vector that's closest to Y, which will be the orthogonal projection of Y onto that column space.") as tracker:
+            ...
         with self.voiceover("So we know what the hat matrix is supposed to do, but now we're going to focus on finding a formula for it.") as tracker:
             pass
         with self.voiceover("For this it's going to be useful to decompose Y into a component that's in the column space of X, and a component that's orthogonal to the column space of X.") as tracker:
