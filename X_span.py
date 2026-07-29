@@ -735,8 +735,8 @@ class XSpan(StitcherScene, ThreeDScene):
             proof5_group = make_proof_group(fact5, proof51, proof52, proof53, proof54, proof55)
             self.play(FadeIn(proof5_group))
         with self.voiceover("The eigenvectors with eigenvalue 1 are the columns of X and anything in their span.") as tracker:
-            self.play(FlashOn(SurroundingRectangle(fact3)))
+            self.play(FlashOn(SurroundingRectangle(fact3, color = RED)))
         with self.voiceover("The eigenvectors with eigenvalue 0 are everything orthogonal to X.") as tracker:
-            self.play(FlashOn(SurroundingRectangle(fact4)))
+            self.play(FlashOn(SurroundingRectangle(fact4, color = RED)))
         with self.voiceover("And the eigenspace of 0 is orthogonal to the eigenspace of 1, which is consistent with the hat matrix being orthogonally diagonalizable.") as tracker:
-            self.play(FlashOn(SurroundingRectangle(fact1)))
+            self.play(FlashOn(SurroundingRectangle(fact1, color = RED)))
