@@ -1,4 +1,1 @@
 X_span
-matrix_definitions_review
-general_case
-derivation_from_bhat
