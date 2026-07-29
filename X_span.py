@@ -211,7 +211,7 @@ class XSpan(StitcherScene, ThreeDScene):
 
         bhat_tex = always_redraw(make_bhat_tex)
 
-        with self.voiceover("Let's start by looking at a very simple example, linear regression with just 1 independent variable and 3 predictors. Let's show the scatterplot") as tracker:
+        with self.voiceover("Let's start by looking at a very simple example, linear regression with just 1 independent variable and 3 data points. Let's show the scatterplot") as tracker:
             self.play(FadeIn(graph_2d_group))
 
         with self.voiceover("and a data table. Right now we have our Ys as separate quantities, but") as tracker:
