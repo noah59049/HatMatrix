@@ -6,6 +6,20 @@ from stitcher_scene import StitcherScene
 
 class XSpan(StitcherScene, ThreeDScene):
     def construct_scene(self):
+        # Disables ThreeDCamera's simulated lighting (a 2-color gradient
+        # per shade_in_3d mobject, computed from a light source + surface
+        # normal). ThreeDAxes' default construction makes every one of its
+        # ~90 parts shade_in_3d=True, and at some point during this scene
+        # that gradient path hits `cairo.LinearGradient(...)` with the
+        # wrong number of arguments and crashes -- looks like a narrow,
+        # geometry-dependent edge case (possibly a pycairo version
+        # mismatch) that wasn't reproducible in isolation. This only turns
+        # off the *lighting* effect; shade_in_3d's depth-sorting (z_key in
+        # ThreeDCamera.get_mobjects_to_display) reads mob.shade_in_3d
+        # directly and doesn't consult this flag, so it doesn't undo any
+        # of the depth-sorting fixes elsewhere in this file.
+        self.renderer.camera.should_apply_shading = False
+
         # n = 3, k = 2. Chosen arbitrarily: first column of X is all ones (intercept).
         n, k = 3, 2
         X = np.array([
@@ -224,8 +238,43 @@ class XSpan(StitcherScene, ThreeDScene):
             self.play(FadeIn(data_table))
 
         with self.voiceover("it's useful to think of them as a vector, a column vector, for reasons that will become apparent.") as tracker:
+            third = self.get_current_voiceover_duration() / 3
+
+            # A "height" line to each data point on the 2D graph -- Y1, Y2,
+            # Y3 as three separate quantities.
+            lines_2d = VGroup(*[
+                Line(graph_2d.c2p(x, 0), graph_2d.c2p(x, y), color=ORANGE)
+                for x, y in zip(X1_vals, Y)
+            ])
+            self.play(Create(lines_2d), run_time=third)
+
+            # bhat starts at [nan, nan]; give yhat_point a sensible (zero)
+            # position before bringing the 3D graph on screen.
+            bhat.set_value(np.array([0.0, 0.0]))
+            self.play(FadeIn(graph_group, y_label), run_time=third)
+
+            # Transform those three 2D lines into three 3D lines chained
+            # tip-to-tail along each axis in turn (Y1 along x, Y2 along y,
+            # Y3 along z) -- Y as its components stacked tip-to-tail,
+            # arriving exactly at the Y point -- while the table's Y column
+            # simultaneously becomes the same vector symbolically.
+            origin_3d = axes.c2p(0, 0, 0)
+            corner1 = axes.c2p(Y[0], 0, 0)
+            corner2 = axes.c2p(Y[0], Y[1], 0)
+            Y_3d = axes.c2p(*Y)
+            lines_3d = VGroup(
+                Line(origin_3d, corner1, color=ORANGE),
+                Line(corner1, corner2, color=ORANGE),
+                Line(corner2, Y_3d, color=ORANGE),
+            )
+            graph_group.add(lines_3d)
+
             y_column = y_col_group.copy()
-            self.play(TransformMatchingShapes(y_column, Y_tex))
+            self.play(
+                *[ReplacementTransform(l2d, l3d) for l2d, l3d in zip(lines_2d, lines_3d)],
+                TransformMatchingShapes(y_column, Y_tex),
+                run_time=third,
+            )
 
         with self.voiceover("Beta hat is also a column vector.") as tracker:
             self.play(FadeIn(bhat_tex))
