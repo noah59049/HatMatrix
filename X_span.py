@@ -191,11 +191,16 @@ class XSpan(StitcherScene, ThreeDScene):
         # be morphed into Y_tex/X_tex during the intro, so their starting
         # position doesn't matter; Transform animates them to wherever the
         # target already is.
-        data_table = Table(
-            [[f"{x:.4g}", f"{y:.4g}"] for x, y in zip(X1_vals, Y)],
-            col_labels=[MathTex("X"), MathTex("Y")],
-            include_outer_lines=True,
-        ).to_corner(UR)
+        #
+        # Built from MathTex + numpy_to_latex (the same pipeline X_tex/
+        # Y_tex/bhat_tex use) rather than a Table mobject: guarantees
+        # identical font size and spacing automatically, no scaling needed
+        # to make it match them.
+        X1_col_tex = MathTex(numpy_to_latex(X1_vals))
+        Y_col_tex = MathTex(numpy_to_latex(Y))
+        x_col_group = VGroup(MathTex("X"), X1_col_tex).arrange(DOWN, buff=0.3)
+        y_col_group = VGroup(MathTex("Y"), Y_col_tex).arrange(DOWN, buff=0.3)
+        data_table = VGroup(x_col_group, y_col_group).arrange(RIGHT, buff=0.8).to_corner(UR)
 
         def get_bhat_string():
             text = numpy_to_latex(bhat.get_value())
@@ -219,7 +224,7 @@ class XSpan(StitcherScene, ThreeDScene):
             self.play(FadeIn(data_table))
 
         with self.voiceover("it's useful to think of them as a vector, a column vector, for reasons that will become apparent.") as tracker:
-            y_column = data_table.get_columns()[1].copy()
+            y_column = y_col_group.copy()
             self.play(TransformMatchingShapes(y_column, Y_tex))
 
         with self.voiceover("Beta hat is also a column vector.") as tracker:
@@ -228,7 +233,7 @@ class XSpan(StitcherScene, ThreeDScene):
         with self.voiceover("X, on the other hand, is represented as a matrix. Each column has one of our X variables, and on the very left there's this column of ones.") as tracker:
             X1_vector_tex = MathTex("X = " + numpy_to_latex(X1_vals))
             X_tex_moved = X_tex.copy().move_to(X1_vector_tex, aligned_edge=RIGHT)
-            x_column = data_table.get_columns()[0].copy()
+            x_column = x_col_group.copy()
             self.play(FadeOut(data_table, run_time = 0.5), TransformMatchingShapes(x_column, X1_vector_tex))
             self.play(TransformMatchingShapes(X1_vector_tex, X_tex_moved))
             self.play(TransformMatchingShapes(X_tex_moved, X_tex))
