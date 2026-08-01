@@ -196,8 +196,8 @@ class XSpan(StitcherScene, ThreeDScene):
         # Y_tex/bhat_tex use) rather than a Table mobject: guarantees
         # identical font size and spacing automatically, no scaling needed
         # to make it match them.
-        X1_col_tex = MathTex(numpy_to_latex(X1_vals, make_table = True))
-        Y_col_tex = MathTex(numpy_to_latex(Y, make_table = True))
+        X1_col_tex = Tex(numpy_to_latex(X1_vals, make_table = True))
+        Y_col_tex = Tex(numpy_to_latex(Y, make_table = True))
         x_col_group = VGroup(MathTex("X"), X1_col_tex).arrange(DOWN, buff=0.3)
         y_col_group = VGroup(MathTex("Y"), Y_col_tex).arrange(DOWN, buff=0.3)
         data_table = VGroup(x_col_group, y_col_group).arrange(RIGHT, buff=0.0).to_corner(UR)
