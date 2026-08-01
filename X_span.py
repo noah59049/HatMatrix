@@ -195,7 +195,7 @@ class XSpan(StitcherScene, ThreeDScene):
             [[f"{x:.4g}", f"{y:.4g}"] for x, y in zip(X1_vals, Y)],
             col_labels=[MathTex("X"), MathTex("Y")],
             include_outer_lines=True,
-        ).next_to(graph_2d_group, RIGHT)
+        ).to_corner(UR)
 
         def get_bhat_string():
             text = numpy_to_latex(bhat.get_value())
@@ -261,6 +261,8 @@ class XSpan(StitcherScene, ThreeDScene):
             lower_down_equals = MathTex("=").next_to(matmul_animation.mobB, LEFT)
             self.add(lower_down_equals)
             # TODO: Put the more rigorous proof onscreen too
+
+        return
 
         with self.voiceover("Let's show how Y hat depends on beta hat, starting with if beta hat is zero. Then all the Y hats are zero,") as tracker:
             self.play(FadeOut(matmul_animation.mobB, lower_down_equals, xbhat_tex))
