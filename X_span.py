@@ -231,12 +231,10 @@ class XSpan(StitcherScene, ThreeDScene):
             self.play(FadeIn(bhat_tex))
 
         with self.voiceover("X, on the other hand, is represented as a matrix. Each column has one of our X variables, and on the very left there's this column of ones.") as tracker:
-            X1_vector_tex = MathTex("X = " + numpy_to_latex(X1_vals))
-            X_tex_moved = X_tex.copy().move_to(X1_vector_tex, aligned_edge=RIGHT)
+            X1_vector_tex = MathTex("X = " + numpy_to_latex(X1_vals)).to_corner(UR)
             x_column = x_col_group.copy()
             self.play(FadeOut(data_table, run_time = 0.5), TransformMatchingShapes(x_column, X1_vector_tex))
-            self.play(TransformMatchingShapes(X1_vector_tex, X_tex_moved))
-            self.play(TransformMatchingShapes(X_tex_moved, X_tex))
+            self.play(TransformMatchingShapes(X1_vector_tex, X_tex))
 
         with self.voiceover("It's defined like this because X beta hat is equal to Y hat this way, where Y hat is a vector in the same manner as Y.") as tracker:
             xbhat_tex = MathTex(
