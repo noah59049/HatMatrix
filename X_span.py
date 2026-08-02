@@ -366,6 +366,7 @@ class XSpan(StitcherScene, ThreeDScene):
             graph_group.add(yhat_point)
         with self.voiceover("or in other words, the y hat vector is zero.") as tracker:
             self.add(graph_group, y_label)
+            # TODO: Emphasize the y hat dot
         with self.voiceover("Now if we vary beta 0 hat, all of the Y hats increase by the same amount. So representing Y hat as a vector,") as tracker:
             sweep_variable(fixed_index=1, fixed_value=0.0, lo = -1.8, hi = 1.8)
         with self.voiceover("that's moving along (1,1,1).") as tracker:
@@ -379,6 +380,7 @@ class XSpan(StitcherScene, ThreeDScene):
             self.play(FadeIn(X0_arrow))
         with self.voiceover("Now if we vary beta one hat, the Y hat that's at X=0 doesn't change at all, and the Y hat that's at X = 1 changes a little bit, and the Y hat that's at X = 3 changes 3 times as much.") as tracker:
             sweep_variable(fixed_index=0, fixed_value=0.0, lo = -1.8, hi = 1.8)
+            # TODO: Move the Y hat at X=0
         with self.voiceover("On the other graph, Y hat moves in the direction of (0,1,3), or X1.") as tracker:
             X1_arrow = Arrow(axes.c2p(0, 0, 0), axes.c2p(*X[:, 1]), buff=0)
             graph_group.add(X1_arrow)
