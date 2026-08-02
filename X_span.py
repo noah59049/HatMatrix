@@ -309,6 +309,8 @@ class XSpan(StitcherScene, ThreeDScene):
             self.play(TransformMatchingShapes(X1_vector_tex, X_tex))
 
         with self.voiceover("It's defined like this because X beta hat is equal to Y hat this way, where Y hat is a vector in the same manner as Y.") as tracker:
+            print("DEBUG bhat:", bhat.get_value())
+
             xbhat_tex = MathTex(
                 r"X",
                 r"\hat{\beta}",
@@ -316,6 +318,8 @@ class XSpan(StitcherScene, ThreeDScene):
                 numpy_to_latex(X),
                 get_bhat_string()
             ).move_to(RIGHT * 0.64)
+            print("DEBUG xbhat_tex[4] tex_string:", repr(xbhat_tex[4].tex_string), "len:", len(xbhat_tex[4]))
+
             self.play(
                 TransformFromCopy(X_tex[0][0], xbhat_tex[0]),
                 TransformFromCopy(bhat_tex[0][0:2], xbhat_tex[1]),
