@@ -695,15 +695,29 @@ class XSpan(StitcherScene, ThreeDScene):
             # _spin included), so FadeOut's opacity change actually sticks.
             scene_to_fade.clear_updaters()
             assert len(bhat_tex.updaters) == 0
+        
+        # Add equations with arrows and their names
+
+        # {arrow to Y} = {arrow to Y hat} + {arrow from Y hat to Y}
+        eq_Y = arrow_to_Y.copy()
+        eq_yhat = arrow_to_yhat.copy()
+        eq_e = arrow_yhat_to_Y.copy()
+        equation = VGroup(
+            eq_Y, MathTex("="), eq_yhat, MathTex("+"), eq_e
+        ).arrange(RIGHT, buff=0.4).move_to(ORIGIN)
+        equation1 = VGroup(
+            MathTex("Y"), MathTex("="), eq_yhat, MathTex("+"), eq_e
+        ).arrange(RIGHT, buff=0.4).move_to(ORIGIN)
+        equation2 = VGroup(
+            MathTex("Y"), MathTex("="), MathTex(r"\hat{Y}"), MathTex("+"), eq_e
+        ).arrange(RIGHT, buff=0.4).move_to(ORIGIN)
+        equation3 = VGroup(
+            MathTex("Y"), MathTex("="), MathTex(r"\hat{Y}"), MathTex("+"), MathTex("e")
+        ).arrange(RIGHT, buff=0.4).move_to(ORIGIN)
+
+        with self.voiceover("Luckily for us, these vectors have names: The component in the column space") as tracker:
             self.play(FadeOut(scene_to_fade))
 
-            # {arrow to Y} = {arrow to Y hat} + {arrow from Y hat to Y}
-            eq_Y = arrow_to_Y.copy()
-            eq_yhat = arrow_to_yhat.copy()
-            eq_e = arrow_yhat_to_Y.copy()
-            equation = VGroup(
-                eq_Y, MathTex("="), eq_yhat, MathTex("+"), eq_e
-            ).arrange(RIGHT, buff=0.4).move_to(ORIGIN)
             self.play(
                 ReplacementTransform(arrow_to_Y, eq_Y),
                 ReplacementTransform(arrow_to_yhat, eq_yhat),
@@ -711,13 +725,15 @@ class XSpan(StitcherScene, ThreeDScene):
                 Write(equation[1]),
                 Write(equation[3]),
             )
-        with self.voiceover("Luckily for us, these vectors have names: The component in the column space is Y hat, and the component orthogonal to the column space is e, our residual vector. Now we can simplify. Since X beta hat is") as tracker:
-            equation_tex = VGroup(
-                MathTex("Y"), MathTex("="), MathTex(r"\hat{Y}"), MathTex("+"), MathTex("e")
-            ).arrange(RIGHT, buff=0.4).move_to(ORIGIN)
-            self.play(TransformIndices(equation, equation_tex))
+
+        # TODO: Put a voiceover here about the Y vector
+            self.play(TransformIndices(equation, equation1))
+        with self.voiceover("is Y hat, and the component orthogonal to the column space") as tracker:
+            self.play(TransformIndices(equation1, equation2))
+        with self.voiceover("is e, our residual vector. Now we can simplify. Since X beta hat is") as tracker:
+            self.play(TransformIndices(equation2, equation3))
             self.play(
-                TransformMatchingShapes(equation_tex, hm_derivations[0]),
+                TransformMatchingShapes(equation3, hm_derivations[0]),
                 FlashOn(orth_fact, run_time = (0.4, self.get_current_voiceover_duration() - 2, 0.4)),
             )
         with self.voiceover("equal to Y hat, we'll substitute that in. Then we") as tracker:
