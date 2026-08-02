@@ -738,25 +738,25 @@ class XSpan(StitcherScene, ThreeDScene):
                                           ([3],[3,4]),
                                           ))
         with self.voiceover("left multiply by X transpose. Since e is orthogonal to every column of X,") as tracker:
-            self.play(TransformByGlyphMap(hm_derivations[1], hm_derivations[2],
+            self.play(TransformWithBoxes(hm_derivations[1], hm_derivations[2],
                                           (FadeIn, [0,1]),
                                           (FadeIn, [4,5]),
                                           (FadeIn, [10,11]),
                                           ))
         with self.voiceover("X transpose e is zero. Then we") as tracker:
-            self.play(TransformByGlyphMap(hm_derivations[2], hm_derivations[3],
+            self.play(TransformWithBoxes(hm_derivations[2], hm_derivations[3],
                                           ([9,10,11,12], FadeOut, {"run_time": 0.5})))
         with self.voiceover("left multiply by the inverse of X transpose X,") as tracker:
-            self.play(TransformByGlyphMap(hm_derivations[3], hm_derivations[4],
+            self.play(TransformWithBoxes(hm_derivations[3], hm_derivations[4],
                                           (FadeIn, range(0,7)),
                                           (FadeIn, range(11,18), {"run_time": 0.45, "delay":0.5},),
                                     ))
         with self.voiceover("Cancel terms, and then we get our formula for beta hat.") as tracker:
-            self.play(TransformByGlyphMap(hm_derivations[4], hm_derivations[5],
+            self.play(TransformWithBoxes(hm_derivations[4], hm_derivations[5],
                                           (range(11,21), FadeOut, {"run_time":0.5})))
         
         with self.voiceover("Now we can left multiply by X") as tracker:
-            self.play(TransformByGlyphMap(hm_derivations[5], hm_derivations[6],
+            self.play(TransformWithBoxes(hm_derivations[5], hm_derivations[6],
                                           (FadeIn, [0]),
                                           (FadeIn, [12]),
                                           ))
