@@ -718,14 +718,17 @@ class XSpan(StitcherScene, ThreeDScene):
         with self.voiceover("Luckily for us, these vectors have names: The component in the column space") as tracker:
             self.play(FadeOut(scene_to_fade))
 
-            self.play(
-                ReplacementTransform(arrow_to_Y, equation[0]),
-                Write(equation[1]),
-                ReplacementTransform(arrow_to_yhat, equation[2]),
-                Write(equation[3]),
-                ReplacementTransform(arrow_yhat_to_Y, equation[4]),
-            )
+            self.play(FadeIn(equation))
+
+            # self.play(
+            #     ReplacementTransform(arrow_to_Y, equation[0]),
+            #     Write(equation[1]),
+            #     ReplacementTransform(arrow_to_yhat, equation[2]),
+            #     Write(equation[3]),
+            #     ReplacementTransform(arrow_yhat_to_Y, equation[4]),
+            # )
             self.wait(1)
+            return # TODO: Remove
 
         # TODO: Put a voiceover here about the Y vector
             self.play(TransformIndices(equation, equation1))
