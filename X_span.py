@@ -311,6 +311,7 @@ class XSpan(StitcherScene, ThreeDScene):
                 TransformMatchingShapes(y_column, Y_tex),
                 run_time=third,
             )
+            graph_group.add(lines_3d)
 
         with self.voiceover("Beta hat is also a column vector.") as tracker:
             self.play(FadeIn(bhat_tex))
