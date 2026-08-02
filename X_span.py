@@ -272,8 +272,23 @@ class XSpan(StitcherScene, ThreeDScene):
 
             # bhat starts at [nan, nan]; give yhat_point a sensible (zero)
             # position before bringing the 3D graph on screen.
+            #
+            # self.add (instant), not self.play(FadeIn(...)): something in
+            # Manim's Transform/_Fade animation machinery is broken for this
+            # ThreeDAxes object in this version -- confirmed by direct
+            # testing that self.play(FadeIn(graph_group, y_label)) corrupts
+            # axes' own points to NaN immediately (breaking axes.c2p() for
+            # the rest of the scene, which is why the 3D graph never
+            # rendered and the "replacement" 3D lines below were invisible,
+            # making the 2D lines look like they just vanished), regardless
+            # of whether graph_group/y_label are faded in together or
+            # separately, and regardless of the strip_sheen fix above (same
+            # crash point either way, just a different failure mode:
+            # LinearGradient crash without it, NaN corruption with it). A
+            # plain self.add() never goes through that machinery at all.
             bhat.set_value(np.array([0.0, 0.0]))
-            self.play(FadeIn(graph_group, y_label), run_time=third)
+            self.add(graph_group, y_label)
+            self.wait(third)
 
             # Transform those three 2D lines into three 3D lines chained
             # tip-to-tail along each axis in turn (Y1 along x, Y2 along y,
