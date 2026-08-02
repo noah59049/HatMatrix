@@ -700,3 +700,62 @@ class TransformIndices(AnimationGroup):
             scene.remove(self._src_group)
         if self._dst_group not in scene.mobjects:
             scene.add(self._dst_group)
+
+def _glyph_group(mobj, indices):
+    """
+    Robust glyph extraction for Text, Tex, MathTex, etc.
+    """
+    try:
+        return VGroup(*[mobj[i] for i in indices])
+    except Exception:
+        return VGroup(*[mobj[0][i] for i in indices])
+
+class TransformWithBoxes(Succession):
+    def __init__(
+        self,
+        src,
+        dst,
+        *mappings,                 # same format as TransformByGlyphMap
+        box_kwargs=None,
+        create_boxes_anim=Create,
+        remove_boxes_anim=FadeOut,
+        run_time=3.0,
+        **kwargs                  # passed to Succession
+    ):
+        if type(run_time) == list or type(run_time) == tuple:
+            time1, time2, time3 = run_time
+        else:
+            time1, time2, time3 = run_time / 3, run_time / 3, run_time / 3
+
+        box_kwargs = box_kwargs or {"color": RED, "buff": 0.1}
+
+        # Build boxes
+        src_boxes = VGroup(*[
+            SurroundingRectangle(
+                _glyph_group(src, src_inds),
+                **box_kwargs
+            )
+            for src_inds, _ in mappings
+        ])
+
+        dst_boxes = VGroup(*[
+            SurroundingRectangle(
+                _glyph_group(dst, dst_inds),
+                **box_kwargs
+            )
+            for _, dst_inds in mappings
+        ])
+
+        # Core animation
+        transform = TransformByGlyphMap(src, dst, *mappings, run_time = time2)
+        box_transform = Transform(src_boxes, dst_boxes, run_time = time2)
+        transforms = AnimationGroup(transform, box_transform)
+
+        # Full animation sequence
+        animations = [
+            create_boxes_anim(src_boxes, run_time = time1),
+            transforms,
+            remove_boxes_anim(src_boxes, run_time = time3),
+        ]
+
+        super().__init__(*animations, **kwargs)
