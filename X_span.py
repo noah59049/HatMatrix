@@ -322,8 +322,6 @@ class XSpan(StitcherScene, ThreeDScene):
         with self.voiceover("and on the very left there's this column of ones.") as tracker:
             self.play(TransformMatchingShapes(X1_vector_tex, X_tex))
 
-        return # TODO: Remove
-
         with self.voiceover("It's defined like this because X beta hat is equal to Y hat this way, where Y hat is a vector in the same manner as Y.") as tracker:
             print("DEBUG bhat:", bhat.get_value())
 
@@ -357,8 +355,7 @@ class XSpan(StitcherScene, ThreeDScene):
             self.add(lower_down_equals)
             # TODO: Put the more rigorous proof onscreen too
 
-        return
-
+        return 
         with self.voiceover("Let's show how Y hat depends on beta hat, starting with if beta hat is zero. Then all the Y hats are zero,") as tracker:
             FadeIn(data_table)
             self.play(FadeOut(matmul_animation.mobB, lower_down_equals, xbhat_tex))
