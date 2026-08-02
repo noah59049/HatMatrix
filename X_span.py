@@ -93,7 +93,7 @@ class XSpan(StitcherScene, ThreeDScene):
             axes.c2p(*yhat.get_value()), color=YELLOW, radius=0.1
         ).set_opacity(1.0 if yhat_point_visible["value"] else 0.0).set_shade_in_3d(False))
         y_point = Dot3D(axes.c2p(*Y), color=ORANGE, radius=0.1)
-        graph_group = VGroup(axes, yhat_point, y_point)
+        graph_group = VGroup(axes, y_point)
         
         # Rotate the objects instead of orbiting the camera (camera stays at
         # its default, identity-like pose). ThreeDCamera projects world points
@@ -286,7 +286,7 @@ class XSpan(StitcherScene, ThreeDScene):
             # crash point either way, just a different failure mode:
             # LinearGradient crash without it, NaN corruption with it). A
             # plain self.add() never goes through that machinery at all.
-            bhat.set_value(np.array([0.0, 0.0]))
+            ### bhat.set_value(np.array([0.0, 0.0]))
             self.add(graph_group, y_label)
 
             # Transform those three 2D lines into three 3D lines chained
@@ -360,10 +360,12 @@ class XSpan(StitcherScene, ThreeDScene):
         return
 
         with self.voiceover("Let's show how Y hat depends on beta hat, starting with if beta hat is zero. Then all the Y hats are zero,") as tracker:
+            FadeIn(data_table)
             self.play(FadeOut(matmul_animation.mobB, lower_down_equals, xbhat_tex))
             bhat.set_value(np.array([0.0,0.0]))
-            self.play(FadeIn(trendline_2d))
+            self.play(FadeIn(trendline_2d), yhat_point)
             graph_2d_group.add(trendline_2d)
+            graph_group.add(yhat_point)
         with self.voiceover("or in other words, the y hat vector is zero.") as tracker:
             self.add(graph_group, y_label)
         with self.voiceover("Now if we vary beta 0 hat, all of the Y hats increase by the same amount. So representing Y hat as a vector,") as tracker:
