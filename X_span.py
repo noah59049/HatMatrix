@@ -257,19 +257,19 @@ class XSpan(StitcherScene, ThreeDScene):
             self.play(FadeIn(graph_2d_group))
 
         with self.voiceover("and a data table. Right now we have our Ys as separate quantities, but") as tracker:
-            self.play(FadeIn(data_table))
-
-        with self.voiceover("it's useful to think of them as a vector, a column vector, for reasons that will become apparent.") as tracker:
-            third = self.get_current_voiceover_duration() / 3
-
             # A "height" line to each data point on the 2D graph -- Y1, Y2,
             # Y3 as three separate quantities.
             lines_2d = VGroup(*[
                 Line(graph_2d.c2p(x, 0), graph_2d.c2p(x, y), color=ORANGE)
                 for x, y in zip(X1_vals, Y)
             ])
-            self.play(Create(lines_2d), run_time=third)
+            self.play(
+                FadeIn(data_table), 
+                Create(lines_2d)
+            )
 
+        with self.voiceover("it's useful to think of them as a vector, a column vector, for reasons that will become apparent.") as tracker:
+            third = self.get_current_voiceover_duration() / 3
             # bhat starts at [nan, nan]; give yhat_point a sensible (zero)
             # position before bringing the 3D graph on screen.
             #
@@ -288,7 +288,6 @@ class XSpan(StitcherScene, ThreeDScene):
             # plain self.add() never goes through that machinery at all.
             bhat.set_value(np.array([0.0, 0.0]))
             self.add(graph_group, y_label)
-            self.wait(third)
 
             # Transform those three 2D lines into three 3D lines chained
             # tip-to-tail along each axis in turn (Y1 along x, Y2 along y,
@@ -304,7 +303,7 @@ class XSpan(StitcherScene, ThreeDScene):
                 Line(corner1, corner2, color=ORANGE),
                 Line(corner2, Y_3d, color=ORANGE),
             )
-            graph_group.add(lines_3d)
+            # graph_group.add(lines_3d)
 
             y_column = y_col_group.copy()
             self.play(
