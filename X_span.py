@@ -541,11 +541,11 @@ class XSpan(StitcherScene, ThreeDScene):
             # Then set Y hat to be the OLS estimate: watch the residual
             # squares shrink to their minimum total area as bhat gets there.
             self.play(bhat.animate.set_value(bhat_ols), run_time=2 * self.get_current_voiceover_duration() / 3)
-        with self.voiceover("Now here's the key idea. This is the same as minimizing the Euclidean distance between Y and Y hat.") as tracker:
+        with self.voiceover("Now here's the key idea. This is the same as minimizing the Euclidean distance between Y and Y hat. And the length of the line between Y and Y hat is minimized precisely when that line is") as tracker:
             residual_3d_line = always_redraw(lambda: DashedLine(axes.c2p(*Y), axes.c2p(*yhat.get_value()), color=WHITE))
             graph_group.add(residual_3d_line)
             self.add(residual_3d_line)
-        with self.voiceover("And the length of the line between Y and Y hat is minimized precisely when that line is perpendicular to the span of X.") as tracker:
+        with self.voiceover("perpendicular to the span of X.") as tracker:
             # A small elbow marker built from raw 3D points rather than
             # manim's Angle/RightAngle: those go through line_intersection,
             # which only supports lines lying in the xy-plane (z=0) and would
