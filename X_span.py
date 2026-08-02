@@ -6,19 +6,40 @@ from stitcher_scene import StitcherScene
 
 class XSpan(StitcherScene, ThreeDScene):
     def construct_scene(self):
-        # Disables ThreeDCamera's simulated lighting (a 2-color gradient
-        # per shade_in_3d mobject, computed from a light source + surface
-        # normal). ThreeDAxes' default construction makes every one of its
-        # ~90 parts shade_in_3d=True, and at some point during this scene
-        # that gradient path hits `cairo.LinearGradient(...)` with the
-        # wrong number of arguments and crashes -- looks like a narrow,
-        # geometry-dependent edge case (possibly a pycairo version
-        # mismatch) that wasn't reproducible in isolation. This only turns
-        # off the *lighting* effect; shade_in_3d's depth-sorting (z_key in
+        # Belt-and-suspenders: disables ThreeDCamera's simulated lighting (a
+        # 2-color gradient per shade_in_3d mobject, computed from a light
+        # source + surface normal). Doesn't fix the actual crash below (see
+        # strip_sheen) -- that one turned out to be a separate mechanism --
+        # but this is harmless to also have off, and it only affects the
+        # *lighting* effect: shade_in_3d's depth-sorting (z_key in
         # ThreeDCamera.get_mobjects_to_display) reads mob.shade_in_3d
-        # directly and doesn't consult this flag, so it doesn't undo any
-        # of the depth-sorting fixes elsewhere in this file.
+        # directly and doesn't consult this flag, so it doesn't undo any of
+        # the depth-sorting fixes elsewhere in this file.
         self.renderer.camera.should_apply_shading = False
+
+        def strip_sheen(mobject):
+            """Removes the 2-color gradient that a nonzero sheen_factor
+            bakes into fill_rgbas/stroke_rgbas at construction time.
+            ThreeDAxes' NumberLine/Line/ArrowTriangleFilledTip parts default
+            to sheen_factor=0.2 (unrelated to shade_in_3d or
+            should_apply_shading -- this is VMobject's own base color
+            generation), which makes Cairo's renderer take the
+            multi-color-gradient path (len(rgbas) > 1) instead of the
+            solid-color one, and that gradient path is what's hitting
+            `cairo.LinearGradient(...)` with the wrong argument count and
+            crashing.
+
+            set_sheen(0, ...) alone doesn't fix this: its own
+            implementation only regenerates fill/stroke `if factor != 0`,
+            so it flips the flag but leaves the already-cached 2-row array
+            in place; the array has to be truncated directly.
+            """
+            for m in mobject.family_members_with_points():
+                m.sheen_factor = 0
+                if hasattr(m, "fill_rgbas") and len(m.fill_rgbas) > 1:
+                    m.fill_rgbas = m.fill_rgbas[:1]
+                if hasattr(m, "stroke_rgbas") and len(m.stroke_rgbas) > 1:
+                    m.stroke_rgbas = m.stroke_rgbas[:1]
 
         # n = 3, k = 2. Chosen arbitrarily: first column of X is all ones (intercept).
         n, k = 3, 2
@@ -45,6 +66,7 @@ class XSpan(StitcherScene, ThreeDScene):
 
         axes = ThreeDAxes()
         axes.scale(0.7)
+        strip_sheen(axes)
         # A dict (not a plain bool) so the lambda below closes over a
         # mutable cell we can flip later, instead of a snapshotted value.
         # We hide/show yhat_point via this opacity flag rather than
