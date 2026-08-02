@@ -786,7 +786,7 @@ class XSpan(StitcherScene, ThreeDScene):
         fact5 = MathTex(r"\lambda \in \{0,1\}.")
 
         facts = VGroup(fact1, fact2, fact3, fact4, fact5).arrange(DOWN, aligned_edge=LEFT, buff=0.5)
-        facts.next_to(hm_formula2, DOWN, buff=1.0)
+        facts.next_to(hm_formula2, DOWN, buff=0.4)
 
         def make_checkmark():
             checkmark = VMobject(stroke_color=GREEN, stroke_width=7)
