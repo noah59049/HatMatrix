@@ -663,15 +663,20 @@ class XSpan(StitcherScene, ThreeDScene):
             ...
         with self.voiceover("So we know what the hat matrix is supposed to do, but now we're going to focus on finding a formula for it.") as tracker:
             pass
-        with self.voiceover("For this it's going to be useful to decompose Y into a component that's in the column space of X, and a component that's orthogonal to the column space of X.") as tracker:
-            origin_pos = axes.c2p(0, 0, 0)
-            Y_pos = axes.c2p(*Y)
-            yhat_pos = axes.c2p(*yhat.get_value())
 
-            arrow_to_Y = Arrow(origin_pos, Y_pos, buff=0, color=ORANGE)
-            arrow_to_yhat = Arrow(origin_pos, yhat_pos, buff=0, color=YELLOW)
-            arrow_yhat_to_Y = Arrow(yhat_pos, Y_pos, buff=0, color=WHITE)
-            self.play(GrowArrow(arrow_to_Y), GrowArrow(arrow_to_yhat), GrowArrow(arrow_yhat_to_Y))
+        origin_pos = axes.c2p(0, 0, 0)
+        Y_pos = axes.c2p(*Y)
+        yhat_pos = axes.c2p(*yhat.get_value())
+
+        arrow_to_Y = Arrow(origin_pos, Y_pos, buff=0, color=ORANGE)
+        arrow_to_yhat = Arrow(origin_pos, yhat_pos, buff=0, color=YELLOW)
+        arrow_yhat_to_Y = Arrow(yhat_pos, Y_pos, buff=0, color=WHITE)        
+        with self.voiceover("For this it's going to be useful to decompose Y into") as tracker:
+            self.play(GrowArrow(arrow_to_Y))
+        with self.voiceover("a component that's in the column space of X, and") as tracker:
+            self.play(GrowArrow(arrow_to_yhat))
+        with self.voiceover("a component that's orthogonal to the column space of X.") as tracker:
+            self.play(GrowArrow(arrow_yhat_to_Y))
 
             # Fade out everything except those 3 arrows -- we're leaving the
             # rotating 3D visualization behind for the symbolic derivation
