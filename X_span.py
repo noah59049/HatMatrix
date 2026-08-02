@@ -308,6 +308,8 @@ class XSpan(StitcherScene, ThreeDScene):
         with self.voiceover("and on the very left there's this column of ones.") as tracker:
             self.play(TransformMatchingShapes(X1_vector_tex, X_tex))
 
+        return # TODO: Remove
+
         with self.voiceover("It's defined like this because X beta hat is equal to Y hat this way, where Y hat is a vector in the same manner as Y.") as tracker:
             print("DEBUG bhat:", bhat.get_value())
 
