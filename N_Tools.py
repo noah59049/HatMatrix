@@ -710,6 +710,14 @@ def _glyph_group(mobj, indices):
     except Exception:
         return VGroup(*[mobj[0][i] for i in indices])
 
+def _is_empty_glyph_spec(spec):
+    """
+    True for [], None, or an Animation class (e.g. FadeIn/FadeOut used as a
+    placeholder in a TransformByGlyphMap entry) -- mirrors MF_Tools' own
+    is_empty() check for glyph_map entries.
+    """
+    return not spec or (isinstance(spec, type) and issubclass(spec, Animation))
+
 class TransformWithBoxes(Succession):
     def __init__(
         self,
@@ -729,33 +737,49 @@ class TransformWithBoxes(Succession):
 
         box_kwargs = box_kwargs or {"color": RED, "buff": 0.1}
 
-        # Build boxes
-        src_boxes = VGroup(*[
-            SurroundingRectangle(
-                _glyph_group(src, src_inds),
-                **box_kwargs
-            )
-            for src_inds, _ in mappings
-        ])
+        # Sort mapping entries by kind, since an entry can introduce a glyph
+        # (empty src, e.g. (FadeIn, [13,14])), remove one (empty dst, e.g.
+        # ([13,14], FadeOut) or ([13,14], [])), or transform src into dst.
+        # Boxes for introduced/removed glyphs only exist on the side that
+        # actually has glyphs, and appear/disappear in sync with them.
+        transform_src_boxes, transform_dst_boxes = VGroup(), VGroup()
+        introduced_boxes = VGroup()  # appear mid-transform, alongside the dst glyphs
+        removed_boxes = VGroup()     # present from the start, vanish mid-transform
 
-        dst_boxes = VGroup(*[
-            SurroundingRectangle(
-                _glyph_group(dst, dst_inds),
-                **box_kwargs
-            )
-            for _, dst_inds in mappings
-        ])
+        for entry in mappings:
+            src_inds, dst_inds = entry[0], entry[1]
+            src_empty = _is_empty_glyph_spec(src_inds)
+            dst_empty = _is_empty_glyph_spec(dst_inds)
+            if src_empty and dst_empty:
+                continue
+            elif src_empty:
+                introduced_boxes.add(SurroundingRectangle(_glyph_group(dst, dst_inds), **box_kwargs))
+            elif dst_empty:
+                removed_boxes.add(SurroundingRectangle(_glyph_group(src, src_inds), **box_kwargs))
+            else:
+                transform_src_boxes.add(SurroundingRectangle(_glyph_group(src, src_inds), **box_kwargs))
+                transform_dst_boxes.add(SurroundingRectangle(_glyph_group(dst, dst_inds), **box_kwargs))
 
         # Core animation
         transform = TransformByGlyphMap(src, dst, *mappings, run_time = time2)
-        box_transform = Transform(src_boxes, dst_boxes, run_time = time2)
-        transforms = AnimationGroup(transform, box_transform)
+        box_transform = Transform(transform_src_boxes, transform_dst_boxes, run_time = time2)
+        transforms = AnimationGroup(
+            transform,
+            box_transform,
+            remove_boxes_anim(removed_boxes, run_time = time2),
+            create_boxes_anim(introduced_boxes, run_time = time2),
+        )
+
+        # transform_src_boxes is mutated in place by box_transform above, so
+        # by the end of `transforms` it visually matches transform_dst_boxes.
+        initial_boxes = VGroup(*transform_src_boxes, *removed_boxes)
+        final_boxes = VGroup(*transform_src_boxes, *introduced_boxes)
 
         # Full animation sequence
         animations = [
-            create_boxes_anim(src_boxes, run_time = time1),
+            create_boxes_anim(initial_boxes, run_time = time1),
             transforms,
-            remove_boxes_anim(src_boxes, run_time = time3),
+            remove_boxes_anim(final_boxes, run_time = time3),
         ]
 
         super().__init__(*animations, **kwargs)
