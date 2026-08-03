@@ -783,8 +783,8 @@ class TransformWithBoxes(Succession):
             ),
             transforms,
             AnimationGroup(
-                remove_boxes_anim(transform_src_boxes, run_time = time3),
-                remove_boxes_anim(introduced_boxes, run_time = time3),
+                remove_boxes_anim(transform_src_boxes, run_time = time3, introducer = True),
+                remove_boxes_anim(introduced_boxes, run_time = time3, introducer = True),
             ),
         ]
 

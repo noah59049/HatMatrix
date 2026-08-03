@@ -10,5 +10,5 @@ class FlashBug(Scene):
             Wait(1),            # nothing should be on screen yet
             Create(mystery_circle),
             Wait(1),
-            FadeOut(mystery_circle),
+            FadeOut(mystery_circle, introducer=True),
         ))
