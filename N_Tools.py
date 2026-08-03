@@ -772,14 +772,20 @@ class TransformWithBoxes(Succession):
 
         # transform_src_boxes is mutated in place by box_transform above, so
         # by the end of `transforms` it visually matches transform_dst_boxes.
-        initial_boxes = VGroup(*transform_src_boxes, *removed_boxes)
-        final_boxes = VGroup(*transform_src_boxes, *introduced_boxes)
+        # initial_boxes = VGroup(*transform_src_boxes, *removed_boxes)
+        # final_boxes = VGroup(*transform_src_boxes, *introduced_boxes)
 
         # Full animation sequence
         animations = [
-            create_boxes_anim(initial_boxes, run_time = time1),
+            AnimationGroup(
+                create_boxes_anim(transform_src_boxes, run_time = time1),
+                create_boxes_anim(removed_boxes, run_time = time1),
+            ),
             transforms,
-            remove_boxes_anim(final_boxes, run_time = time3),
+            AnimationGroup(
+                remove_boxes_anim(transform_src_boxes, run_time = time3),
+                remove_boxes_anim(introduced_boxes, run_time = time3),
+            ),
         ]
 
         super().__init__(*animations, **kwargs)

@@ -18,8 +18,7 @@ class MyScene(Scene):
         self.play(TransformWithBoxes(hm_derivations[0], hm_derivations[1],
                                         ([3],[3,4]),
                                         ))
-        self.wait(5)
-        return
+
         self.play(TransformWithBoxes(hm_derivations[1], hm_derivations[2],
                                         (FadeIn, [0,1]),
                                         (FadeIn, [4,5]),
@@ -29,16 +28,17 @@ class MyScene(Scene):
     
         self.play(TransformWithBoxes(hm_derivations[2], hm_derivations[3],
                                         ([9,10,11,12], FadeOut, {"run_time": 0.5})))
-        self.play(TransformByGlyphMap(hm_derivations[3], hm_derivations[4],
+        self.play(TransformWithBoxes(hm_derivations[3], hm_derivations[4],
                                         (FadeIn, range(0,7)),
                                         (FadeIn, range(11,18), {"run_time": 0.45, "delay":0.5},),
                                 ))
-        self.play(TransformByGlyphMap(hm_derivations[4], hm_derivations[5],
+        self.play(TransformWithBoxes(hm_derivations[4], hm_derivations[5],
                                         (range(11,21), FadeOut, {"run_time":0.5})))
     
-        self.play(TransformByGlyphMap(hm_derivations[5], hm_derivations[6],
+        self.play(TransformWithBoxes(hm_derivations[5], hm_derivations[6],
                                         (FadeIn, [0]),
                                         (FadeIn, [12]),
                                         ))
         self.play(TransformWithBoxes(hm_derivations[6], hm_derivations[7],
                                         ([12,14], [13])))
+        self.wait(2)
