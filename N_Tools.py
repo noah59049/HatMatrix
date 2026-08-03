@@ -701,14 +701,22 @@ class TransformIndices(AnimationGroup):
         if self._dst_group not in scene.mobjects:
             scene.add(self._dst_group)
 
-def _glyph_group(mobj, indices):
+def _glyph_group(
+    mobj, 
+    indices, 
+    submobject_index  = [] if MANIM_TYPE == 'GL' else [0]
+):
     """
     Robust glyph extraction for Text, Tex, MathTex, etc.
     """
-    try:
-        return VGroup(*[mobj[i] for i in indices])
-    except Exception:
-        return VGroup(*[mobj[0][i] for i in indices])
+    assert type(mobj) != type
+    for i in submobject_index:
+        assert type(i) != type, f"{i=} {submobject_index=}"
+        assert type(mobj) != type
+        mobj = mobj[i]
+        assert type(mobj) != type
+    return VGroup(*[mobj[i] for i in indices])
+
 
 def _is_empty_glyph_spec(spec):
     """
@@ -723,7 +731,9 @@ class TransformWithBoxes(Succession):
         self,
         src,
         dst,
-        *mappings,                 # same format as TransformByGlyphMap
+        *mappings,                                                    # same format as TransformByGlyphMap
+        mobA_submobject_index = [] if MANIM_TYPE == 'GL' else [0],    # same format as TransformByGlyphMap
+		mobB_submobject_index = [] if MANIM_TYPE == 'GL' else [0],    # same format as TransformByGlyphMap
         box_kwargs=None,
         create_boxes_anim=Create,
         remove_boxes_anim=FadeOut,
@@ -753,12 +763,12 @@ class TransformWithBoxes(Succession):
             if src_empty and dst_empty:
                 continue
             elif src_empty:
-                introduced_boxes.add(SurroundingRectangle(_glyph_group(dst, dst_inds), **box_kwargs))
+                introduced_boxes.add(SurroundingRectangle(_glyph_group(dst, dst_inds, mobB_submobject_index), **box_kwargs))
             elif dst_empty:
-                removed_boxes.add(SurroundingRectangle(_glyph_group(src, src_inds), **box_kwargs))
+                removed_boxes.add(SurroundingRectangle(_glyph_group(src, src_inds, mobA_submobject_index), **box_kwargs))
             else:
-                transform_src_boxes.add(SurroundingRectangle(_glyph_group(src, src_inds), **box_kwargs))
-                transform_dst_boxes.add(SurroundingRectangle(_glyph_group(dst, dst_inds), **box_kwargs))
+                transform_src_boxes.add(SurroundingRectangle(_glyph_group(src, src_inds, mobA_submobject_index), **box_kwargs))
+                transform_dst_boxes.add(SurroundingRectangle(_glyph_group(dst, dst_inds, mobB_submobject_index), **box_kwargs))
 
         # Core animation
         transform = TransformByGlyphMap(src, dst, *mappings, run_time = time2)
