@@ -25,6 +25,11 @@ class Leverages(StitcherScene):
         bhat = np.linalg.inv(X.T @ X) @ X.T @ Y
         print(f"{bhat.shape=} {X.shape=} {yhat.shape=} {Y.shape=} {e.shape=} {epsilon.shape=} {bhat=}")        
 
+        Y_tracker = ArrayValueTracker(Y)
+        bhat_tracker = ArrayValueTracker(bhat)
+        bhat_tracker.add_updater(lambda m : m.set_value(np.linalg.inv(X.T @ X) @ X.T @ Y))
+        yhat_tracker = ArrayValueTracker(X @ bhat_tracker.get_value())
+        yhat_tracker.add_updater(lambda m: m.set_value(X @ bhat_tracker.get_value()))
         axes = Axes(
             x_range=[X1.min() - 0.5, X1.max() + 0.5, 1],
             y_range=[Y.min() - 0.5, Y.max() + 5, 1],
@@ -32,8 +37,11 @@ class Leverages(StitcherScene):
             y_length=4,
             tips=False,
         )
-
-        points = VGroup([Dot(axes.c2p(x, y)) for x, y in zip(X1.flatten(), Y.flatten())])
+        points = VGroup([Dot(axes.c2p(x, y)) for x, y in zip(X1.flatten(), Y_tracker.get_value().flatten())])
+        trendline = always_redraw(lambda: axes.plot(
+            lambda x: bhat_tracker.get_value()[0,0] + bhat_tracker.get_value()[1,0] * x,
+            color=YELLOW,
+        ))
 
         with self.voiceover("Now we're going to explain the relationship with leverages.") as tracker:
             ...
@@ -48,7 +56,8 @@ class Leverages(StitcherScene):
         with self.voiceover("Let's look at an example.") as tracker:
             self.play(
                 FadeIn(axes), 
-                FadeIn(points)
+                FadeIn(points),
+                FadeIn(trendline)
             )
 
         with self.voiceover("Here's a point with a high leverage value. Now let's look at what would happen if the Y for this point were to change. You can see that the regression line moves quite a bit, and Y hat gets pulled towards Y. ") as tracker:
