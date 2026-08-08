@@ -25,6 +25,16 @@ class Leverages(StitcherScene):
         bhat = np.linalg.inv(X.T @ X) @ X.T @ Y
         print(f"{bhat.shape=} {X.shape=} {yhat.shape=} {Y.shape=} {e.shape=} {epsilon.shape=} {bhat=}")        
 
+        axes = Axes(
+            x_range=[X1.min() - 0.5, X1.max() + 0.5, 1],
+            y_range=[Y.min() - 0.5, Y.max() + 5, 1],
+            x_length=4,
+            y_length=4,
+            tips=False,
+        )
+
+        points = VGroup([Dot(axes.c2p(x, y)) for x, y in zip(X1.flatten(), Y.flatten())])
+
         with self.voiceover("Now we're going to explain the relationship with leverages.") as tracker:
             ...
         with self.voiceover("Basically, Y hat equals H Y,") as tracker:
@@ -36,16 +46,6 @@ class Leverages(StitcherScene):
         with self.voiceover("Hii is therefore a measure of how much the ith datapoint can influence the regression coefficients by pulling the regression line or plane or surface towards itself.") as tracker:
             self.play(TransformMatchingShapes(limit_tex, frac_tex))
         with self.voiceover("Let's look at an example.") as tracker:
-            axes = Axes(
-                x_range=[X1.min() - 0.5, X1.max() + 0.5, 1],
-                y_range=[Y.min() - 0.5, Y.max() + 5, 1],
-                x_length=4,
-                y_length=4,
-                tips=False,
-            )
-
-            points = VGroup([Dot(axes.c2p(x, y)) for x, y in zip(X1.flatten(), Y.flatten())])
-
             self.play(
                 FadeIn(axes), 
                 FadeIn(points)
