@@ -35,8 +35,8 @@ class Leverages(StitcherScene):
         axes = Axes(
             x_range=[X1.min() - 0.5, X1.max() + 0.5, 1],
             y_range=[Y.min() - 0.5, Y.max() + 5, 1],
-            x_length=4,
-            y_length=4,
+            x_length=8,
+            y_length=6,
             tips=False,
         )
         points = always_redraw(lambda : VGroup([Dot(axes.c2p(x, y), color = Y_COLOR) for x, y in zip(X1.flatten(), Y_tracker.get_value().flatten())]))
@@ -69,53 +69,47 @@ class Leverages(StitcherScene):
             pt = points[i_big].copy()
             self.play(Indicate(pt))
             self.remove(pt)
-        with self.voiceover("if the Y for this point were to change. You can see that the regression line moves quite a bit, and Y hat gets pulled towards Y.") as tracker:
+        with self.voiceover("if the Y for this point were to change. You can see that the regression line moves quite a bit, and Y hat gets pulled towards Y. And in fact") as tracker:
             Y_bumped_big = Y.copy()
             Y_bumped_big[i_big,0] += 2
             self.play(Y_tracker.animate.set_value(Y_bumped_big))
-        with self.voiceover("And in fact the amount that Y hat moves is exactly equal to the leverage value times the change in Y.") as tracker:
-            Y_stem_big = DashedLine(
-                axes.c2p(X1[i_big,0],            Y[i_big,0]),
-                axes.c2p(X1[i_big,0], Y_bumped_big[i_big,0]),
+
+        def make_stems(Y_bumped, i):
+            Y_stem = DashedLine(
+                axes.c2p(X1[i,0],        Y[i,0]),
+                axes.c2p(X1[i,0], Y_bumped[i,0]),
                 color = Y_COLOR,
             ).set_opacity(0.5)
-            yhat_stem_big = DashedLine(
-                axes.c2p(X1[i_big,0],               yhat[i_big,0]),
-                axes.c2p(X1[i_big,0], (H @ Y_bumped_big)[i_big,0]),
+            yhat_stem = DashedLine(
+                axes.c2p(X1[i,0],           yhat[i,0]),
+                axes.c2p(X1[i,0], (H @ Y_bumped)[i,0]),
                 color = YHAT_COLOR,
             ).set_opacity(0.5)
-            self.play(
-                FadeIn(Y_stem_big), 
-                FadeIn(yhat_stem_big),
-            )
+            return Y_stem, yhat_stem
+        
+        Y_stem_big, yhat_stem_big = make_stems(Y_bumped_big, i_big)
+        with self.voiceover("the amount that Y hat moves is exactly equal to the leverage value times") as tracker:
+            self.play(FadeIn(yhat_stem_big))
+        with self.voiceover("the change in Y. Now let's look at") as tracker:
+            self.play(FadeIn(Y_stem_big))
             self.play(
                 FadeOut(Y_stem_big), 
                 FadeOut(yhat_stem_big),
                 Y_tracker.animate.set_value(Y)
             )
-        with self.voiceover("Now let's look at this point, which has a much lower leverage value. Let's look at what would happen") as tracker:
+        with self.voiceover("this point, which has a much lower leverage value. Let's look at what would happen") as tracker:
             pt = points[i_small].copy()
             self.play(Indicate(pt))
             self.remove(pt)
-        with self.voiceover("if the Y were to move.") as tracker:
+        with self.voiceover("if the Y were to move. This time the regression line barely changes.") as tracker:
             Y_bumped_small = Y.copy()
             Y_bumped_small[np.argmin(leverages),0] += 2
             self.play(Y_tracker.animate.set_value(Y_bumped_small))
-        with self.voiceover("This time the regression line barely changes. The Y hat barely moves. Again, the change in Y hat is equal to the leverage times the change in Y, which this time is much lower.") as tracker:
-            Y_stem_small = DashedLine(
-                axes.c2p(X1[i_small,0],              Y[i_small,0]),
-                axes.c2p(X1[i_small,0], Y_bumped_small[i_small,0]),
-                color = Y_COLOR,
-            ).set_opacity(0.5)
-            yhat_stem_small = DashedLine(
-                axes.c2p(X1[i_small,0],                 yhat[i_small,0]),
-                axes.c2p(X1[i_small,0], (H @ Y_bumped_small)[i_small,0]),
-                color = YHAT_COLOR,
-            ).set_opacity(0.5)
-            self.play(
-                FadeIn(Y_stem_small), 
-                FadeIn(yhat_stem_small),
-            )
+        Y_stem_small, yhat_stem_small = make_stems(Y_bumped_small, i_small)
+        with self.voiceover("Y hat barely moves. Again, the change in Y hat is equal to the leverage times") as tracker:
+            self.play(FadeIn(yhat_stem_small))
+        with self.voiceover("the change in Y, which this time is much lower.") as tracker:
+            self.play(FadeIn(Y_stem_small))
             self.play(
                 FadeOut(Y_stem_small), 
                 FadeOut(yhat_stem_small),
