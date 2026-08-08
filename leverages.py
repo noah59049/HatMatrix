@@ -66,8 +66,12 @@ class Leverages(StitcherScene):
         i_big = np.argmax(leverages)
         i_small = np.argmin(leverages)
         with self.voiceover("Here's a point with a high leverage value. Now let's look at what would happen") as tracker:
+            lev_big_tex = MathTex(f"H_{{ii}} = {leverages[i_big]:.2f}").to_corner(UL)
             pt = points[i_big].copy()
-            self.play(Indicate(pt))
+            self.play(
+                Indicate(pt, run_time = self.get_current_voiceover_duration() - 0.4),
+                Write(lev_big_tex)
+            )
             self.remove(pt)
         with self.voiceover("if the Y for this point were to change. You can see that the regression line moves quite a bit, and Y hat gets pulled towards Y. And in fact") as tracker:
             Y_bumped_big = Y.copy()
@@ -115,11 +119,16 @@ class Leverages(StitcherScene):
                 FadeOut(Y_stem_big), 
                 FadeOut(yhat_stem_big),
                 FadeOut(equations_big),
+                FadeOut(lev_big_tex),
                 Y_tracker.animate.set_value(Y)
             )
         with self.voiceover("this point, which has a much lower leverage value. Let's look at what would happen") as tracker:
+            lev_small_tex = MathTex(f"H_{{ii}} = {leverages[i_small]:.2f}").to_corner(UL)
             pt = points[i_small].copy()
-            self.play(Indicate(pt))
+            self.play(
+                Indicate(pt, run_time = self.get_current_voiceover_duration() - 0.4),
+                Write(lev_small_tex)
+            )
             self.remove(pt)
         with self.voiceover("if the Y were to move. This time the regression line barely changes.") as tracker:
             Y_bumped_small = Y.copy()
@@ -142,6 +151,7 @@ class Leverages(StitcherScene):
                 FadeOut(Y_stem_small), 
                 FadeOut(yhat_stem_small),
                 FadeOut(equations_small),
+                FadeOut(lev_small_tex),
                 Y_tracker.animate.set_value(Y)
             )
         # with self.voiceover("I've heard it said that the leverage is a measure of a point's potential to influence the regression coefficients. We don't say it's how influential it actually is because look at this point. It has a high leverage, but it's very close to the trend line, so it isn't actually moving it much, and if you were to remove it, the regression coefficients would stay basically the same.") as tracker:
