@@ -63,19 +63,55 @@ class Leverages(StitcherScene):
             )
 
         leverages = np.diagonal(H)
+        i_big = np.argmax(leverages)
+        i_small = np.argmin(leverages)
         with self.voiceover("Here's a point with a high leverage value. Now let's look at what would happen if the Y for this point were to change. You can see that the regression line moves quite a bit, and Y hat gets pulled towards Y. ") as tracker:
             Y_bumped_big = Y.copy()
-            Y_bumped_big[np.argmax(leverages),0] += 2
+            Y_bumped_big[i_big,0] += 2
             self.play(Y_tracker.animate.set_value(Y_bumped_big))
-            self.play(Y_tracker.animate.set_value(Y))
         with self.voiceover("And in fact the amount that Y hat moves is exactly equal to the leverage value times the change in Y.") as tracker:
-            ...
+            Y_stem_big = DashedLine(
+                axes.c2p(X1[i_big,0],            Y[i_big,0]),
+                axes.c2p(X1[i_big,0], Y_bumped_big[i_big,0]),
+                color = Y_COLOR,
+            ).set_opacity(0.5)
+            yhat_stem_big = DashedLine(
+                axes.c2p(X1[i_big,0],               yhat[i_big,0]),
+                axes.c2p(X1[i_big,0], (H @ Y_bumped_big)[i_big,0]),
+                color = YHAT_COLOR,
+            ).set_opacity(0.5)
+            self.play(
+                FadeIn(Y_stem_big), 
+                FadeIn(yhat_stem_big),
+            )
+            self.play(
+                FadeOut(Y_stem_big), 
+                FadeOut(yhat_stem_big),
+                Y_tracker.animate.set_value(Y)
+            )
         with self.voiceover("Now let's look at this point, which has a much lower leverage value. Let's look at what would happen if the Y were to move.") as tracker:
             Y_bumped_small = Y.copy()
             Y_bumped_small[np.argmin(leverages),0] += 2
             self.play(Y_tracker.animate.set_value(Y_bumped_small))
-            self.play(Y_tracker.animate.set_value(Y))
         with self.voiceover("This time the regression line barely changes. The Y hat barely moves. Again, the change in Y hat is equal to the leverage times the change in Y, which this time is much lower.") as tracker:
-            ...
+            Y_stem_small = DashedLine(
+                axes.c2p(X1[i_small,0],              Y[i_small,0]),
+                axes.c2p(X1[i_small,0], Y_bumped_small[i_small,0]),
+                color = Y_COLOR,
+            ).set_opacity(0.5)
+            yhat_stem_small = DashedLine(
+                axes.c2p(X1[i_small,0],                 yhat[i_small,0]),
+                axes.c2p(X1[i_small,0], (H @ Y_bumped_small)[i_small,0]),
+                color = YHAT_COLOR,
+            ).set_opacity(0.5)
+            self.play(
+                FadeIn(Y_stem_small), 
+                FadeIn(yhat_stem_small),
+            )
+            self.play(
+                FadeOut(Y_stem_small), 
+                FadeOut(yhat_stem_small),
+                Y_tracker.animate.set_value(Y)
+            )
         with self.voiceover("I've heard it said that the leverage is a measure of a point's potential to influence the regression coefficients. We don't say it's how influential it actually is because look at this point. It has a high leverage, but it's very close to the trend line, so it isn't actually moving it much, and if you were to remove it, the regression coefficients would stay basically the same.") as tracker:
             ...
