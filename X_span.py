@@ -727,6 +727,12 @@ class XSpan(StitcherScene, ThreeDScene):
         hm_formula2 = MathTex(r" H = X (X^T X)^{-1} X^T").next_to(hm_formula, DOWN, aligned_edge = RIGHT)
         
         with self.voiceover("So here we can write this decomposition as an equation.") as tracker:
+            graph_group.add(
+                arrow_to_Y.copy(), 
+                arrow_to_yhat.copy(), 
+                arrow_yhat_to_Y.copy(),
+            )
+            
             self.play(
                 graph_group.animate.to_corner(UR),
                 FadeOut(scene_to_fade)
