@@ -686,8 +686,13 @@ class XSpan(StitcherScene, ThreeDScene):
         with self.voiceover("Euclidean distance between Y and Y hat. And the length of the line between Y and Y hat is minimized precisely when that line is") as tracker:
             residual_3d_line = always_redraw(lambda: DashedLine(axes.c2p(*Y), axes.c2p(*yhat.get_value()), color=WHITE))
             graph_group.add(residual_3d_line)
-            self.add(residual_3d_line)
-            
+            self.add(residual_3d_line) # This line removes the _spin updater
+            # This is because residual_3d_line is already in graph_group, then gets added to the scene.
+            # So the graph_group itself gets removed from the scene, so the scene never finds its updater
+            # Claude explains in more detail: Scene.add() calls restructure_mobjects(to_remove=[...]) with extract_families=True (the default), which expands residual_3d_line's family and checks every existing top-level entry for overlap. Since residual_3d_line is already nested inside graph_group (from the graph_group.add() on the line above), graph_group's family intersects the removal set — so instead of keeping graph_group as one top-level entry, get_restructured_mobject_list recursively dissolves it, scattering its children out as separate top-level entries and dropping graph_group itself. Scene.update_mobjects() only calls .update(dt) on top-level self.mobjects entries, so once graph_group is no longer one of them, _spin (attached directly to graph_group via add_updater) never fires again
+            # This would normally be a bug
+            # But I happen to like the rotation stopping here
+
         with self.voiceover("perpendicular to the span of X.") as tracker:
             # A small elbow marker built from raw 3D points rather than
             # manim's Angle/RightAngle: those go through line_intersection,
