@@ -696,18 +696,19 @@ class XSpan(StitcherScene, ThreeDScene):
         # Add equations with arrows and their names
 
         # {arrow to Y} = {arrow to Y hat} + {arrow from Y hat to Y}
+        equation_point = UP
         equation = VGroup(
             arrow_to_Y.copy(), MathTex("="), arrow_to_yhat.copy(), MathTex("+"), arrow_yhat_to_Y.copy()
-        ).arrange(RIGHT, buff=0.25).move_to(ORIGIN)
+        ).arrange(RIGHT, buff=0.25).move_to(equation_point)
         equation1 = VGroup(
             MathTex("Y"), MathTex("="), arrow_to_yhat.copy(), MathTex("+"), arrow_yhat_to_Y.copy()
-        ).arrange(RIGHT, buff=0.25).move_to(ORIGIN)
+        ).arrange(RIGHT, buff=0.25).move_to(equation_point)
         equation2 = VGroup(
             MathTex("Y"), MathTex("="), MathTex(r"\hat{Y}"), MathTex("+"), arrow_yhat_to_Y.copy()
-        ).arrange(RIGHT, buff=0.25).move_to(ORIGIN)
+        ).arrange(RIGHT, buff=0.25).move_to(equation_point)
         equation3 = VGroup(
             MathTex("Y"), MathTex("="), MathTex(r"\hat{Y}"), MathTex("+"), MathTex("e")
-        ).arrange(RIGHT, buff=0.25).move_to(ORIGIN)
+        ).arrange(RIGHT, buff=0.25).move_to(equation_point)
 
         orth_fact = Tex(r"$e \perp$ all cols of $X$").to_corner(UR)
         hm_derivations = [
@@ -720,6 +721,8 @@ class XSpan(StitcherScene, ThreeDScene):
             MathTex(r"X (X^T X)^{-1} X^T Y = X \hat{\beta}"),
             MathTex(r"X (X^T X)^{-1} X^T Y = \hat{Y}"),
         ]
+        for hm_derivation in hm_derivations:
+            hm_derivation.move_to(equation_point)
         hm_formula  = MathTex(r"     X (X^T X)^{-1} X^T").move_to(hm_derivations[-1], aligned_edge=LEFT)
         hm_formula2 = MathTex(r" H = X (X^T X)^{-1} X^T").next_to(hm_formula, DOWN, aligned_edge = RIGHT)
         
