@@ -677,7 +677,7 @@ class XSpan(StitcherScene, ThreeDScene):
             # Fade out everything except those 3 arrows -- we're leaving the
             # rotating 3D visualization behind for the symbolic derivation
             # below.
-            scene_to_fade = VGroup(graph_group, graph_2d_group, X_tex, Y_tex, bhat_tex, y_label)
+            scene_to_fade = VGroup(graph_2d_group, X_tex, Y_tex, bhat_tex, y_label)
             # A lot of this (the graph_group spin updater, yhat_point, the
             # sweep traces, the scaffold lattice, residual_3d_line,
             # right_angle, trendline_2d, y_label, bhat_tex) is always_redraw
@@ -690,6 +690,7 @@ class XSpan(StitcherScene, ThreeDScene):
             # updater in the whole family tree first (graph_group's own
             # _spin included), so FadeOut's opacity change actually sticks.
             scene_to_fade.clear_updaters()
+            graph_group.clear_updaters()
             assert len(bhat_tex.updaters) == 0
         
         # Add equations with arrows and their names
@@ -723,7 +724,10 @@ class XSpan(StitcherScene, ThreeDScene):
         hm_formula2 = MathTex(r" H = X (X^T X)^{-1} X^T").next_to(hm_formula, DOWN, aligned_edge = RIGHT)
         
         with self.voiceover("So here we can write this decomposition as an equation.") as tracker:
-            self.play(FadeOut(scene_to_fade))
+            self.play(
+                graph_group.animate.to_corner(UR),
+                FadeOut(scene_to_fade)
+            )
 
             self.play(
                 ReplacementTransform(arrow_to_Y, equation[0]),
@@ -744,6 +748,7 @@ class XSpan(StitcherScene, ThreeDScene):
             self.play(
                 TransformMatchingShapes(equation3, hm_derivations[0]),
                 # FlashOn(orth_fact, run_time = (0.4, self.get_current_voiceover_duration() - 2, 0.4)),
+                FadeOut(graph_group)
             )
         with self.voiceover("equal to Y hat, we'll substitute that in. Then we") as tracker:
             self.play(TransformWithBoxes(hm_derivations[0], hm_derivations[1],
