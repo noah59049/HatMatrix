@@ -122,7 +122,9 @@ class XSpan(StitcherScene, ThreeDScene):
         # tracking y_point through any later rotations of graph_group too.
         # Kept out of graph_group itself so it stays flat/upright on screen
         # instead of inheriting graph_group's 3D tilt like y_point does.
-        y_label = always_redraw(lambda: MathTex("Y", color=ORANGE).next_to(y_point, UP))
+        def make_y_label():
+            return MathTex("Y", color=ORANGE).next_to(y_point, UP)
+        y_label = always_redraw(make_y_label)
 
         GRID_STROKE_WIDTH = 4
         def sweep_variable(
@@ -310,6 +312,28 @@ class XSpan(StitcherScene, ThreeDScene):
                 TransformMatchingShapes(y_column, Y_tex),
                 run_time=third,
             )
+            # TransformIndices.clean_up_from_scene (N_Tools.py) leaves
+            # lines_3d registered as its own independent top-level scene
+            # entry (via scene.add(self._dst_group)), separate from
+            # graph_group.add(lines_3d) below. Without dropping that
+            # standalone registration first, lines_3d ends up double
+            # registered: once on its own, once nested inside graph_group.
+            # A later FadeOut(graph_group) only removes the literal
+            # graph_group entry (Scene.remove doesn't recursively remove
+            # independently-registered descendants), so the orphaned
+            # lines_3d entry survives in self.mobjects -- and FadeOut's own
+            # clean_up_from_scene finishes with self.interpolate(0), which
+            # restores full opacity on graph_group's whole family (by
+            # design, so a later FadeIn can show it again) including
+            # lines_3d. Net effect: lines_3d visibly snaps back to full
+            # opacity immediately after "fading out", because the orphaned
+            # copy was still on screen the whole time. Removing it here,
+            # before it's nested into graph_group, avoids the double
+            # registration (and is safe to do now specifically because
+            # lines_3d isn't yet a descendant of anything else, so this
+            # doesn't trigger the group-dissolving self.remove() hazard
+            # documented near yhat_point_visible above).
+            self.remove(lines_3d)
             graph_group.add(lines_3d)
 
         with self.voiceover("Beta hat is also a column vector.") as tracker:
@@ -334,6 +358,15 @@ class XSpan(StitcherScene, ThreeDScene):
             ).move_to(RIGHT * 0.64)
             print("DEBUG xbhat_tex[4] tex_string:", repr(xbhat_tex[4].tex_string), "len:", len(xbhat_tex[4]))
 
+            # y_label is always_redraw (it needs to keep tracking y_point
+            # through later rotations), but that same updater fights
+            # FadeOut's opacity animation every frame -- same mechanism as
+            # scene_to_fade further down. It's not being retired here
+            # (graph_group/graph_2d_group fade back in a few beats from
+            # now), so clear its updater just for the fade and reattach it
+            # once FadeIn brings it back, rather than clearing it for good.
+            y_label.clear_updaters()
+
             self.play(
                 TransformFromCopy(X_tex[0][0], xbhat_tex[0]),
                 TransformFromCopy(bhat_tex[0][0:2], xbhat_tex[1]),
@@ -342,7 +375,8 @@ class XSpan(StitcherScene, ThreeDScene):
                 TransformFromCopy(bhat_tex[0][3:], xbhat_tex[4]),
 
                 FadeOut(graph_group),
-                FadeOut(graph_2d_group)
+                FadeOut(graph_2d_group),
+                FadeOut(y_label),
             )
             
         with self.voiceover("and I'll leave up an animation for the intuition and a more rigorous proof onscreen.") as tracker:
@@ -363,8 +397,14 @@ class XSpan(StitcherScene, ThreeDScene):
             self.play(
                 FadeOut(matmul_animation.mobB, lower_down_equals, xbhat_tex),
                 FadeIn(graph_group),
-                FadeIn(graph_2d_group)
+                FadeIn(graph_2d_group),
+                FadeIn(y_label),
             )
+            # Reattach the tracking updater now that the fade is done --
+            # y_point doesn't move between the clear_updaters() above and
+            # here, so no visible jump, but everything from here on
+            # (rotation, etc.) needs y_label live again.
+            y_label.add_updater(lambda m: m.become(make_y_label()))
             bhat.set_value(np.array([0.0,0.0]))
             self.play(FadeIn(trendline_2d), FadeIn(yhat_point))
             graph_2d_group.add(trendline_2d)
