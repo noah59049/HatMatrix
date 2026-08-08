@@ -144,5 +144,5 @@ class Leverages(StitcherScene):
                 FadeOut(equations_small),
                 Y_tracker.animate.set_value(Y)
             )
-        with self.voiceover("I've heard it said that the leverage is a measure of a point's potential to influence the regression coefficients. We don't say it's how influential it actually is because look at this point. It has a high leverage, but it's very close to the trend line, so it isn't actually moving it much, and if you were to remove it, the regression coefficients would stay basically the same.") as tracker:
-            ...
+        # with self.voiceover("I've heard it said that the leverage is a measure of a point's potential to influence the regression coefficients. We don't say it's how influential it actually is because look at this point. It has a high leverage, but it's very close to the trend line, so it isn't actually moving it much, and if you were to remove it, the regression coefficients would stay basically the same.") as tracker:
+        #     ...
