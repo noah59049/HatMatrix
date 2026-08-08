@@ -2,6 +2,7 @@ import numpy as np
 from manim import *
 from stitcher_scene import StitcherScene
 from N_Tools import *
+from colors import *
 
 
 class Leverages(StitcherScene):
@@ -38,10 +39,10 @@ class Leverages(StitcherScene):
             y_length=4,
             tips=False,
         )
-        points = always_redraw(lambda : VGroup([Dot(axes.c2p(x, y)) for x, y in zip(X1.flatten(), Y_tracker.get_value().flatten())]))
+        points = always_redraw(lambda : VGroup([Dot(axes.c2p(x, y), color = Y_COLOR) for x, y in zip(X1.flatten(), Y_tracker.get_value().flatten())]))
         trendline = always_redraw(lambda: axes.plot(
             lambda x: bhat_tracker.get_value()[0,0] + bhat_tracker.get_value()[1,0] * x,
-            color=YELLOW,
+            color=YHAT_COLOR,
         ))
 
         with self.voiceover("Now we're going to explain the relationship with leverages.") as tracker:
