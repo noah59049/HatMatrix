@@ -764,7 +764,7 @@ class XSpan(StitcherScene, ThreeDScene):
         with self.voiceover("and X beta hat is Y hat.") as tracker:
             self.play(TransformByGlyphMap(hm_derivations[6], hm_derivations[7],
                                           ([12,14], [13])))
-        with self.voiceover("So this here is the hat matrix, which we call H.") as tracker:
+        with self.voiceover("So this here is the hat matrix, which we call H. As we showed here, when you multiply the hat matrix by Y, you get Y hat.") as tracker:
             self.add(hm_formula)
             hm_formula_box = SurroundingRectangle(hm_formula, color = RED)
             self.play(Create(hm_formula_box))
