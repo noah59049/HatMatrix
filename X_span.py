@@ -647,10 +647,12 @@ class XSpan(StitcherScene, ThreeDScene):
         scaffold = VGroup(scaffold_lines, scaffold_dots)
         graph_group.add(scaffold)
 
-        with self.voiceover("So here I'll show what multiplying the hat matrix does to a variety of points. As you can see,") as tracker: # TODO: We might need to rethink this voiceover
+        with self.voiceover("So here I'll show what happens if you take a bunch of points, you can think of them as potential Ys, and watch them") as tracker: # TODO: We might need to rethink this voiceover
             self.play(FadeIn(scaffold))
-        with self.voiceover("they all get squished - projected - onto the plane spanned by X0 and X1. The hat matrix is the orthogonal projection matrix onto the column space of X.") as tracker:
+        with self.voiceover("transform into their respective Y hats, which are the closest points on that plane that's the span of X0 and X1 to those Ys.") as tracker:
             self.play(project_alpha.animate.set_value(1.0), run_time=self.get_current_voiceover_duration() - 0.1)
+        with self.voiceover("They all get squished - projected - onto that plane. This is a linear transformation. This means you can represent it by multiplication by a matrix. And that matrix is the hat matrix.") as tracker:
+            pass
 
 
         with self.voiceover("If we have more datapoints, and possibly more variables, the graph of Y and Y hat will be more than 3 dimensions, so we can't really visualize it. But the same idea applies. Y hat can be anything in the column space of X. It's going to be the vector that's closest to Y, which will be the orthogonal projection of Y onto that column space.") as tracker:
