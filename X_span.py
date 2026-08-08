@@ -361,7 +361,6 @@ class XSpan(StitcherScene, ThreeDScene):
 
 
         with self.voiceover("Let's show how Y hat depends on beta hat, starting with if beta hat is zero. Then all the Y hats are zero,") as tracker:
-            # FadeIn(data_table) # Huh? This isn't in a self.play() block. Well the scene works fine without it.
             self.play(
                 FadeOut(matmul_animation.mobB, lower_down_equals, xbhat_tex),
                 FadeIn(graph_group),
