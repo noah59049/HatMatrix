@@ -256,17 +256,17 @@ class XSpan(StitcherScene, ThreeDScene):
         with self.voiceover("Let's show the scatterplot") as tracker:
             self.play(FadeIn(graph_2d_group))
 
-        with self.voiceover("and a data table. Right now we have our Ys as separate quantities, but") as tracker:
+        with self.voiceover("and a data table. Right now") as tracker:
+            self.play(FadeIn(data_table))
+
+        with self.voiceover("we have our Ys as separate quantities, but") as tracker:
             # A "height" line to each data point on the 2D graph -- Y1, Y2,
             # Y3 as three separate quantities.
             lines_2d = VGroup(*[
                 Line(graph_2d.c2p(x, 0), graph_2d.c2p(x, y), color=ORANGE)
                 for x, y in zip(X1_vals, Y)
             ])
-            self.play(
-                FadeIn(data_table), 
-                Create(lines_2d)
-            )
+            self.play(Create(lines_2d))
 
         with self.voiceover("it's useful to think of them as a vector, a column vector, for reasons that will become apparent.") as tracker:
             third = self.get_current_voiceover_duration() / 3
