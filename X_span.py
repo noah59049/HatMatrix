@@ -645,19 +645,6 @@ class XSpan(StitcherScene, ThreeDScene):
             self.play(FadeIn(scaffold), run_time=half_time)
             self.play(project_alpha.animate.set_value(1.0), run_time=half_time)
 
-        orth_fact = Tex(r"$e \perp$ all cols of $X$").to_corner(UR)
-        hm_derivations = [
-            MathTex(r"Y =   \hat{Y} + e"),
-            MathTex(r"Y = X \hat{\beta} + e"),
-            MathTex(r"X^T Y = X^T X \hat{\beta} + X^T e"),
-            MathTex(r"X^T Y = X^T X \hat{\beta}"),
-            MathTex(r"(X^T X)^{-1} X^T Y = (X^T X)^{-1} X^T X \hat{\beta}"),
-            MathTex(r"(X^T X)^{-1} X^T Y = \hat{\beta}"),
-            MathTex(r"X (X^T X)^{-1} X^T Y = X \hat{\beta}"),
-            MathTex(r"X (X^T X)^{-1} X^T Y = \hat{Y}"),
-        ]
-        hm_formula  = MathTex(r"     X (X^T X)^{-1} X^T").move_to(hm_derivations[-1], aligned_edge=LEFT)
-        hm_formula2 = MathTex(r" H = X (X^T X)^{-1} X^T").next_to(hm_formula, DOWN, aligned_edge = RIGHT)
 
         with self.voiceover("If we have more datapoints, and possibly more variables, the graph of Y and Y hat will be more than 3 dimensions, so we can't really visualize it. But the same idea applies. Y hat can be anything in the column space of X. It's going to be the vector that's closest to Y, which will be the orthogonal projection of Y onto that column space.") as tracker:
             ...
@@ -712,6 +699,20 @@ class XSpan(StitcherScene, ThreeDScene):
             MathTex("Y"), MathTex("="), MathTex(r"\hat{Y}"), MathTex("+"), MathTex("e")
         ).arrange(RIGHT, buff=0.4).move_to(ORIGIN)
 
+        orth_fact = Tex(r"$e \perp$ all cols of $X$").to_corner(UR)
+        hm_derivations = [
+            MathTex(r"Y =   \hat{Y} + e"),
+            MathTex(r"Y = X \hat{\beta} + e"),
+            MathTex(r"X^T Y = X^T X \hat{\beta} + X^T e"),
+            MathTex(r"X^T Y = X^T X \hat{\beta}"),
+            MathTex(r"(X^T X)^{-1} X^T Y = (X^T X)^{-1} X^T X \hat{\beta}"),
+            MathTex(r"(X^T X)^{-1} X^T Y = \hat{\beta}"),
+            MathTex(r"X (X^T X)^{-1} X^T Y = X \hat{\beta}"),
+            MathTex(r"X (X^T X)^{-1} X^T Y = \hat{Y}"),
+        ]
+        hm_formula  = MathTex(r"     X (X^T X)^{-1} X^T").move_to(hm_derivations[-1], aligned_edge=LEFT)
+        hm_formula2 = MathTex(r" H = X (X^T X)^{-1} X^T").next_to(hm_formula, DOWN, aligned_edge = RIGHT)
+        
         with self.voiceover("Luckily for us, these vectors have names: The component in the column space") as tracker:
             self.play(FadeOut(scene_to_fade))
 
