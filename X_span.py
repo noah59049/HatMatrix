@@ -303,11 +303,10 @@ class XSpan(StitcherScene, ThreeDScene):
                 Line(corner1, corner2, color=ORANGE),
                 Line(corner2, Y_3d, color=ORANGE),
             )
-            # graph_group.add(lines_3d)
 
             y_column = y_col_group.copy()
             self.play(
-                *[ReplacementTransform(l2d, l3d) for l2d, l3d in zip(lines_2d, lines_3d)],
+                TransformIndices(lines_2d, lines_3d),
                 TransformMatchingShapes(y_column, Y_tex),
                 run_time=third,
             )
