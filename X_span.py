@@ -147,6 +147,18 @@ class XSpan(StitcherScene, ThreeDScene):
             it behaves correctly no matter when it's actually played. The
             trace Line is available as `.trace` on the instance after it's
             been played (it doesn't exist until _setup_scene runs).
+
+            sweep[0]/sweep[1]/sweep[2] index into the 3 built phases
+            (hi/lo/base) if you need to play them one at a time -- but
+            _setup_scene/clean_up_from_scene only fire when the
+            sweep_variable *instance itself* is what gets passed to
+            self.play(); playing an individual phase bypasses them
+            entirely (no trace, no trackers, no bhat seeding, no cleanup),
+            since Scene.play() only invokes those hooks on the top-level
+            object it's given, not on nested self.animations entries.
+            Splitting the phases across separate self.play() calls (e.g.
+            one per voiceover block) needs that setup/teardown handled
+            some other way -- not yet solved here.
             """
             def __init__(
                     self,
@@ -198,6 +210,15 @@ class XSpan(StitcherScene, ThreeDScene):
                     for i, value in enumerate(bhat_targets)
                 ]
                 super().__init__(*phases)
+
+            def __getitem__(self, i):
+                # Sugar for .animations[i] (the individual hi/lo/base
+                # Transform phases, in order) -- lets X1_sweep[0] work
+                # directly. Note this is *only* index access into the
+                # already-built phase list; it doesn't change when
+                # _setup_scene/clean_up_from_scene run (see the docstring
+                # note below about playing phases individually).
+                return self.animations[i]
 
             def _setup_scene(self, scene):
                 super()._setup_scene(scene)
