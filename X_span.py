@@ -805,7 +805,7 @@ class XSpan(StitcherScene, ThreeDScene):
             group.next_to(fact, DOWN, aligned_edge=LEFT, buff=0.3).shift(RIGHT * 0.5)
             return group
 
-        with self.voiceover("It's symmetric. By the spectral theorem, this means it must be orthogonally diagonalizable.") as tracker:
+        with self.voiceover("It's symmetric. By the spectral theorem, this means") as tracker:
             self.play(LaggedStart(Create(checks[0]), Write(fact1), lag_ratio=0.6))
             proof11 = MathTex("H^T = (X (X^T X)^{-1} X^T)^T")
             proof12 = MathTex("H^T = {X^T}^T {(X^T X)^{-1}}^T X^T")
@@ -815,6 +815,7 @@ class XSpan(StitcherScene, ThreeDScene):
             proof16 = MathTex("H^T = H")
             proof1_group = make_proof_group(fact1, proof11, proof12, proof13, proof14, proof15, proof16)
             self.play(FadeIn(proof1_group))
+        with self.voiceover("it must be orthogonally diagonalizable.") as tracker:
             fact11 = Tex(r"$\implies H$ is orthogonally diagonalizable.").next_to(fact1, RIGHT)
             self.play(FadeIn(fact11))
         with self.voiceover("It's idempotent, meaning that H squared equals H.") as tracker:
@@ -854,7 +855,7 @@ class XSpan(StitcherScene, ThreeDScene):
             self.play(FadeIn(proof5_group))
         with self.voiceover("The eigenvectors with eigenvalue 1 are the columns of X and anything in their span.") as tracker:
             self.play(FlashOn(SurroundingRectangle(fact3, color = RED)))
-        with self.voiceover("The eigenvectors with eigenvalue 0 are everything orthogonal to X.") as tracker:
+        with self.voiceover("The eigenvectors with eigenvalue 0 are everything orthogonal to X. And the eigenspace of 0 is orthogonal to the eigenspace of 1, which is consistent with") as tracker:
             self.play(FlashOn(SurroundingRectangle(fact4, color = RED)))
-        with self.voiceover("And the eigenspace of 0 is orthogonal to the eigenspace of 1, which is consistent with the hat matrix being orthogonally diagonalizable.") as tracker:
-            self.play(FlashOn(SurroundingRectangle(fact1, color = RED)))
+        with self.voiceover("the hat matrix being orthogonally diagonalizable.") as tracker:
+            self.play(FlashOn(SurroundingRectangle(fact11, color = RED)))
