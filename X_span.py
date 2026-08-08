@@ -655,8 +655,8 @@ class XSpan(StitcherScene, ThreeDScene):
             pass
 
 
-        with self.voiceover("If we have more datapoints, and possibly more variables, the graph of Y and Y hat will be more than 3 dimensions, so we can't really visualize it. But the same idea applies. Y hat can be anything in the column space of X. It's going to be the vector that's closest to Y, which will be the orthogonal projection of Y onto that column space.") as tracker:
-            ...
+        # with self.voiceover("If we have more datapoints, and possibly more variables, the graph of Y and Y hat will be more than 3 dimensions, so we can't really visualize it. But the same idea applies. Y hat can be anything in the column space of X. It's going to be the vector that's closest to Y, which will be the orthogonal projection of Y onto that column space.") as tracker:
+        #     ...
         with self.voiceover("So we know what the hat matrix is supposed to do, but now we're going to focus on finding a formula for it.") as tracker:
             pass
 
