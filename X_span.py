@@ -732,9 +732,9 @@ class XSpan(StitcherScene, ThreeDScene):
                 arrow_to_yhat.copy(), 
                 arrow_yhat_to_Y.copy(),
             )
-            
+
             self.play(
-                graph_group.animate.to_corner(UR),
+                graph_group.animate.to_corner(UR), # TODO: Why does this change the apparent thickness of the green plane that represents col(X)?
                 FadeOut(scene_to_fade)
             )
 
