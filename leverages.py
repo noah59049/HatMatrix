@@ -6,10 +6,10 @@ from N_Tools import *
 
 class Leverages(StitcherScene):
     def construct_scene(self):
-        yhat_tex = MathTex(r"\hat{Y}=HY")
-        deriv_tex = MathTex(r"\frac{\partial \hat{Y}_i} {\partial Y_i}=H_{ii}")
-        limit_tex = MathTex(r"\lim_{\Delta Y_i \to 0} \frac{\Delta \hat{Y}_i} {\Delta Y_i} = H_{ii}")
-        frac_tex = MathTex(r"\frac{\Delta \hat{Y}_i} {\Delta Y_i} = H_{ii}")
+        yhat_tex = MathTex(r"\hat{Y}=HY").to_edge(UP)
+        deriv_tex = MathTex(r"\frac{\partial \hat{Y}_i} {\partial Y_i}=H_{ii}").next_to(yhat_tex, DOWN)
+        limit_tex = MathTex(r"\lim_{\Delta Y_i \to 0} \frac{\Delta \hat{Y}_i} {\Delta Y_i} = H_{ii}").next_to(yhat_tex, DOWN)
+        frac_tex = MathTex(r"\frac{\Delta \hat{Y}_i} {\Delta Y_i} = H_{ii}").next_to(yhat_tex, DOWN)
 
         X1 = [0.4, 0.7, 0.7, 1, 1, 1.2, 1.5, 1.59, 1.68, 1.73, 1.8, 5]
         n = len(X1)
