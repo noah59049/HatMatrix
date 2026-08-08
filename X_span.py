@@ -752,7 +752,7 @@ class XSpan(StitcherScene, ThreeDScene):
                                           (FadeIn, range(0,7)),
                                           (FadeIn, range(11,18), {"run_time": 0.45, "delay":0.5},),
                                     ))
-        with self.voiceover("Cancel terms, and then we get our formula for beta hat.") as tracker:
+        with self.voiceover("Cancel terms, and then we get our formula for beta hat.") as tracker: # TODO: Add more to the voiceover, this is very bare-bones.
             self.play(TransformWithBoxes(hm_derivations[4], hm_derivations[5],
                                           (range(11,21), FadeOut, {"run_time":0.5})))
         
