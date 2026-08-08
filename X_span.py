@@ -477,7 +477,7 @@ class XSpan(StitcherScene, ThreeDScene):
             graph_group.add(yhat_point)
         with self.voiceover("or in other words, the y hat vector is zero.") as tracker:
             self.add(graph_group, y_label)
-            # TODO: Emphasize the y hat dot
+            self.play(Indicate(yhat_point))
         with self.voiceover("Now if we vary beta 0 hat, all of the Y hats increase by the same amount. ") as tracker:
             X0_sweep = sweep_variable(fixed_index=1, fixed_value=0.0, lo = -1.8, hi = 1.8)
             X0_sweep._setup_scene(self)
