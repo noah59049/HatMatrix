@@ -341,6 +341,9 @@ class XSpan(StitcherScene, ThreeDScene):
                 TransformFromCopy(bhat_tex[0][2], xbhat_tex[2]),
                 TransformFromCopy(X_tex[0][2:], xbhat_tex[3]),
                 TransformFromCopy(bhat_tex[0][3:], xbhat_tex[4]),
+
+                FadeOut(graph_group),
+                FadeOut(graph_2d_group)
             )
             
         with self.voiceover("and I'll leave up an animation for the intuition and a more rigorous proof onscreen.") as tracker:
@@ -359,7 +362,11 @@ class XSpan(StitcherScene, ThreeDScene):
 
         with self.voiceover("Let's show how Y hat depends on beta hat, starting with if beta hat is zero. Then all the Y hats are zero,") as tracker:
             # FadeIn(data_table) # Huh? This isn't in a self.play() block. Well the scene works fine without it.
-            self.play(FadeOut(matmul_animation.mobB, lower_down_equals, xbhat_tex))
+            self.play(
+                FadeOut(matmul_animation.mobB, lower_down_equals, xbhat_tex),
+                FadeIn(graph_group),
+                FadeIn(graph_2d_group)
+            )
             bhat.set_value(np.array([0.0,0.0]))
             self.play(FadeIn(trendline_2d), FadeIn(yhat_point))
             graph_2d_group.add(trendline_2d)
