@@ -922,7 +922,7 @@ class XSpan(StitcherScene, ThreeDScene):
             proof1_group = make_proof_group(fact1, proof11, proof12, proof13, proof14, proof15, proof16)
             self.play(FadeIn(proof1_group))
         with self.voiceover("it must be orthogonally diagonalizable.") as tracker:
-            fact11 = Tex(r"$\implies H$", "is orthogonally diagonalizable.").next_to(fact1, RIGHT)
+            fact11 = Tex(r"$\implies$", "$H$ is orthogonally diagonalizable.").next_to(fact1, RIGHT)
             self.play(FadeIn(fact11))
         with self.voiceover("It's idempotent, meaning that H squared equals H.") as tracker:
             self.play(FadeOut(proof1_group))
@@ -939,7 +939,7 @@ class XSpan(StitcherScene, ThreeDScene):
             proof32 = MathTex("H X = X")
             proof3_group = make_proof_group(fact3, proof31, proof32)
             self.play(FadeIn(proof3_group))
-            fact31 = MathTex(r"\implies H", r"X_{\cdot j} = X_{\cdot j}").next_to(fact3, RIGHT)
+            fact31 = MathTex(r"\implies", r"H X_{\cdot j} = X_{\cdot j}").next_to(fact3, RIGHT)
             self.play(FadeIn(fact31))
         with self.voiceover("H times any vector orthogonal to X is zero.") as tracker:
             self.play(FadeOut(proof3_group))
