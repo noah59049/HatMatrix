@@ -391,7 +391,7 @@ class XSpan(StitcherScene, ThreeDScene):
             X1_arrow = Arrow(axes.c2p(0, 0, 0), axes.c2p(*X[:, 1]), buff=0)
             graph_group.add(X1_arrow)
             self.play(FadeIn(X1_arrow))
-        with self.voiceover("So you can see how, by varying both beta zero hat and beta 1 hat, Y hat can be anything that's in the span of the two columns of X.") as tracker:
+        with self.voiceover("So you can see how, by varying both beta zero hat and beta 1 hat, Y hat can be anything that's in the span of the two columns of X. Right now we're showing them tracing out a grid of possible Y hat values by fixing one at various points and varying the other, but") as tracker:
             # Tunable constants: how many beta1 steps to draw gridlines at,
             # and how long each row's animated sweep across beta0 takes
             # (total time is roughly GRID_ROWS * GRID_ROW_RUN_TIME * 3, since
@@ -473,6 +473,7 @@ class XSpan(StitcherScene, ThreeDScene):
             extended_num_steps = int(round(2 * EXTENDED_RADIUS / original_spacing)) + 1
             add_grid_pass(EXTENDED_RADIUS, extended_num_steps, run_time=1.0, include_existing_lines=True)
 
+        with self.voiceover("we could get a finer grid or really anywhere in the span of the columns of X, which here is this plane, just by varing the beta hats.") as tracker:
             # 2)/3) Finer and finer: double the row count each pass (which
             # keeps every previous line's position and only adds the
             # in-between ones), speeding up as there's more to draw.
