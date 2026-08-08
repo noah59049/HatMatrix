@@ -75,26 +75,46 @@ class Leverages(StitcherScene):
             self.play(Y_tracker.animate.set_value(Y_bumped_big))
 
         def make_stems(Y_bumped, i):
-            Y_stem = DashedLine(
+            Y_stem = Line(
                 axes.c2p(X1[i,0],        Y[i,0]),
                 axes.c2p(X1[i,0], Y_bumped[i,0]),
                 color = Y_COLOR,
-            ).set_opacity(0.5)
+            )
             yhat_stem = DashedLine(
                 axes.c2p(X1[i,0],           yhat[i,0]),
                 axes.c2p(X1[i,0], (H @ Y_bumped)[i,0]),
                 color = YHAT_COLOR,
             ).set_opacity(0.5)
             return Y_stem, yhat_stem
+        class ExampleLeverageEquations(VGroup):
+            def __init__(self, i, dy):
+                self.tex1 = MathTex(r"\Delta \hat{Y} = ", "H_{ii}", r"\Delta Y").to_corner(UR)
+                self.tex2 = MathTex(f"{(dy * leverages[i]):.2f} = ", f"{leverages[i]:.2f}", f"{dy:.2f}").next_to(self.tex1, DOWN, aligned_edge=RIGHT)
+                super().__init__(self.tex1, self.tex2)
+            def draw_parts(self, i):
+                return AnimationGroup(
+                    Write(self.tex1[i]),
+                    Write(self.tex2[i])
+                )
         
         Y_stem_big, yhat_stem_big = make_stems(Y_bumped_big, i_big)
-        with self.voiceover("the amount that Y hat moves is exactly equal to the leverage value times") as tracker:
-            self.play(FadeIn(yhat_stem_big))
+        equations_big = ExampleLeverageEquations(i_big, dy = 2)
+        with self.voiceover("the amount that Y hat moves is exactly equal to") as tracker:
+            self.play(
+                FadeIn(yhat_stem_big),
+                equations_big.draw_parts(0)
+            )
+        with self.voiceover("the leverage value times") as tracker:
+            self.play(equations_big.draw_parts(1))
         with self.voiceover("the change in Y. Now let's look at") as tracker:
-            self.play(FadeIn(Y_stem_big))
+            self.play(
+                equations_big.draw_parts(2),
+                FadeIn(Y_stem_big)
+            )
             self.play(
                 FadeOut(Y_stem_big), 
                 FadeOut(yhat_stem_big),
+                FadeOut(equations_big),
                 Y_tracker.animate.set_value(Y)
             )
         with self.voiceover("this point, which has a much lower leverage value. Let's look at what would happen") as tracker:
@@ -106,13 +126,22 @@ class Leverages(StitcherScene):
             Y_bumped_small[np.argmin(leverages),0] += 2
             self.play(Y_tracker.animate.set_value(Y_bumped_small))
         Y_stem_small, yhat_stem_small = make_stems(Y_bumped_small, i_small)
-        with self.voiceover("Y hat barely moves. Again, the change in Y hat is equal to the leverage times") as tracker:
+        equations_small = ExampleLeverageEquations(i_small, dy = 2)
+        with self.voiceover("Y hat barely moves. Again,") as tracker:
             self.play(FadeIn(yhat_stem_small))
-        with self.voiceover("the change in Y, which this time is much lower.") as tracker:
-            self.play(FadeIn(Y_stem_small))
+        with self.voiceover("the change in Y hat is equal to") as tracker:
+            self.play(equations_small.draw_parts(0))
+        with self.voiceover("the leverage times the") as tracker:
+            self.play(equations_small.draw_parts(1))
+        with self.voiceover("change in Y, which this time is much lower.") as tracker:
+            self.play(
+                FadeIn(Y_stem_small),
+                equations_small.draw_parts(2)
+            )
             self.play(
                 FadeOut(Y_stem_small), 
                 FadeOut(yhat_stem_small),
+                FadeOut(equations_small),
                 Y_tracker.animate.set_value(Y)
             )
         with self.voiceover("I've heard it said that the leverage is a measure of a point's potential to influence the regression coefficients. We don't say it's how influential it actually is because look at this point. It has a high leverage, but it's very close to the trend line, so it isn't actually moving it much, and if you were to remove it, the regression coefficients would stay basically the same.") as tracker:
