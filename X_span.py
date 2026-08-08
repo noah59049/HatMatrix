@@ -152,7 +152,7 @@ class XSpan(StitcherScene, ThreeDScene):
                     self,
                     fixed_index,
                     fixed_value,
-                    run_time=1.0,
+                    run_time=3.0,
                     color=GREEN,
                     stroke_width=GRID_STROKE_WIDTH,
                     lo = None,
@@ -469,15 +469,24 @@ class XSpan(StitcherScene, ThreeDScene):
             graph_group.add(X0_arrow)
             self.play(FadeIn(X0_arrow))
         with self.voiceover("Now if we vary beta one hat, the Y hat that's at X=0 doesn't change at all, and") as tracker:
-            X1_sweep = sweep_variable(fixed_index=0, fixed_value=0.0, lo = -1.8, hi = 1.8)
+            X1_sweep = sweep_variable(
+                fixed_index=0, 
+                fixed_value=0.0, 
+                lo = -1.8, 
+                hi = 1.8,
+                run_time = [self.get_current_voiceover_duration(), 1.3, 1.3]
+            )
             self.play(X1_sweep[0])
         with self.voiceover("the Y hat that's at X = 1 changes a little bit, and") as tracker:
             pivot_line1 = DashedLine(axes.c2p(X[1,1], 0), axes.c2p(X[1,1], Y[1]))
-            self.play(FadeIn(pivot_line1))
+            self.play(Create(pivot_line1))
         with self.voiceover("the Y hat that's at X = 3 changes three times as much.") as tracker:
             pivot_line2 = DashedLine(axes.c2p(X[2,1], 0), axes.c2p(X[2,1], Y[2]))
-            self.play(FadeIn(pivot_line2))
-        with self.voiceover("On the other graph, Y hat moves in the direction of (0,1,3), or X1.") as tracker:
+            self.play(Create(pivot_line2))
+        with self.voiceover("On the other graph, Y hat moves in the direction of") as tracker:
+            self.play(X1_sweep[1])
+            self.play(X1_sweep[2])
+        with self.voiceover("(0,1,3), or X1.") as tracker:
             X1_arrow = Arrow(axes.c2p(0, 0, 0), axes.c2p(*X[:, 1]), buff=0)
             graph_group.add(X1_arrow)
             self.play(FadeIn(X1_arrow))
