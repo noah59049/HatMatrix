@@ -270,7 +270,7 @@ class XSpan(StitcherScene, ThreeDScene):
             ])
             self.play(Create(lines_2d))
 
-        with self.voiceover("it's useful to think of them as a vector, a column vector, for reasons that will become apparent.") as tracker:
+        with self.voiceover("it's useful to think of them as a vector, an n by 1 vector, for reasons that will become apparent.") as tracker:
             third = self.get_current_voiceover_duration() / 3
             # bhat starts at [nan, nan]; give yhat_point a sensible (zero)
             # position before bringing the 3D graph on screen.
@@ -336,17 +336,17 @@ class XSpan(StitcherScene, ThreeDScene):
             self.remove(lines_3d)
             graph_group.add(lines_3d)
 
-        with self.voiceover("Beta hat is also a column vector.") as tracker:
+        with self.voiceover("Beta hat is a k by 1 vector.") as tracker:
             self.play(FadeIn(bhat_tex))
 
-        with self.voiceover("X, on the other hand, is represented as a matrix. Each column has one of our X variables,") as tracker:
+        with self.voiceover("X, on the other hand, is represented as an n by k matrix. Each column has one of our X variables,") as tracker:
             X1_vector_tex = MathTex("X = " + numpy_to_latex(X1_vals)).to_corner(UR)
             x_column = x_col_group.copy()
             self.play(FadeOut(data_table, run_time = 0.5), TransformMatchingShapes(x_column, X1_vector_tex))
         with self.voiceover("and on the very left there's this column of ones.") as tracker:
             self.play(TransformMatchingShapes(X1_vector_tex, X_tex))
 
-        with self.voiceover("It's defined like this because X beta hat is equal to Y hat this way, where Y hat is a vector in the same manner as Y.") as tracker:
+        with self.voiceover("It's defined like this because X beta hat is equal to Y hat this way, where Y hat is an n by 1 vector like Y.") as tracker:
             print("DEBUG bhat:", bhat.get_value())
 
             xbhat_tex = MathTex(
