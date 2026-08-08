@@ -89,7 +89,7 @@ class Leverages(StitcherScene):
         class ExampleLeverageEquations(VGroup):
             def __init__(self, i, dy):
                 self.tex1 = MathTex(r"\Delta \hat{Y} = ", "H_{ii}", r"\Delta Y").to_corner(UR)
-                self.tex2 = MathTex(f"{(dy * leverages[i]):.2f} = ", f"{leverages[i]:.2f}", f"{dy:.2f}").next_to(self.tex1, DOWN, aligned_edge=RIGHT)
+                self.tex2 = MathTex(f"{(dy * leverages[i]):.2f} = ", f"{leverages[i]:.2f}", f" * {dy}").next_to(self.tex1, DOWN, aligned_edge=RIGHT)
                 super().__init__(self.tex1, self.tex2)
             def draw_parts(self, i):
                 return AnimationGroup(
