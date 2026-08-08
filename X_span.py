@@ -217,11 +217,6 @@ class XSpan(StitcherScene, ThreeDScene):
         ))
         graph_2d_group = VGroup(graph_2d, graph_2d_labels, X_ticks_2d, data_points_2d)
 
-        X_tex = MathTex("X = " + numpy_to_latex(X))
-        Y_tex = MathTex("Y = " + numpy_to_latex(Y))
-        X_tex.to_corner(UR)
-        Y_tex.next_to(X_tex, DOWN)
-
         # Raw-data table (X1, Y side by side) and the intermediate "X as a
         # plain vector, before the ones column" step -- both only exist to
         # be morphed into Y_tex/X_tex during the intro, so their starting
@@ -237,6 +232,11 @@ class XSpan(StitcherScene, ThreeDScene):
         x_col_group = VGroup(MathTex("X"), X1_col_tex).arrange(DOWN, buff=0.3)
         y_col_group = VGroup(MathTex("Y"), Y_col_tex).arrange(DOWN, buff=0.3)
         data_table = VGroup(x_col_group, y_col_group).arrange(RIGHT, buff=0.0).to_corner(UR)
+
+        X_tex = MathTex("X = " + numpy_to_latex(X))
+        Y_tex = MathTex("Y = " + numpy_to_latex(Y))
+        Y_tex.next_to(data_table, DOWN)
+        X_tex.next_to(Y_tex, UP)
 
         def get_bhat_string():
             text = numpy_to_latex(bhat.get_value())
