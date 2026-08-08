@@ -1,22 +1,31 @@
 import numpy as np
 from manim import *
 from stitcher_scene import StitcherScene
+from N_Tools import *
 
 
 class Leverages(StitcherScene):
     def construct_scene(self):
+
         with self.voiceover("Now we're going to explain the relationship with leverages.") as tracker:
             ...
         with self.voiceover("Basically, Y hat equals H Y,") as tracker:
             yhat_tex = MathTex(r"\hat{Y}=HY")
         with self.voiceover("so the derivative of Y hat i with respect to Y i is equal to Hii, the ith diagonal element of H.") as tracker:
-            deriv_tex = MathTex(r"\partial")
+            deriv_tex = MathTex(r"\frac{\partial \hat{Y}_i}} {\partial Y_i}=H_{ii}")
         with self.voiceover("And in fact, we don't need any fancy 'differentiable functions are linear in the limit' arguments, it's just the change in your hat I over the change in Y i.") as tracker:
-            ...
+            limit_tex = MathTex(r"\lim_{\Delta Y_i \to 0} \frac{\Delta \hat{Y}_i}} {\Delta Y_i} = H_{ii}")
         with self.voiceover("Hii is therefore a measure of how much the ith datapoint can influence the regression coefficients by pulling the regression line or plane or surface towards itself.") as tracker:
-            ...
+            frac_tex = MathTex(r"\frac{\Delta \hat{Y}_i}} {\Delta Y_i} = H_{ii}")
         with self.voiceover("Let's look at an example.") as tracker:
-            ...
+
+            axes = Axes(
+                x_range=[-0.5, X1_vals.max() + 0.5, 1],
+                y_range=[0, Y.max() + 1, 1],
+                x_length=4,
+                y_length=4,
+                tips=False,
+            )
         with self.voiceover("Here's a point with a high leverage value. Now let's look at what would happen if the Y for this point were to change. You can see that the regression line moves quite a bit, and Y hat gets pulled towards Y. ") as tracker:
             ...
         with self.voiceover("And in fact the amount that Y hat moves is exactly equal to the leverage value times the change in Y.") as tracker:
