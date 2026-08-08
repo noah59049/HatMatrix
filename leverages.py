@@ -6,23 +6,26 @@ from N_Tools import *
 
 class Leverages(StitcherScene):
     def construct_scene(self):
+        yhat_tex = MathTex(r"\hat{Y}=HY")
+        deriv_tex = MathTex(r"\frac{\partial \hat{Y}_i}} {\partial Y_i}=H_{ii}")
+        limit_tex = MathTex(r"\lim_{\Delta Y_i \to 0} \frac{\Delta \hat{Y}_i}} {\Delta Y_i} = H_{ii}")
+        frac_tex = MathTex(r"\frac{\Delta \hat{Y}_i}} {\Delta Y_i} = H_{ii}")
 
         with self.voiceover("Now we're going to explain the relationship with leverages.") as tracker:
             ...
         with self.voiceover("Basically, Y hat equals H Y,") as tracker:
-            yhat_tex = MathTex(r"\hat{Y}=HY")
+            self.play(Write(yhat_tex))
         with self.voiceover("so the derivative of Y hat i with respect to Y i is equal to Hii, the ith diagonal element of H.") as tracker:
-            deriv_tex = MathTex(r"\frac{\partial \hat{Y}_i}} {\partial Y_i}=H_{ii}")
+            self.play(Write(deriv_tex))
         with self.voiceover("And in fact, we don't need any fancy 'differentiable functions are linear in the limit' arguments, it's just the change in your hat I over the change in Y i.") as tracker:
-            limit_tex = MathTex(r"\lim_{\Delta Y_i \to 0} \frac{\Delta \hat{Y}_i}} {\Delta Y_i} = H_{ii}")
+            self.play(TransformMatchingShapes(deriv_tex, limit_tex))
         with self.voiceover("Hii is therefore a measure of how much the ith datapoint can influence the regression coefficients by pulling the regression line or plane or surface towards itself.") as tracker:
-            frac_tex = MathTex(r"\frac{\Delta \hat{Y}_i}} {\Delta Y_i} = H_{ii}")
+            self.play(TransformMatchingShapes(limit_tex, frac_tex))
         with self.voiceover("Let's look at an example.") as tracker:
-
             axes = Axes(
                 x_range=[-0.5, X1_vals.max() + 0.5, 1],
                 y_range=[0, Y.max() + 1, 1],
-                x_length=4,
+                x_length=6,
                 y_length=4,
                 tips=False,
             )
