@@ -497,6 +497,7 @@ class XSpan(StitcherScene, ThreeDScene):
                 hi = 1.8,
                 run_time = [self.get_current_voiceover_duration(), 1.3, 1.3]
             )
+            X1_sweep._setup_scene(self)
             self.play(X1_sweep[0])
         with self.voiceover("the Y hat that's at X = 1 changes a little bit, and") as tracker:
             pivot_line1 = DashedLine(axes.c2p(X[1,1], 0), axes.c2p(X[1,1], Y[1]))
@@ -507,10 +508,15 @@ class XSpan(StitcherScene, ThreeDScene):
         with self.voiceover("On the other graph, Y hat moves in the direction of") as tracker:
             self.play(X1_sweep[1])
             self.play(X1_sweep[2])
+            X1_sweep.clean_up_from_scene(self)
         with self.voiceover("(0,1,3), or X1.") as tracker:
             X1_arrow = Arrow(axes.c2p(0, 0, 0), axes.c2p(*X[:, 1]), buff=0)
             graph_group.add(X1_arrow)
-            self.play(FadeIn(X1_arrow))
+            self.play(
+                FadeIn(X1_arrow),
+                FadeOut(pivot_line1),
+                FadeOut(pivot_line2)
+            )
         with self.voiceover("So you can see how, by varying both beta zero hat and beta 1 hat, Y hat can be anything that's in the span of the two columns of X. Right now we're showing them tracing out a grid of possible Y hat values by fixing one at various points and varying the other, but") as tracker:
             # Tunable constants: how many beta1 steps to draw gridlines at,
             # and how long each row's animated sweep across beta0 takes
