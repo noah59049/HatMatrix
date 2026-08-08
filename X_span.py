@@ -731,7 +731,7 @@ class XSpan(StitcherScene, ThreeDScene):
             self.play(TransformIndices(equation2, equation3))
             self.play(
                 TransformMatchingShapes(equation3, hm_derivations[0]),
-                FlashOn(orth_fact, run_time = (0.4, self.get_current_voiceover_duration() - 2, 0.4)),
+                # FlashOn(orth_fact, run_time = (0.4, self.get_current_voiceover_duration() - 2, 0.4)),
             )
         with self.voiceover("equal to Y hat, we'll substitute that in. Then we") as tracker:
             self.play(TransformWithBoxes(hm_derivations[0], hm_derivations[1],
