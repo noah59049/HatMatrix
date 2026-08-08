@@ -698,16 +698,16 @@ class XSpan(StitcherScene, ThreeDScene):
         # {arrow to Y} = {arrow to Y hat} + {arrow from Y hat to Y}
         equation = VGroup(
             arrow_to_Y.copy(), MathTex("="), arrow_to_yhat.copy(), MathTex("+"), arrow_yhat_to_Y.copy()
-        ).arrange(RIGHT, buff=0.4).move_to(ORIGIN)
+        ).arrange(RIGHT, buff=0.25).move_to(ORIGIN)
         equation1 = VGroup(
             MathTex("Y"), MathTex("="), arrow_to_yhat.copy(), MathTex("+"), arrow_yhat_to_Y.copy()
-        ).arrange(RIGHT, buff=0.4).move_to(ORIGIN)
+        ).arrange(RIGHT, buff=0.25).move_to(ORIGIN)
         equation2 = VGroup(
             MathTex("Y"), MathTex("="), MathTex(r"\hat{Y}"), MathTex("+"), arrow_yhat_to_Y.copy()
-        ).arrange(RIGHT, buff=0.4).move_to(ORIGIN)
+        ).arrange(RIGHT, buff=0.25).move_to(ORIGIN)
         equation3 = VGroup(
             MathTex("Y"), MathTex("="), MathTex(r"\hat{Y}"), MathTex("+"), MathTex("e")
-        ).arrange(RIGHT, buff=0.4).move_to(ORIGIN)
+        ).arrange(RIGHT, buff=0.25).move_to(ORIGIN)
 
         orth_fact = Tex(r"$e \perp$ all cols of $X$").to_corner(UR)
         hm_derivations = [
