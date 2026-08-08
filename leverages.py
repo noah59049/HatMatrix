@@ -30,6 +30,7 @@ class Leverages(StitcherScene):
         bhat_tracker.add_updater(lambda m : m.set_value(np.linalg.inv(X.T @ X) @ X.T @ Y_tracker.get_value()))
         yhat_tracker = ArrayValueTracker(X @ bhat)
         yhat_tracker.add_updater(lambda m: m.set_value(X @ bhat_tracker.get_value()))
+        self.add(Y_tracker, bhat_tracker, yhat_tracker)
         axes = Axes(
             x_range=[X1.min() - 0.5, X1.max() + 0.5, 1],
             y_range=[Y.min() - 0.5, Y.max() + 5, 1],
