@@ -65,7 +65,11 @@ class Leverages(StitcherScene):
         leverages = np.diagonal(H)
         i_big = np.argmax(leverages)
         i_small = np.argmin(leverages)
-        with self.voiceover("Here's a point with a high leverage value. Now let's look at what would happen if the Y for this point were to change. You can see that the regression line moves quite a bit, and Y hat gets pulled towards Y. ") as tracker:
+        with self.voiceover("Here's a point with a high leverage value. Now let's look at what would happen") as tracker:
+            pt = points[i_big].copy()
+            self.play(Indicate(pt))
+            self.remove(pt)
+        with self.voiceover("if the Y for this point were to change. You can see that the regression line moves quite a bit, and Y hat gets pulled towards Y.") as tracker:
             Y_bumped_big = Y.copy()
             Y_bumped_big[i_big,0] += 2
             self.play(Y_tracker.animate.set_value(Y_bumped_big))
@@ -89,7 +93,11 @@ class Leverages(StitcherScene):
                 FadeOut(yhat_stem_big),
                 Y_tracker.animate.set_value(Y)
             )
-        with self.voiceover("Now let's look at this point, which has a much lower leverage value. Let's look at what would happen if the Y were to move.") as tracker:
+        with self.voiceover("Now let's look at this point, which has a much lower leverage value. Let's look at what would happen") as tracker:
+            pt = points[i_small].copy()
+            self.play(Indicate(pt))
+            self.remove(pt)
+        with self.voiceover("if the Y were to move.") as tracker:
             Y_bumped_small = Y.copy()
             Y_bumped_small[np.argmin(leverages),0] += 2
             self.play(Y_tracker.animate.set_value(Y_bumped_small))
