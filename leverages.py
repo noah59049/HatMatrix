@@ -38,7 +38,7 @@ class Leverages(StitcherScene):
             y_length=4,
             tips=False,
         )
-        points = VGroup([Dot(axes.c2p(x, y)) for x, y in zip(X1.flatten(), Y_tracker.get_value().flatten())])
+        points = always_redraw(lambda : VGroup([Dot(axes.c2p(x, y)) for x, y in zip(X1.flatten(), Y_tracker.get_value().flatten())]))
         trendline = always_redraw(lambda: axes.plot(
             lambda x: bhat_tracker.get_value()[0,0] + bhat_tracker.get_value()[1,0] * x,
             color=YELLOW,
@@ -62,7 +62,7 @@ class Leverages(StitcherScene):
             )
 
         with self.voiceover("Here's a point with a high leverage value. Now let's look at what would happen if the Y for this point were to change. You can see that the regression line moves quite a bit, and Y hat gets pulled towards Y. ") as tracker:
-            Y_bumped_big = Y_tracker.get_value().copy()
+            Y_bumped_big = Y.copy()
             Y_bumped_big[-1,0] += 2
             print(f"before {Y_tracker.get_value()=} {np.linalg.inv(X.T @ X) @ X.T @ Y_tracker.get_value()=} {bhat_tracker.get_value()=}")
             self.play(Y_tracker.animate.set_value(Y_bumped_big))
