@@ -484,8 +484,8 @@ class XSpan(StitcherScene, ThreeDScene):
             self.play(X0_sweep[0])
             # TODO: I could add something here with pivot lines too, I'm not sure if I want to though
         with self.voiceover("So representing Y hat as a vector, that's moving along") as tracker:
-            self.play(X0_sweep[0])
-            self.play(X0_sweep[0])
+            self.play(X0_sweep[1])
+            self.play(X0_sweep[2])
             X0_sweep.clean_up_from_scene(self)
         with self.voiceover("(1,1,1), or X0.") as tracker:
             # Not shade_in_3d: these are static reference arrows, not part of
