@@ -7,9 +7,23 @@ from N_Tools import *
 class Leverages(StitcherScene):
     def construct_scene(self):
         yhat_tex = MathTex(r"\hat{Y}=HY")
-        deriv_tex = MathTex(r"\frac{\partial \hat{Y}_i}} {\partial Y_i}=H_{ii}")
-        limit_tex = MathTex(r"\lim_{\Delta Y_i \to 0} \frac{\Delta \hat{Y}_i}} {\Delta Y_i} = H_{ii}")
-        frac_tex = MathTex(r"\frac{\Delta \hat{Y}_i}} {\Delta Y_i} = H_{ii}")
+        deriv_tex = MathTex(r"\frac{\partial \hat{Y}_i} {\partial Y_i}=H_{ii}")
+        limit_tex = MathTex(r"\lim_{\Delta Y_i \to 0} \frac{\Delta \hat{Y}_i} {\Delta Y_i} = H_{ii}")
+        frac_tex = MathTex(r"\frac{\Delta \hat{Y}_i} {\Delta Y_i} = H_{ii}")
+
+        X1 = [0.4, 0.7, 0.7, 1, 1, 1.2, 1.5, 1.59, 1.68, 1,73, 1.8, 5]
+        n = len(X1)
+        X1 = as_col(np.array(X1))
+        X = np.column_stack([as_col(np.ones(13)), X1])
+        bhat_ols = as_col(np.array([-1.842, 0.384]))
+        yhat = X @ bhat_ols
+        rng = np.random.default_rng(42)
+        epsilon = as_col(rng.standard_normal(n))
+        H = X @ np.linalg.inv(X.T @ X) @ X.T
+        e = epsilon - H @ epsilon
+        Y = yhat + e
+        bhat = np.linalg.inv(X.T @ X) @ X.T @ Y
+        print(f"{bhat.shape=} {X.shape=} {yhat.shape=} {Y.shape=} {e.shape=} {epsilon.shape=} {bhat=}")        
 
         with self.voiceover("Now we're going to explain the relationship with leverages.") as tracker:
             ...
@@ -23,7 +37,7 @@ class Leverages(StitcherScene):
             self.play(TransformMatchingShapes(limit_tex, frac_tex))
         with self.voiceover("Let's look at an example.") as tracker:
             axes = Axes(
-                x_range=[-0.5, X1_vals.max() + 0.5, 1],
+                x_range=[-0.5, X1.max() + 0.5, 1],
                 y_range=[0, Y.max() + 1, 1],
                 x_length=6,
                 y_length=4,
