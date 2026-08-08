@@ -478,9 +478,16 @@ class XSpan(StitcherScene, ThreeDScene):
         with self.voiceover("or in other words, the y hat vector is zero.") as tracker:
             self.add(graph_group, y_label)
             # TODO: Emphasize the y hat dot
-        with self.voiceover("Now if we vary beta 0 hat, all of the Y hats increase by the same amount. So representing Y hat as a vector,") as tracker:
-            self.play(sweep_variable(fixed_index=1, fixed_value=0.0, lo = -1.8, hi = 1.8))
-        with self.voiceover("that's moving along (1,1,1).") as tracker:
+        with self.voiceover("Now if we vary beta 0 hat, all of the Y hats increase by the same amount. ") as tracker:
+            X0_sweep = sweep_variable(fixed_index=1, fixed_value=0.0, lo = -1.8, hi = 1.8)
+            X0_sweep._setup_scene(self)
+            self.play(X0_sweep[0])
+            # TODO: I could add something here with pivot lines too, I'm not sure if I want to though
+        with self.voiceover("So representing Y hat as a vector, that's moving along") as tracker:
+            self.play(X0_sweep[0])
+            self.play(X0_sweep[0])
+            X0_sweep.clean_up_from_scene(self)
+        with self.voiceover("(1,1,1), or X0.") as tracker:
             # Not shade_in_3d: these are static reference arrows, not part of
             # the Y-vs-plane depth story, and being long relative to the grid
             # they cross makes Manim's per-object (not per-pixel) depth-sort
