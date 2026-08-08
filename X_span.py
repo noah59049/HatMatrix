@@ -713,7 +713,7 @@ class XSpan(StitcherScene, ThreeDScene):
         hm_formula  = MathTex(r"     X (X^T X)^{-1} X^T").move_to(hm_derivations[-1], aligned_edge=LEFT)
         hm_formula2 = MathTex(r" H = X (X^T X)^{-1} X^T").next_to(hm_formula, DOWN, aligned_edge = RIGHT)
         
-        with self.voiceover("Luckily for us, these vectors have names: The component in the column space") as tracker:
+        with self.voiceover("So here we can write this decomposition as an equation.") as tracker:
             self.play(FadeOut(scene_to_fade))
 
             self.play(
@@ -724,11 +724,13 @@ class XSpan(StitcherScene, ThreeDScene):
                 ReplacementTransform(arrow_yhat_to_Y, equation[4]),
             )
 
-        # TODO: Put a voiceover here about the Y vector
+        with self.voiceover("We've already seen the names of two of these three vectors:") as tracker:
+            ...
+        with self.voiceover("The sum of them is Y, and the component in the column space") as tracker:
             self.play(TransformIndices(equation, equation1))
-        with self.voiceover("is Y hat, and the component orthogonal to the column space") as tracker:
+        with self.voiceover("is Y hat. We haven't talked about the component orthogonal to the column space yet, but it's called") as tracker:
             self.play(TransformIndices(equation1, equation2))
-        with self.voiceover("is e, our residual vector. Now we can simplify. Since X beta hat is") as tracker:
+        with self.voiceover("e, our residual vector. Now we can simplify. Since X beta hat is") as tracker:
             self.play(TransformIndices(equation2, equation3))
             self.play(
                 TransformMatchingShapes(equation3, hm_derivations[0]),
