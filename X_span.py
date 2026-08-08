@@ -3,6 +3,7 @@ from manim import *
 from manim.animation.animation import prepare_animation
 from N_Tools import *
 from stitcher_scene import StitcherScene
+from colors import *
 
 
 class XSpan(StitcherScene, ThreeDScene):
@@ -91,9 +92,9 @@ class XSpan(StitcherScene, ThreeDScene):
         # needed real depth-compositing here -- like the arrows, it should
         # just always draw on top.
         yhat_point = always_redraw(lambda: Dot3D(
-            axes.c2p(*yhat.get_value()), color=YELLOW, radius=0.1
+            axes.c2p(*yhat.get_value()), color=YHAT_COLOR, radius=0.1
         ).set_opacity(1.0 if yhat_point_visible["value"] else 0.0).set_shade_in_3d(False))
-        y_point = Dot3D(axes.c2p(*Y), color=ORANGE, radius=0.1)
+        y_point = Dot3D(axes.c2p(*Y), color=Y_COLOR, radius=0.1)
         graph_group = VGroup(axes, y_point)
         
         # Rotate the objects instead of orbiting the camera (camera stays at
@@ -124,7 +125,7 @@ class XSpan(StitcherScene, ThreeDScene):
         # Kept out of graph_group itself so it stays flat/upright on screen
         # instead of inheriting graph_group's 3D tilt like y_point does.
         def make_y_label():
-            return MathTex("Y", color=ORANGE).next_to(y_point, UP)
+            return MathTex("Y", color=Y_COLOR).next_to(y_point, UP)
         y_label = always_redraw(make_y_label)
 
         GRID_STROKE_WIDTH = 4
@@ -281,7 +282,7 @@ class XSpan(StitcherScene, ThreeDScene):
         ])
         trendline_2d = always_redraw(lambda: axes_2d.plot(
             lambda x: bhat.get_value()[0] + bhat.get_value()[1] * x,
-            color=YELLOW,
+            color=YHAT_COLOR,
         ))
         graph_2d_group = VGroup(axes_2d, graph_2d_labels, X_ticks_2d, data_points_2d)
 
@@ -331,7 +332,7 @@ class XSpan(StitcherScene, ThreeDScene):
             # A "height" line to each data point on the 2D graph -- Y1, Y2,
             # Y3 as three separate quantities.
             lines_2d = VGroup(*[
-                Line(axes_2d.c2p(x, 0), axes_2d.c2p(x, y), color=ORANGE)
+                Line(axes_2d.c2p(x, 0), axes_2d.c2p(x, y), color=Y_COLOR)
                 for x, y in zip(X1_vals, Y)
             ])
             self.play(Create(lines_2d))
@@ -367,9 +368,9 @@ class XSpan(StitcherScene, ThreeDScene):
             corner2 = axes.c2p(Y[0], Y[1], 0)
             Y_3d = axes.c2p(*Y)
             lines_3d = VGroup(
-                Line(origin_3d, corner1, color=ORANGE),
-                Line(corner1, corner2, color=ORANGE),
-                Line(corner2, Y_3d, color=ORANGE),
+                Line(origin_3d, corner1, color=Y_COLOR),
+                Line(corner1, corner2, color=Y_COLOR),
+                Line(corner2, Y_3d, color=Y_COLOR),
             )
 
             y_column = y_col_group.copy()
@@ -808,8 +809,8 @@ class XSpan(StitcherScene, ThreeDScene):
         Y_pos = axes.c2p(*Y)
         yhat_pos = axes.c2p(*yhat.get_value())
 
-        arrow_to_Y = Arrow(origin_pos, Y_pos, buff=0, color=ORANGE)
-        arrow_to_yhat = Arrow(origin_pos, yhat_pos, buff=0, color=YELLOW)
+        arrow_to_Y = Arrow(origin_pos, Y_pos, buff=0, color=Y_COLOR)
+        arrow_to_yhat = Arrow(origin_pos, yhat_pos, buff=0, color=YHAT_COLOR)
         arrow_yhat_to_Y = Arrow(yhat_pos, Y_pos, buff=0, color=WHITE)        
         with self.voiceover("For this it's going to be useful to decompose Y into") as tracker:
             self.play(GrowArrow(arrow_to_Y))
