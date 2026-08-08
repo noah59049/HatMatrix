@@ -261,29 +261,29 @@ class XSpan(StitcherScene, ThreeDScene):
         # A 2D scatter/trendline plot on the left, showing the actual (X1, Y)
         # data next to the abstract 3D span picture.
         X1_vals = X[:, 1]
-        graph_2d = Axes(
+        axes_2d = Axes(
             x_range=[-0.5, X1_vals.max() + 0.5, 1],
             y_range=[0, Y.max() + 1, 1],
             x_length=4,
             y_length=4,
             tips=False,
         )
-        graph_2d.to_edge(LEFT)
-        graph_2d_labels = graph_2d.get_axis_labels(x_label="X_1", y_label="Y")
+        axes_2d.to_edge(LEFT)
+        graph_2d_labels = axes_2d.get_axis_labels(x_label="X_1", y_label="Y")
 
         X_ticks_2d = VGroup(*[
-            Line(DOWN * 0.1, UP * 0.1).move_to(graph_2d.c2p(x, 0))
+            Line(DOWN * 0.1, UP * 0.1).move_to(axes_2d.c2p(x, 0))
             for x in X1_vals
         ])
         data_points_2d = VGroup(*[
-            Dot(graph_2d.c2p(x, y), color=WHITE, radius=0.08)
+            Dot(axes_2d.c2p(x, y), color=WHITE, radius=0.08)
             for x, y in zip(X1_vals, Y)
         ])
-        trendline_2d = always_redraw(lambda: graph_2d.plot(
+        trendline_2d = always_redraw(lambda: axes_2d.plot(
             lambda x: bhat.get_value()[0] + bhat.get_value()[1] * x,
             color=YELLOW,
         ))
-        graph_2d_group = VGroup(graph_2d, graph_2d_labels, X_ticks_2d, data_points_2d)
+        graph_2d_group = VGroup(axes_2d, graph_2d_labels, X_ticks_2d, data_points_2d)
 
         # Raw-data table (X1, Y side by side) and the intermediate "X as a
         # plain vector, before the ones column" step -- both only exist to
@@ -331,7 +331,7 @@ class XSpan(StitcherScene, ThreeDScene):
             # A "height" line to each data point on the 2D graph -- Y1, Y2,
             # Y3 as three separate quantities.
             lines_2d = VGroup(*[
-                Line(graph_2d.c2p(x, 0), graph_2d.c2p(x, y), color=ORANGE)
+                Line(axes_2d.c2p(x, 0), axes_2d.c2p(x, y), color=ORANGE)
                 for x, y in zip(X1_vals, Y)
             ])
             self.play(Create(lines_2d))
@@ -500,10 +500,10 @@ class XSpan(StitcherScene, ThreeDScene):
             X1_sweep._setup_scene(self)
             self.play(X1_sweep[0])
         with self.voiceover("the Y hat that's at X = 1 changes a little bit, and") as tracker:
-            pivot_line1 = DashedLine(graph_2d.c2p(X[1,1], 0), graph_2d.c2p(X[1,1], Y[1]))
+            pivot_line1 = DashedLine(axes_2d.c2p(X[1,1], 0), axes_2d.c2p(X[1,1], Y[1]))
             self.play(Create(pivot_line1))
         with self.voiceover("the Y hat that's at X = 3 changes three times as much.") as tracker:
-            pivot_line2 = DashedLine(graph_2d.c2p(X[2,1], 0), graph_2d.c2p(X[2,1], Y[2]))
+            pivot_line2 = DashedLine(axes_2d.c2p(X[2,1], 0), axes_2d.c2p(X[2,1], Y[2]))
             self.play(Create(pivot_line2))
         with self.voiceover("On the other graph, Y hat moves in the direction of") as tracker:
             self.play(X1_sweep[1])
@@ -624,8 +624,8 @@ class XSpan(StitcherScene, ThreeDScene):
                 group = VGroup()
                 for x, y in zip(X1_vals, Y):
                     yhat_val = bhat.get_value()[0] + bhat.get_value()[1] * x
-                    p_y = graph_2d.c2p(x, y)
-                    p_yhat = graph_2d.c2p(x, yhat_val)
+                    p_y = axes_2d.c2p(x, y)
+                    p_yhat = axes_2d.c2p(x, yhat_val)
                     dashed = DashedLine(p_y, p_yhat, color=YELLOW, stroke_width=2)
                     side = max(abs(p_y[1] - p_yhat[1]), 0.01)
                     bottom = min(p_y[1], p_yhat[1])
