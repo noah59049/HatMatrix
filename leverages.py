@@ -51,9 +51,9 @@ class Leverages(StitcherScene):
             self.play(Write(yhat_tex))
         with self.voiceover("so the derivative of Y hat i with respect to Y i is equal to Hii, the ith diagonal element of H.") as tracker:
             self.play(Write(deriv_tex))
-        with self.voiceover("And in fact, we don't need any fancy 'differentiable functions are linear in the limit' arguments, it's just the change in your hat I over the change in Y i.") as tracker:
+        with self.voiceover("And in fact, we don't need any fancy 'differentiable functions are linear in the limit' arguments, it's just the change in your hat I over the change in Y i.") as tracker: # TODO: We can ignore this thing
             self.play(TransformMatchingShapes(deriv_tex, limit_tex))
-        with self.voiceover("Hii is therefore a measure of how much the ith datapoint can influence the regression coefficients by pulling the regression line or plane or surface towards itself.") as tracker:
+        with self.voiceover("Hii is therefore a measure of how much the ith datapoint can influence the regression coefficients by pulling the regression line or plane or surface towards itself.") as tracker: # TODO: Explain this better
             self.play(TransformMatchingShapes(limit_tex, frac_tex))
         with self.voiceover("Let's look at an example.") as tracker:
             self.play(
