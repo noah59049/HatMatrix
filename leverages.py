@@ -64,14 +64,15 @@ class Leverages(StitcherScene):
         with self.voiceover("Here's a point with a high leverage value. Now let's look at what would happen if the Y for this point were to change. You can see that the regression line moves quite a bit, and Y hat gets pulled towards Y. ") as tracker:
             Y_bumped_big = Y.copy()
             Y_bumped_big[-1,0] += 2
-            print(f"before {Y_tracker.get_value()=} {np.linalg.inv(X.T @ X) @ X.T @ Y_tracker.get_value()=} {bhat_tracker.get_value()=}")
             self.play(Y_tracker.animate.set_value(Y_bumped_big))
-            print(f"after  {Y_tracker.get_value()=} {np.linalg.inv(X.T @ X) @ X.T @ Y_tracker.get_value()=} {bhat_tracker.get_value()=}")
-            return
+            self.play(Y_tracker.animate.set_value(Y))
         with self.voiceover("And in fact the amount that Y hat moves is exactly equal to the leverage value times the change in Y.") as tracker:
             ...
         with self.voiceover("Now let's look at this point, which has a much lower leverage value. Let's look at what would happen if the Y were to move.") as tracker:
-            ...
+            Y_bumped_small = Y.copy()
+            Y_bumped_small[6,0] += 2
+            self.play(Y_tracker.animate.set_value(Y_bumped_small))
+            self.play(Y_tracker.animate.set_value(Y))
         with self.voiceover("This time the regression line barely changes. The Y hat barely moves. Again, the change in Y hat is equal to the leverage times the change in Y, which this time is much lower.") as tracker:
             ...
         with self.voiceover("I've heard it said that the leverage is a measure of a point's potential to influence the regression coefficients. We don't say it's how influential it actually is because look at this point. It has a high leverage, but it's very close to the trend line, so it isn't actually moving it much, and if you were to remove it, the regression coefficients would stay basically the same.") as tracker:
