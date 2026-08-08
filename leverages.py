@@ -11,10 +11,10 @@ class Leverages(StitcherScene):
         limit_tex = MathTex(r"\lim_{\Delta Y_i \to 0} \frac{\Delta \hat{Y}_i} {\Delta Y_i} = H_{ii}")
         frac_tex = MathTex(r"\frac{\Delta \hat{Y}_i} {\Delta Y_i} = H_{ii}")
 
-        X1 = [0.4, 0.7, 0.7, 1, 1, 1.2, 1.5, 1.59, 1.68, 1,73, 1.8, 5]
+        X1 = [0.4, 0.7, 0.7, 1, 1, 1.2, 1.5, 1.59, 1.68, 1.73, 1.8, 5]
         n = len(X1)
         X1 = as_col(np.array(X1))
-        X = np.column_stack([as_col(np.ones(13)), X1])
+        X = np.column_stack([as_col(np.ones(n)), X1])
         bhat_ols = as_col(np.array([-1.842, 0.384]))
         yhat = X @ bhat_ols
         rng = np.random.default_rng(42)
@@ -37,12 +37,20 @@ class Leverages(StitcherScene):
             self.play(TransformMatchingShapes(limit_tex, frac_tex))
         with self.voiceover("Let's look at an example.") as tracker:
             axes = Axes(
-                x_range=[-0.5, X1.max() + 0.5, 1],
-                y_range=[0, Y.max() + 1, 1],
-                x_length=6,
+                x_range=[X1.min() - 0.5, X1.max() + 0.5, 1],
+                y_range=[Y.min() - 0.5, Y.max() + 5, 1],
+                x_length=4,
                 y_length=4,
                 tips=False,
             )
+
+            points = VGroup([Dot(axes.c2p(x, y)) for x, y in zip(X1.flatten(), Y.flatten())])
+
+            self.play(
+                FadeIn(axes), 
+                FadeIn(points)
+            )
+
         with self.voiceover("Here's a point with a high leverage value. Now let's look at what would happen if the Y for this point were to change. You can see that the regression line moves quite a bit, and Y hat gets pulled towards Y. ") as tracker:
             ...
         with self.voiceover("And in fact the amount that Y hat moves is exactly equal to the leverage value times the change in Y.") as tracker:
