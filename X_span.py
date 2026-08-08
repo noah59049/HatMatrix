@@ -1,5 +1,6 @@
 import numpy as np
 from manim import *
+from manim.animation.animation import prepare_animation
 from N_Tools import *
 from stitcher_scene import StitcherScene
 
@@ -127,15 +128,7 @@ class XSpan(StitcherScene, ThreeDScene):
         y_label = always_redraw(make_y_label)
 
         GRID_STROKE_WIDTH = 4
-        def sweep_variable(
-                fixed_index, 
-                fixed_value, 
-                run_time=1.0, 
-                color=GREEN,
-                stroke_width=GRID_STROKE_WIDTH,
-                lo = None,
-                hi = None,
-            ):
+        class sweep_variable(Succession):
             """Fixes bhat[fixed_index] = fixed_value and animates the other
             component of bhat out to its max, then its min, then back to this
             row's baseline (fixed_index stays put, the other component
@@ -147,50 +140,97 @@ class XSpan(StitcherScene, ThreeDScene):
             the sweep finishes, so repeated calls (e.g. one per grid row)
             don't contaminate each other's traces.
 
-            Returns the trace Line.
+            Usage: self.play(sweep_variable(...)) -- unlike the function
+            this replaced, constructing it no longer plays anything or
+            touches the scene by itself; all of that now happens through
+            the Animation lifecycle (_setup_scene/clean_up_from_scene) so
+            it behaves correctly no matter when it's actually played. The
+            trace Line is available as `.trace` on the instance after it's
+            been played (it doesn't exist until _setup_scene runs).
             """
-            varying_index = 1 - fixed_index
-            base = np.zeros(2)
-            base[fixed_index] = fixed_value
-            direction = np.zeros(2)
-            direction[varying_index] = 1.0
+            def __init__(
+                    self,
+                    fixed_index,
+                    fixed_value,
+                    run_time=1.0,
+                    color=GREEN,
+                    stroke_width=GRID_STROKE_WIDTH,
+                    lo = None,
+                    hi = None,
+                ):
+                varying_index = 1 - fixed_index
+                self.sweep_base = np.zeros(2)
+                self.sweep_base[fixed_index] = fixed_value
+                direction = np.zeros(2)
+                direction[varying_index] = 1.0
 
-            lo_bhat, hi_bhat = bhat_extremes(axes, X, base, direction)
-            if lo is not None:
-                lo_bhat[varying_index] = lo
-            if hi is not None:
-                hi_bhat[varying_index] = hi
+                self.lo_bhat, self.hi_bhat = bhat_extremes(axes, X, self.sweep_base, direction)
+                if lo is not None:
+                    self.lo_bhat[varying_index] = lo
+                if hi is not None:
+                    self.hi_bhat[varying_index] = hi
 
-            running_min = ArrayValueTracker(base)
-            running_max = ArrayValueTracker(base)
-            running_min.add_updater(lambda m: m.set_value(np.minimum(bhat.get_value(), m.get_value())))
-            running_max.add_updater(lambda m: m.set_value(np.maximum(bhat.get_value(), m.get_value())))
-            self.add(running_min, running_max)
+                self.trace_color = color
+                self.trace_stroke_width = stroke_width
+                self.running_min = None
+                self.running_max = None
+                self.trace = None
 
-            # shade_in_3d=True is what makes ThreeDCamera depth-sort this
-            # against other 3D content (y_point, span_plane, ...) by actual
-            # position; plain Line/VMobjects default to False, which the
-            # camera treats as "always draw on top", regardless of depth.
-            trace = always_redraw(lambda: Line(
-                axes.c2p(*(X @ running_min.get_value())),
-                axes.c2p(*(X @ running_max.get_value())),
-                color=color,
-                stroke_width = stroke_width,
-            ).set_shade_in_3d(True))
-            # Into graph_group (not just self.add) so this moves along with
-            # everything else if/when graph_group gets rotated further.
-            graph_group.add(trace)
+                # bhat.animate stashes the copy it's about to modify in the
+                # single shared bhat.target attribute, which gets
+                # overwritten every time .animate is accessed again. If we
+                # built all three .animate chains back-to-back and let
+                # Succession/AnimationGroup's own prepare_animation resolve
+                # them (which it does immediately, in its __init__, by
+                # which point all three .animate accesses have already
+                # happened), every phase would end up reading whichever
+                # .target was set last (the 3rd one, base) instead of its
+                # own hi/lo/base value. Building (prepare_animation) each
+                # phase immediately -- before the next .animate access
+                # overwrites bhat.target again -- avoids that.
+                phases = [
+                    prepare_animation(bhat.animate(run_time=run_time).set_value(value))
+                    for value in (self.hi_bhat, self.lo_bhat, self.sweep_base)
+                ]
+                super().__init__(*phases)
 
-            bhat.set_value(base)
-            self.play(bhat.animate.set_value(hi_bhat), run_time=run_time)
-            self.play(bhat.animate.set_value(lo_bhat), run_time=run_time)
-            self.play(bhat.animate.set_value(base), run_time=run_time)
+            def _setup_scene(self, scene):
+                super()._setup_scene(scene)
 
-            running_min.clear_updaters()
-            running_max.clear_updaters()
-            self.remove(running_min, running_max)
+                self.running_min = ArrayValueTracker(self.sweep_base)
+                self.running_max = ArrayValueTracker(self.sweep_base)
+                self.running_min.add_updater(lambda m: m.set_value(np.minimum(bhat.get_value(), m.get_value())))
+                self.running_max.add_updater(lambda m: m.set_value(np.maximum(bhat.get_value(), m.get_value())))
+                scene.add(self.running_min, self.running_max)
 
-            return trace
+                running_min, running_max = self.running_min, self.running_max
+                color, stroke_width = self.trace_color, self.trace_stroke_width
+                # shade_in_3d=True is what makes ThreeDCamera depth-sort this
+                # against other 3D content (y_point, span_plane, ...) by actual
+                # position; plain Line/VMobjects default to False, which the
+                # camera treats as "always draw on top", regardless of depth.
+                self.trace = always_redraw(lambda: Line(
+                    axes.c2p(*(X @ running_min.get_value())),
+                    axes.c2p(*(X @ running_max.get_value())),
+                    color=color,
+                    stroke_width = stroke_width,
+                ).set_shade_in_3d(True))
+                # Into graph_group (not just scene.add) so this moves along
+                # with everything else if/when graph_group gets rotated
+                # further.
+                graph_group.add(self.trace)
+
+                # Must happen after the phases already captured their own
+                # .target snapshots in __init__ (see the comment there) --
+                # this only sets bhat's real, current value, which is what
+                # phase 0's Transform.begin() reads as its starting point.
+                bhat.set_value(self.sweep_base)
+
+            def clean_up_from_scene(self, scene):
+                super().clean_up_from_scene(scene)
+                self.running_min.clear_updaters()
+                self.running_max.clear_updaters()
+                scene.remove(self.running_min, self.running_max)
 
         # A 2D scatter/trendline plot on the left, showing the actual (X1, Y)
         # data next to the abstract 3D span picture.
@@ -413,7 +453,7 @@ class XSpan(StitcherScene, ThreeDScene):
             self.add(graph_group, y_label)
             # TODO: Emphasize the y hat dot
         with self.voiceover("Now if we vary beta 0 hat, all of the Y hats increase by the same amount. So representing Y hat as a vector,") as tracker:
-            sweep_variable(fixed_index=1, fixed_value=0.0, lo = -1.8, hi = 1.8)
+            self.play(sweep_variable(fixed_index=1, fixed_value=0.0, lo = -1.8, hi = 1.8))
         with self.voiceover("that's moving along (1,1,1).") as tracker:
             # Not shade_in_3d: these are static reference arrows, not part of
             # the Y-vs-plane depth story, and being long relative to the grid
@@ -424,7 +464,7 @@ class XSpan(StitcherScene, ThreeDScene):
             graph_group.add(X0_arrow)
             self.play(FadeIn(X0_arrow))
         with self.voiceover("Now if we vary beta one hat, the Y hat that's at X=0 doesn't change at all, and the Y hat that's at X = 1 changes a little bit, and the Y hat that's at X = 3 changes 3 times as much.") as tracker:
-            sweep_variable(fixed_index=0, fixed_value=0.0, lo = -1.8, hi = 1.8)
+            self.play(sweep_variable(fixed_index=0, fixed_value=0.0, lo = -1.8, hi = 1.8))
             # TODO: Move the Y hat at X=0
         with self.voiceover("On the other graph, Y hat moves in the direction of (0,1,3), or X1.") as tracker:
             X1_arrow = Arrow(axes.c2p(0, 0, 0), axes.c2p(*X[:, 1]), buff=0)
@@ -443,24 +483,24 @@ class XSpan(StitcherScene, ThreeDScene):
             grid_radius = 0.9
             beta1_steps = np.linspace(-grid_radius, grid_radius, GRID_ROWS)
             for beta1 in beta1_steps:
-                sweep_variable(
+                self.play(sweep_variable(
                     fixed_index=1, 
                     fixed_value=beta1, 
                     run_time=GRID_ROW_RUN_TIME,
                     lo = -grid_radius,
                     hi = grid_radius,
-                )
+                ))
 
             # beta0_min, beta0_max = bhat_extremes(axes, X, np.array([0., 0.]), np.array([1., 0.]))
             beta0_steps = np.linspace(-grid_radius, grid_radius, GRID_ROWS)
             for beta0 in beta0_steps:
-                sweep_variable(
+                self.play(sweep_variable(
                     fixed_index=0, 
                     fixed_value=beta0, 
                     run_time=GRID_ROW_RUN_TIME,
                     lo = -grid_radius,
                     hi = grid_radius,
-                )
+                ))
 
             yhat_point_visible["value"] = False
             # Rather than just fading in a solid plane, sell "the span is
