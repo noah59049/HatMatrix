@@ -176,6 +176,10 @@ class XSpan(StitcherScene, ThreeDScene):
                 self.running_max = None
                 self.trace = None
 
+                if type(run_time) not in (list, tuple, np.array):
+                    run_time = [run_time / 3] * 3
+
+
                 # bhat.animate stashes the copy it's about to modify in the
                 # single shared bhat.target attribute, which gets
                 # overwritten every time .animate is accessed again. If we
@@ -188,9 +192,10 @@ class XSpan(StitcherScene, ThreeDScene):
                 # own hi/lo/base value. Building (prepare_animation) each
                 # phase immediately -- before the next .animate access
                 # overwrites bhat.target again -- avoids that.
+                bhat_targets = (self.hi_bhat, self.lo_bhat, self.sweep_base)
                 phases = [
-                    prepare_animation(bhat.animate(run_time=run_time).set_value(value))
-                    for value in (self.hi_bhat, self.lo_bhat, self.sweep_base)
+                    prepare_animation(bhat.animate(run_time=run_time[i]).set_value(value))
+                    for i, value in enumerate(bhat_targets)
                 ]
                 super().__init__(*phases)
 
@@ -463,9 +468,15 @@ class XSpan(StitcherScene, ThreeDScene):
             X0_arrow = Arrow(axes.c2p(0, 0, 0), axes.c2p(*X[:, 0]), buff=0)
             graph_group.add(X0_arrow)
             self.play(FadeIn(X0_arrow))
-        with self.voiceover("Now if we vary beta one hat, the Y hat that's at X=0 doesn't change at all, and the Y hat that's at X = 1 changes a little bit, and the Y hat that's at X = 3 changes 3 times as much.") as tracker:
-            self.play(sweep_variable(fixed_index=0, fixed_value=0.0, lo = -1.8, hi = 1.8))
-            # TODO: Move the Y hat at X=0
+        with self.voiceover("Now if we vary beta one hat, the Y hat that's at X=0 doesn't change at all, and") as tracker:
+            X1_sweep = sweep_variable(fixed_index=0, fixed_value=0.0, lo = -1.8, hi = 1.8)
+            self.play(X1_sweep[0])
+        with self.voiceover("the Y hat that's at X = 1 changes a little bit, and") as tracker:
+            pivot_line1 = DashedLine(axes.c2p(X[1,1], 0), axes.c2p(X[1,1], Y[1]))
+            self.play(FadeIn(pivot_line1))
+        with self.voiceover("the Y hat that's at X = 3 changes three times as much.") as tracker:
+            pivot_line2 = DashedLine(axes.c2p(X[2,1], 0), axes.c2p(X[2,1], Y[2]))
+            self.play(FadeIn(pivot_line2))
         with self.voiceover("On the other graph, Y hat moves in the direction of (0,1,3), or X1.") as tracker:
             X1_arrow = Arrow(axes.c2p(0, 0, 0), axes.c2p(*X[:, 1]), buff=0)
             graph_group.add(X1_arrow)
