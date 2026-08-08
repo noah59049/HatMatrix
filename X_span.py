@@ -649,7 +649,7 @@ class XSpan(StitcherScene, ThreeDScene):
             # squares shrink to their minimum total area as bhat gets there.
             self.play(bhat.animate.set_value(bhat_ols), run_time=2 * self.get_current_voiceover_duration() / 3)
 
-            
+        with self.voiceover("Now here's the key idea. This is the same as minimizing the") as tracker:
             # The grid's viewing angle looks almost exactly down the plane's
             # normal (deliberately, so the grid itself isn't foreshortened) --
             # but that also means displacement *along* that normal, like how
@@ -683,10 +683,11 @@ class XSpan(StitcherScene, ThreeDScene):
 
             graph_group.add_updater(_spin)
 
-        with self.voiceover("Now here's the key idea. This is the same as minimizing the Euclidean distance between Y and Y hat. And the length of the line between Y and Y hat is minimized precisely when that line is") as tracker:
+        with self.voiceover("Euclidean distance between Y and Y hat. And the length of the line between Y and Y hat is minimized precisely when that line is") as tracker:
             residual_3d_line = always_redraw(lambda: DashedLine(axes.c2p(*Y), axes.c2p(*yhat.get_value()), color=WHITE))
             graph_group.add(residual_3d_line)
             self.add(residual_3d_line)
+            
         with self.voiceover("perpendicular to the span of X.") as tracker:
             # A small elbow marker built from raw 3D points rather than
             # manim's Angle/RightAngle: those go through line_intersection,
