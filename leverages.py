@@ -66,7 +66,8 @@ class Leverages(StitcherScene):
         i_big = np.argmax(leverages)
         i_small = np.argmin(leverages)
         with self.voiceover("Here's a point with a high leverage value. Now let's look at what would happen") as tracker:
-            lev_big_tex = MathTex(f"H_{{ii}} = {leverages[i_big]:.2f}").to_corner(UL)
+            lev_big_tex = MathTex(f"H_{{ii}} = {leverages[i_big]:.2f}")
+            lev_big_tex.to_corner(UL)
             pt = points[i_big].copy()
             self.play(
                 Indicate(pt, run_time = self.get_current_voiceover_duration() - 0.4),
@@ -123,7 +124,8 @@ class Leverages(StitcherScene):
                 Y_tracker.animate.set_value(Y)
             )
         with self.voiceover("this point, which has a much lower leverage value. Let's look at what would happen") as tracker:
-            lev_small_tex = MathTex(f"H_{{ii}} = {leverages[i_small]:.2f}").to_corner(UL)
+            lev_small_tex = MathTex(f"H_{{ii}} = {leverages[i_small]:.2f}")
+            lev_small_tex.to_corner(UL)
             pt = points[i_small].copy()
             self.play(
                 Indicate(pt, run_time = self.get_current_voiceover_duration() - 0.4),
