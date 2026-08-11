@@ -74,9 +74,10 @@ class Leverages(StitcherScene):
                 Write(lev_big_tex)
             )
             self.remove(pt)
+        DELTA_Y = 4
         with self.voiceover("if the Y for this point were to change. You can see that the regression line moves quite a bit, and Y hat gets pulled towards Y. And in fact") as tracker:
             Y_bumped_big = Y.copy()
-            Y_bumped_big[i_big,0] += 2
+            Y_bumped_big[i_big,0] += DELTA_Y
             self.play(Y_tracker.animate.set_value(Y_bumped_big))
 
         def make_stems(Y_bumped, i):
@@ -103,7 +104,7 @@ class Leverages(StitcherScene):
                 )
         
         Y_stem_big, yhat_stem_big = make_stems(Y_bumped_big, i_big)
-        equations_big = ExampleLeverageEquations(i_big, dy = 2)
+        equations_big = ExampleLeverageEquations(i_big, dy = DELTA_Y)
         with self.voiceover("the amount that Y hat moves is exactly equal to") as tracker:
             self.play(
                 FadeIn(yhat_stem_big),
@@ -134,10 +135,10 @@ class Leverages(StitcherScene):
             self.remove(pt)
         with self.voiceover("if the Y were to move. This time the regression line barely changes.") as tracker:
             Y_bumped_small = Y.copy()
-            Y_bumped_small[np.argmin(leverages),0] += 2
+            Y_bumped_small[np.argmin(leverages),0] += DELTA_Y
             self.play(Y_tracker.animate.set_value(Y_bumped_small))
         Y_stem_small, yhat_stem_small = make_stems(Y_bumped_small, i_small)
-        equations_small = ExampleLeverageEquations(i_small, dy = 2)
+        equations_small = ExampleLeverageEquations(i_small, dy = DELTA_Y)
         with self.voiceover("Y hat barely moves. Again,") as tracker:
             self.play(FadeIn(yhat_stem_small))
         with self.voiceover("the change in Y hat is equal to") as tracker:
