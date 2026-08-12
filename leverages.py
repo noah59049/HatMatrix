@@ -75,6 +75,9 @@ class Leverages(StitcherScene):
             )
             self.remove(pt)
         DELTA_Y = 4
+        old_trendline = trendline.copy().clear_updaters().set_opacity(0.38)
+        old_points = points.copy().clear_updaters().set_opacity(0.38)
+        self.add(old_trendline, old_points)
         with self.voiceover("if the Y for this point were to change. You can see that the regression line moves quite a bit, and Y hat gets pulled towards Y. And in fact") as tracker:
             Y_bumped_big = Y.copy()
             Y_bumped_big[i_big,0] += DELTA_Y
