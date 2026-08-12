@@ -508,10 +508,10 @@ class XSpan(StitcherScene, ThreeDScene):
             X1_sweep._setup_scene(self)
             self.play(X1_sweep[0])
         with self.voiceover("the Y hat that's at X = 1 changes a little bit, and") as tracker:
-            pivot_line1 = DashedLine(axes_2d.c2p(X[1,1], 0), axes_2d.c2p(X[1,1], Y[1]))
+            pivot_line1 = DashedLine(axes_2d.c2p(X[1,1], 0), axes_2d.c2p(X[1,1], yhat.get_value()[1]))
             self.play(Create(pivot_line1))
         with self.voiceover("the Y hat that's at X = 3 changes three times as much.") as tracker:
-            pivot_line2 = DashedLine(axes_2d.c2p(X[2,1], 0), axes_2d.c2p(X[2,1], Y[2]))
+            pivot_line2 = DashedLine(axes_2d.c2p(X[2,1], 0), axes_2d.c2p(X[2,1], yhat.get_value()[2]))
             self.play(Create(pivot_line2))
         with self.voiceover("On the other graph, Y hat moves in the direction of") as tracker:
             self.play(X1_sweep[1])
