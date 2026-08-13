@@ -7,10 +7,10 @@ from colors import *
 
 class Leverages(StitcherScene):
     def construct_scene(self):
-        yhat_tex = MathTex(r"\hat{Y}=HY").to_edge(UP)
-        deriv_tex = MathTex(r"\frac{\partial \hat{Y}_i} {\partial Y_i}=H_{ii}").next_to(yhat_tex, DOWN)
-        limit_tex = MathTex(r"\lim_{\Delta Y_i \to 0} \frac{\Delta \hat{Y}_i} {\Delta Y_i} = H_{ii}").next_to(yhat_tex, DOWN)
-        frac_tex = MathTex(r"\frac{\Delta \hat{Y}_i} {\Delta Y_i} = H_{ii}").next_to(yhat_tex, DOWN)
+        yhat_tex = ColoredMathTex(r"\hat{Y}=HY").to_edge(UP)
+        deriv_tex = ColoredMathTex(r"\frac{\partial \hat{Y}_i} {\partial Y_i}=H_{ii}").next_to(yhat_tex, DOWN)
+        limit_tex = ColoredMathTex(r"\lim_{\Delta Y_i \to 0} \frac{\Delta \hat{Y}_i} {\Delta Y_i} = H_{ii}").next_to(yhat_tex, DOWN)
+        frac_tex = ColoredMathTex(r"\frac{\Delta \hat{Y}_i} {\Delta Y_i} = H_{ii}").next_to(yhat_tex, DOWN)
 
         X1 = [0.4, 0.7, 0.7, 1, 1, 1.2, 1.5, 1.59, 1.68, 1.73, 1.8, 5]
         n = len(X1)
@@ -66,7 +66,7 @@ class Leverages(StitcherScene):
         i_big = np.argmax(leverages)
         i_small = np.argmin(leverages)
         with self.voiceover("Here's a point with a high leverage value. Now let's look at what would happen") as tracker:
-            lev_big_tex = MathTex(f"H_{{ii}} = {leverages[i_big]:.2f}")
+            lev_big_tex = ColoredMathTex(f"H_{{ii}} = {leverages[i_big]:.2f}")
             lev_big_tex.to_corner(UL)
             pt = points[i_big].copy()
             self.play(
@@ -97,8 +97,8 @@ class Leverages(StitcherScene):
             return Y_stem, yhat_stem
         class ExampleLeverageEquations(VGroup):
             def __init__(self, i, dy):
-                self.tex1 = MathTex(r"\Delta \hat{Y} = ", "H_{ii}", r"\Delta Y").to_corner(UR)
-                self.tex2 = MathTex(f"{(dy * leverages[i]):.2f} = ", f"{leverages[i]:.2f}", f" * {dy}").next_to(self.tex1, DOWN, aligned_edge=RIGHT)
+                self.tex1 = ColoredMathTex(r"\Delta \hat{Y} = ", "H_{ii}", r"\Delta Y").to_corner(UR)
+                self.tex2 = ColoredMathTex(f"{(dy * leverages[i]):.2f} = ", f"{leverages[i]:.2f}", f" * {dy}").next_to(self.tex1, DOWN, aligned_edge=RIGHT)
                 super().__init__(self.tex1, self.tex2)
             def draw_parts(self, i):
                 return AnimationGroup(
@@ -128,7 +128,7 @@ class Leverages(StitcherScene):
                 Y_tracker.animate.set_value(Y)
             )
         with self.voiceover("this point, which has a much lower leverage value. Let's look at what would happen") as tracker:
-            lev_small_tex = MathTex(f"H_{{ii}} = {leverages[i_small]:.2f}")
+            lev_small_tex = ColoredMathTex(f"H_{{ii}} = {leverages[i_small]:.2f}")
             lev_small_tex.to_corner(UL)
             pt = points[i_small].copy()
             self.play(
