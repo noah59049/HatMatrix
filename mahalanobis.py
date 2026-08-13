@@ -7,7 +7,7 @@ class Mahalanobis(StitcherScene):
     def construct_scene(self):
         
 
-        with self.voiceover("You may have noticed that the point with high leverage is an outlier, and the point with low leverage is near the center of the data. This is no accident, and in fact there’s a mathematical relationship between leverage and the distance from the center of the X values, or more specifically called Mahalanobis distance.") as tracker:
+        with self.voiceover("You may have noticed that the point with high leverage is an outlier, and the point with low leverage is near the center of the data. This is no accident, and in fact there's a mathematical relationship between leverage and the distance from the center of the X values, or more specifically called Mahalanobis distance.") as tracker:
             ...
         with self.voiceover("So let's suppose we have a bunch of vectors in R^j (or a distribution actually, but you can think of a set of vectors as a distribution too).") as tracker:
             ...
