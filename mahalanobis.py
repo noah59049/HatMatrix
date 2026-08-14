@@ -44,7 +44,10 @@ class Mahalanobis(StitcherScene):
         ).arrange(DOWN, aligned_edge = LEFT)
 
         with self.voiceover("From these two properties it's possible to derive the exact formula for Mahalanobis distance. First note that the Mahalanobis distance must necessarily be equal to the Euclidean distance after a whitening transformation is applied.") as tracker:
-            self.play(FadeOut(texes))
+            self.play(
+                FadeOut(texes),
+                FadeOut(dots),
+            )
         with self.voiceover("A whitening transformation is a linear transformation, so a matrix multiplication, that turns the covariance matrix into the identity matrix.") as tracker:
             self.play(FadeIn(whitening_texes[0]))
         with self.voiceover("Here I'll show a proof that the whitening matrix must yield the inverse of the covariance matrix when you multiply its transpose by it.") as tracker:
