@@ -12,9 +12,9 @@ class Mahalanobis(StitcherScene):
         ]
         texes = VGroup(texes_list).arrange(DOWN, aligned_edge = LEFT)
         dots = VGroup(
-            Dot().next_to(texes[0]), 
-            Dot().next_to(texes[1]),
-        ).arrange(DOWN)
+            Dot().next_to(texes[0], LEFT), 
+            Dot().next_to(texes[1], LEFT),
+        )
 
         with self.voiceover("You may have noticed that the point with high leverage is an outlier, and the point with low leverage is near the center of the data. This is no accident, and in fact there's a mathematical relationship between leverage and the distance from the center of the X values, or more specifically called Mahalanobis distance.") as tracker:
             ...
