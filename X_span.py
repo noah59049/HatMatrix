@@ -125,7 +125,7 @@ class XSpan(StitcherScene, ThreeDScene):
         # Kept out of graph_group itself so it stays flat/upright on screen
         # instead of inheriting graph_group's 3D tilt like y_point does.
         def make_y_label():
-            return MathTex("Y", color=Y_COLOR).next_to(y_point, UP)
+            return ColoredMathTex("Y", color=Y_COLOR).next_to(y_point, UP)
         y_label = always_redraw(make_y_label)
 
         GRID_STROKE_WIDTH = 4
@@ -292,18 +292,18 @@ class XSpan(StitcherScene, ThreeDScene):
         # position doesn't matter; Transform animates them to wherever the
         # target already is.
         #
-        # Built from MathTex + numpy_to_latex (the same pipeline X_tex/
+        # Built from ColoredMathTex + numpy_to_latex (the same pipeline X_tex/
         # Y_tex/bhat_tex use) rather than a Table mobject: guarantees
         # identical font size and spacing automatically, no scaling needed
         # to make it match them.
         X1_col_tex = Tex(numpy_to_latex(X1_vals, make_table = True))
         Y_col_tex = Tex(numpy_to_latex(Y, make_table = True))
-        x_col_group = VGroup(MathTex("X"), X1_col_tex).arrange(DOWN, buff=0.3)
-        y_col_group = VGroup(MathTex("Y"), Y_col_tex).arrange(DOWN, buff=0.3)
+        x_col_group = VGroup(ColoredMathTex("X"), X1_col_tex).arrange(DOWN, buff=0.3)
+        y_col_group = VGroup(ColoredMathTex("Y"), Y_col_tex).arrange(DOWN, buff=0.3)
         data_table = VGroup(x_col_group, y_col_group).arrange(RIGHT, buff=0.0).to_corner(UR)
 
-        X_tex = MathTex("X = " + numpy_to_latex(X))
-        Y_tex = MathTex("Y = " + numpy_to_latex(Y))
+        X_tex = ColoredMathTex("X = " + numpy_to_latex(X))
+        Y_tex = ColoredMathTex("Y = " + numpy_to_latex(Y))
         Y_tex.next_to(data_table, DOWN)
         X_tex.next_to(Y_tex, UP)
 
@@ -316,7 +316,7 @@ class XSpan(StitcherScene, ThreeDScene):
             return text
 
         def make_bhat_tex():
-            return MathTex(r"\hat{\beta} = " + get_bhat_string()).next_to(Y_tex, DOWN)
+            return ColoredMathTex(r"\hat{\beta} = " + get_bhat_string()).next_to(Y_tex, DOWN)
 
         bhat_tex = always_redraw(make_bhat_tex)
 
@@ -407,7 +407,7 @@ class XSpan(StitcherScene, ThreeDScene):
             self.play(FadeIn(bhat_tex))
 
         with self.voiceover("X, on the other hand, is represented as an n by k matrix. Each column has one of our X variables,") as tracker:
-            X1_vector_tex = MathTex("X = " + numpy_to_latex(X1_vals)).next_to(Y_tex, UP)
+            X1_vector_tex = ColoredMathTex("X = " + numpy_to_latex(X1_vals)).next_to(Y_tex, UP)
             x_column = x_col_group.copy()
             self.play(FadeOut(data_table, run_time = 0.5), TransformMatchingShapes(x_column, X1_vector_tex))
         with self.voiceover("and on the very left there's this column of ones.") as tracker:
@@ -416,7 +416,7 @@ class XSpan(StitcherScene, ThreeDScene):
         with self.voiceover("It's defined like this because X beta hat is equal to Y hat this way, where Y hat is an n by 1 vector like Y.") as tracker:
             print("DEBUG bhat:", bhat.get_value())
 
-            xbhat_tex = MathTex(
+            xbhat_tex = ColoredMathTex(
                 r"X",
                 r"\hat{\beta}",
                 r"=",
@@ -455,7 +455,7 @@ class XSpan(StitcherScene, ThreeDScene):
             )
 
             self.play(matmul_animation)
-            lower_down_equals = MathTex("=").next_to(matmul_animation.mobB, LEFT)
+            lower_down_equals = ColoredMathTex("=").next_to(matmul_animation.mobB, LEFT)
             self.add(lower_down_equals)
             # TODO: Put the more rigorous proof onscreen too
 
@@ -843,33 +843,33 @@ class XSpan(StitcherScene, ThreeDScene):
         # {arrow to Y} = {arrow to Y hat} + {arrow from Y hat to Y}
         equation_point = UP
         equation = VGroup(
-            arrow_to_Y.copy(), MathTex("="), arrow_to_yhat.copy(), MathTex("+"), arrow_yhat_to_Y.copy()
+            arrow_to_Y.copy(), ColoredMathTex("="), arrow_to_yhat.copy(), ColoredMathTex("+"), arrow_yhat_to_Y.copy()
         ).arrange(RIGHT, buff=0.25).move_to(equation_point)
         equation1 = VGroup(
-            MathTex("Y"), MathTex("="), arrow_to_yhat.copy(), MathTex("+"), arrow_yhat_to_Y.copy()
+            ColoredMathTex("Y"), ColoredMathTex("="), arrow_to_yhat.copy(), ColoredMathTex("+"), arrow_yhat_to_Y.copy()
         ).arrange(RIGHT, buff=0.25).move_to(equation_point)
         equation2 = VGroup(
-            MathTex("Y"), MathTex("="), MathTex(r"\hat{Y}"), MathTex("+"), arrow_yhat_to_Y.copy()
+            ColoredMathTex("Y"), ColoredMathTex("="), ColoredMathTex(r"\hat{Y}"), ColoredMathTex("+"), arrow_yhat_to_Y.copy()
         ).arrange(RIGHT, buff=0.25).move_to(equation_point)
         equation3 = VGroup(
-            MathTex("Y"), MathTex("="), MathTex(r"\hat{Y}"), MathTex("+"), MathTex("e")
+            ColoredMathTex("Y"), ColoredMathTex("="), ColoredMathTex(r"\hat{Y}"), ColoredMathTex("+"), ColoredMathTex("e")
         ).arrange(RIGHT, buff=0.25).move_to(equation_point)
 
         orth_fact = Tex(r"$e \perp$ all cols of $X$").to_corner(UR)
         hm_derivations = [
-            MathTex(r"Y =   \hat{Y} + e"),
-            MathTex(r"Y = X \hat{\beta} + e"),
-            MathTex(r"X^T Y = X^T X \hat{\beta} + X^T e"),
-            MathTex(r"X^T Y = X^T X \hat{\beta}"),
-            MathTex(r"(X^T X)^{-1} X^T Y = (X^T X)^{-1} X^T X \hat{\beta}"),
-            MathTex(r"(X^T X)^{-1} X^T Y = \hat{\beta}"),
-            MathTex(r"X (X^T X)^{-1} X^T Y = X \hat{\beta}"),
-            MathTex(r"X (X^T X)^{-1} X^T Y = \hat{Y}"),
+            ColoredMathTex(r"Y =   \hat{Y} + e"),
+            ColoredMathTex(r"Y = X \hat{\beta} + e"),
+            ColoredMathTex(r"X^T Y = X^T X \hat{\beta} + X^T e"),
+            ColoredMathTex(r"X^T Y = X^T X \hat{\beta}"),
+            ColoredMathTex(r"(X^T X)^{-1} X^T Y = (X^T X)^{-1} X^T X \hat{\beta}"),
+            ColoredMathTex(r"(X^T X)^{-1} X^T Y = \hat{\beta}"),
+            ColoredMathTex(r"X (X^T X)^{-1} X^T Y = X \hat{\beta}"),
+            ColoredMathTex(r"X (X^T X)^{-1} X^T Y = \hat{Y}"),
         ]
         for hm_derivation in hm_derivations:
             hm_derivation.move_to(equation_point)
-        hm_formula  = MathTex(r"     X (X^T X)^{-1} X^T").move_to(hm_derivations[-1], aligned_edge=LEFT)
-        hm_formula2 = MathTex(r" H = X (X^T X)^{-1} X^T").next_to(hm_formula, DOWN, aligned_edge = RIGHT)
+        hm_formula  = ColoredMathTex(r"     X (X^T X)^{-1} X^T").move_to(hm_derivations[-1], aligned_edge=LEFT)
+        hm_formula2 = ColoredMathTex(r" H = X (X^T X)^{-1} X^T").next_to(hm_formula, DOWN, aligned_edge = RIGHT)
         
         with self.voiceover("So here we can write this decomposition as an equation.") as tracker:
             graph_group.add(
@@ -946,11 +946,11 @@ class XSpan(StitcherScene, ThreeDScene):
                 hm_formula2.animate.to_edge(UP)
             )
         
-        fact1 = MathTex(r"H^T = H")
-        fact2 = MathTex(r"H^2 = H")
-        fact3 = MathTex(r"H X = X")
-        fact4 = MathTex(r"\vec{v} \perp X \implies H \vec{v} = 0")
-        fact5 = MathTex(r"\lambda \in \{0,1\}.")
+        fact1 = ColoredMathTex(r"H^T = H")
+        fact2 = ColoredMathTex(r"H^2 = H")
+        fact3 = ColoredMathTex(r"H X = X")
+        fact4 = ColoredMathTex(r"\vec{v} \perp X \implies H \vec{v} = 0")
+        fact5 = ColoredMathTex(r"\lambda \in \{0,1\}.")
 
         facts = VGroup(fact1, fact2, fact3, fact4, fact5).arrange(DOWN, aligned_edge=LEFT, buff=0.5)
         facts.next_to(hm_formula2, DOWN, buff=0.2)
@@ -978,12 +978,12 @@ class XSpan(StitcherScene, ThreeDScene):
 
         with self.voiceover("It's symmetric. By the spectral theorem, this means") as tracker:
             self.play(LaggedStart(Create(checks[0]), Write(fact1), lag_ratio=0.6))
-            proof11 = MathTex("H^T = (X (X^T X)^{-1} X^T)^T")
-            proof12 = MathTex("H^T = {X^T}^T {(X^T X)^{-1}}^T X^T")
-            proof13 = MathTex("H^T = X {(X^T X)^T}^{-1} X^T")
-            proof14 = MathTex("H^T = X (X^T {X^T}^T)^{-1} X^T")
-            proof15 = MathTex("H^T = X (X^T X)^{-1} X^T")
-            proof16 = MathTex("H^T = H")
+            proof11 = ColoredMathTex("H^T = (X (X^T X)^{-1} X^T)^T")
+            proof12 = ColoredMathTex("H^T = {X^T}^T {(X^T X)^{-1}}^T X^T")
+            proof13 = ColoredMathTex("H^T = X {(X^T X)^T}^{-1} X^T")
+            proof14 = ColoredMathTex("H^T = X (X^T {X^T}^T)^{-1} X^T")
+            proof15 = ColoredMathTex("H^T = X (X^T X)^{-1} X^T")
+            proof16 = ColoredMathTex("H^T = H")
             proof1_group = make_proof_group(fact1, proof11, proof12, proof13, proof14, proof15, proof16)
             self.play(FadeIn(proof1_group))
         with self.voiceover("it must be orthogonally diagonalizable.") as tracker:
@@ -992,36 +992,36 @@ class XSpan(StitcherScene, ThreeDScene):
         with self.voiceover("It's idempotent, meaning that H squared equals H.") as tracker:
             self.play(FadeOut(proof1_group))
             self.play(LaggedStart(Create(checks[1]), Write(fact2), lag_ratio=0.6))
-            proof21 = MathTex("H^2 = X (X^T X)^{-1} X^T X (X^T X)^{-1} X^T")
-            proof22 = MathTex("H^2 = X (X^T X)^{-1} X^T")
-            proof23 = MathTex("H^2 = H")
+            proof21 = ColoredMathTex("H^2 = X (X^T X)^{-1} X^T X (X^T X)^{-1} X^T")
+            proof22 = ColoredMathTex("H^2 = X (X^T X)^{-1} X^T")
+            proof23 = ColoredMathTex("H^2 = H")
             proof2_group = make_proof_group(fact2, proof21, proof22, proof23)
             self.play(FadeIn(proof2_group))
         with self.voiceover("H times X is X. Since H leaves the entire matrix X unchanged, it must leave each column of X unchanged.") as tracker:
             self.play(FadeOut(proof2_group))
             self.play(LaggedStart(Create(checks[2]), Write(fact3), lag_ratio=0.6))
-            proof31 = MathTex("H X = X (X^T X)^{-1} X^T X")
-            proof32 = MathTex("H X = X")
+            proof31 = ColoredMathTex("H X = X (X^T X)^{-1} X^T X")
+            proof32 = ColoredMathTex("H X = X")
             proof3_group = make_proof_group(fact3, proof31, proof32)
             self.play(FadeIn(proof3_group))
-            fact31 = MathTex(r"\implies", r"H X_{\cdot j} = X_{\cdot j}").next_to(fact3, RIGHT)
+            fact31 = ColoredMathTex(r"\implies", r"H X_{\cdot j} = X_{\cdot j}").next_to(fact3, RIGHT)
             self.play(FadeIn(fact31))
         with self.voiceover("H times any vector orthogonal to X is zero.") as tracker:
             self.play(FadeOut(proof3_group))
             self.play(LaggedStart(Create(checks[3]), Write(fact4), lag_ratio=0.6))
-            proof41 = MathTex(r"H \vec{v} = X (X^T X)^{-1} X^T \vec{v}")
-            proof42 = MathTex(r"H \vec{v} = X (X^T X)^{-1} 0")
-            proof43 = MathTex(r"H \vec{v} = 0")
+            proof41 = ColoredMathTex(r"H \vec{v} = X (X^T X)^{-1} X^T \vec{v}")
+            proof42 = ColoredMathTex(r"H \vec{v} = X (X^T X)^{-1} 0")
+            proof43 = ColoredMathTex(r"H \vec{v} = 0")
             proof4_group = make_proof_group(fact4, proof41, proof42, proof43)
             self.play(FadeIn(proof4_group))
         with self.voiceover("All the eigenvalues of the hat matrix are 0 or 1, and in fact, our previous facts have been hinting at where the eigenvalues of 0 and 1 are.") as tracker:
             self.play(FadeOut(proof4_group))
             self.play(LaggedStart(Create(checks[4]), Write(fact5), lag_ratio=0.6))
-            proof51 = MathTex(r"H^2=H, H\vec{v}=\lambda\vec{v}")
-            proof52 = MathTex(r"H^2\vec{v}=H\vec{v}")
-            proof53 = MathTex(r"\lambda^2\vec{v}=\lambda\vec{v}")
-            proof54 = MathTex(r"\lambda^2=\lambda")
-            proof55 = MathTex(r"\lambda \in \{0,1\}")
+            proof51 = ColoredMathTex(r"H^2=H, H\vec{v}=\lambda\vec{v}")
+            proof52 = ColoredMathTex(r"H^2\vec{v}=H\vec{v}")
+            proof53 = ColoredMathTex(r"\lambda^2\vec{v}=\lambda\vec{v}")
+            proof54 = ColoredMathTex(r"\lambda^2=\lambda")
+            proof55 = ColoredMathTex(r"\lambda \in \{0,1\}")
             proof5_group = make_proof_group(fact5, proof51, proof52, proof53, proof54, proof55)
             self.play(FadeIn(proof5_group))
         with self.voiceover("The eigenvectors with eigenvalue 1 are the columns of X and anything in their span.") as tracker:
