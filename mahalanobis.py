@@ -21,9 +21,15 @@ class Mahalanobis(StitcherScene):
         with self.voiceover("So let's suppose we have a bunch of vectors in R^j (or a distribution actually, but you can think of a set of vectors as a distribution too).") as tracker:
             ... # TODO: Show a 2D scatterplot, then transition it into a 3D graph of some kind of probability density function, then go back to the scatterplot.
         with self.voiceover("The best way I know of to think of Mahalanobis distances is a formula for distance with two properties. First, we want them to be equal to Euclidean distances when the covariance matrix is the identity matrix.") as tracker:
-            self.play(FadeIn(texes[0]))
+            self.play(
+                FadeIn(texes[0]),
+                FadeIn(dots[0])
+            )
         with self.voiceover("Second, we want Mahalanobis distances to be invariant under linear transformations, in other words, adding something or multiplying by a matrix.") as tracker:
-            self.play(FadeIn(texes[1]))
+            self.play(
+                FadeIn(texes[1]),
+                FadeIn(dots[1])
+            )
             self.play(FadeIn(texes[2]))
 
         whitening_texes = VGroup(
