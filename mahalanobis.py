@@ -6,7 +6,7 @@ from stitcher_scene import StitcherScene
 class Mahalanobis(StitcherScene):
     def construct_scene(self):
         texes_list = [
-            MathTex(r"\Sigma = I \implies D = ||\vec{x} - \vec{\mu}||"),
+            MathTex(r"\Sigma(Q) = \mathrm{I} \implies D = ||\vec{x} - \vec{\mu}||"),
             MathTex(r"D(\vec{x},Q) = D(A \vec{x}, A Q)"),
             MathTex(r"D(\vec{x},Q) = D(\vec{a} + \vec{x}, \vec{a} + Q)"),
         ]
@@ -25,12 +25,23 @@ class Mahalanobis(StitcherScene):
         with self.voiceover("Second, we want Mahalanobis distances to be invariant under linear transformations, in other words, adding something or multiplying by a matrix.") as tracker:
             self.play(FadeIn(texes[1]))
             self.play(FadeIn(texes[2]))
-        with self.voiceover("From these two properties it's possible to derive the exact formula for Mahalanobis distance. First note that the Mahalanobis distance must necessarily be equal to the Euclidean distance after a whitening transformation is applied. A whitening transformation is one that turns the covariance matrix into the identity matrix.") as tracker:
+
+        whitening_texes = VGroup(
+            MathTex(r"cov(W \vec{x}) = \mathrm{I}"),
+            MathTex(r"E[W \vec{x} (W \vec{x})^T] = \mathrm{I}"),
+            MathTex(r"E[W \vec{x} \vec{x}^T W^T] = \mathrm{I}"),
+            MathTex(r"W E[\vec{x} \vec{x}^T] W^T = \mathrm{I}"),
+            MathTex(r"W cov(\vec{x}) W^T = \mathrm{I}"),
+            MathTex(r"cov(\vec{x}) W^T = W^{-1}"),
+            MathTex(r"cov(\vec{x}) = W^{-1} {W^T}^{-1}"),
+            MathTex(r"cov(\vec{x}) = (W^T W)^{-1}"),
+        ).arrange(DOWN, aligned_edge = LEFT)
+        with self.voiceover("From these two properties it's possible to derive the exact formula for Mahalanobis distance. First note that the Mahalanobis distance must necessarily be equal to the Euclidean distance after a whitening transformation is applied.") as tracker:
             ...
-        with self.voiceover("") as tracker:
-            ...
-        with self.voiceover("") as tracker:
-            ...
+        with self.voiceover("A whitening transformation is a linear transformation, so a matrix multiplication, that turns the covariance matrix into the identity matrix.") as tracker:
+            self.play(FadeIn(whitening_texes[0]))
+        with self.voiceover("Here I'll show a proof that the whitening matrix must yield the inverse of the covariance matrix when you multiply its transpose by it.") as tracker:
+            self.play(FadeIn(whitening_texes))
         with self.voiceover("") as tracker:
             ...
         with self.voiceover("") as tracker:
