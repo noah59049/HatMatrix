@@ -3,7 +3,7 @@ from manim import *
 from stitcher_scene import StitcherScene
 
 
-class Mahalanobis(StitcherScene):
+class Mahalanobis(StitcherScene, ThreeDScene):
     def construct_scene(self):
         texes_list = [
             MathTex(r"\Sigma(Q) = \mathrm{I} \implies D = ||\vec{x} - \vec{\mu}||"),
@@ -19,7 +19,68 @@ class Mahalanobis(StitcherScene):
         with self.voiceover("You may have noticed that the point with high leverage is an outlier, and the point with low leverage is near the center of the data. This is no accident, and in fact there's a mathematical relationship between leverage and the distance from the center of the X values, or more specifically called Mahalanobis distance.") as tracker:
             ...
         with self.voiceover("So let's suppose we have a bunch of vectors in R^j (or a distribution actually, but you can think of a set of vectors as a distribution too).") as tracker:
-            ... # TODO: Show a 2D scatterplot, then transition it into a 3D graph of some kind of probability density function, then go back to the scatterplot.
+            self.renderer.camera.should_apply_shading = False
+
+            cov = np.array([[1.4, 0.8], [0.8, 1.0]])
+            mean = np.array([0.0, 0.0])
+            inv_cov = np.linalg.inv(cov)
+            norm_const = 1 / (2 * np.pi * np.sqrt(np.linalg.det(cov)))
+
+            def pdf(x, y):
+                v = np.array([x, y]) - mean
+                return norm_const * np.exp(-0.5 * v @ inv_cov @ v)
+
+            rng = np.random.default_rng(3)
+            L = np.linalg.cholesky(cov)
+            samples = (L @ rng.standard_normal((2, 80))).T + mean
+
+            PLOT_RADIUS = 4
+            scatter_axes = Axes(
+                x_range=[-PLOT_RADIUS, PLOT_RADIUS, 1],
+                y_range=[-PLOT_RADIUS, PLOT_RADIUS, 1],
+                x_length=6,
+                y_length=6,
+                tips=False,
+            )
+            scatter_dots = VGroup(*[
+                Dot(scatter_axes.c2p(x, y), radius=0.05, color=BLUE_C)
+                for x, y in samples
+            ])
+            scatter_group = VGroup(scatter_axes, scatter_dots)
+
+            # Reuse scatter_axes' own x/y mapping for the surface's base plane
+            # (rather than a separate ThreeDAxes) so the scatterplot and the
+            # density bump agree exactly on where each point sits -- the
+            # scatter is literally the surface's z=0 slice.
+            HEIGHT_SCALE = 9.0
+            density_surface = Surface(
+                lambda u, v: scatter_axes.c2p(u, v) + OUT * pdf(u, v) * HEIGHT_SCALE,
+                u_range=[-PLOT_RADIUS, PLOT_RADIUS],
+                v_range=[-PLOT_RADIUS, PLOT_RADIUS],
+                resolution=(32, 32),
+                fill_opacity=0.85,
+                checkerboard_colors=[BLUE_D, BLUE_E],
+                stroke_width=0.5,
+            )
+
+            quarter = self.get_current_voiceover_duration() / 4
+            self.play(FadeIn(scatter_group), run_time=quarter)
+            self.move_camera(phi=65 * DEGREES, theta=-60 * DEGREES, run_time=quarter)
+            self.play(
+                scatter_dots.animate.set_opacity(0.15),
+                FadeIn(density_surface),
+                run_time=quarter,
+            )
+            self.play(
+                Rotate(density_surface, angle=PI / 2, axis=OUT, about_point=scatter_axes.get_origin()),
+                run_time=quarter,
+            )
+            self.play(
+                FadeOut(density_surface),
+                scatter_dots.animate.set_opacity(1.0),
+            )
+            self.move_camera(phi=0, theta=-90 * DEGREES, run_time=0.6)
+            self.play(FadeOut(scatter_group), run_time=0.6)
         with self.voiceover("The best way I know of to think of Mahalanobis distances is a formula for distance with two properties. First, we want them to be equal to Euclidean distances when the covariance matrix is the identity matrix.") as tracker:
             self.play(
                 FadeIn(texes[0]),
