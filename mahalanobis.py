@@ -36,15 +36,32 @@ class Mahalanobis(StitcherScene):
             MathTex(r"cov(\vec{x}) = W^{-1} {W^T}^{-1}"),
             MathTex(r"cov(\vec{x}) = (W^T W)^{-1}"),
         ).arrange(DOWN, aligned_edge = LEFT)
+
         with self.voiceover("From these two properties it's possible to derive the exact formula for Mahalanobis distance. First note that the Mahalanobis distance must necessarily be equal to the Euclidean distance after a whitening transformation is applied.") as tracker:
             ...
         with self.voiceover("A whitening transformation is a linear transformation, so a matrix multiplication, that turns the covariance matrix into the identity matrix.") as tracker:
             self.play(FadeIn(whitening_texes[0]))
         with self.voiceover("Here I'll show a proof that the whitening matrix must yield the inverse of the covariance matrix when you multiply its transpose by it.") as tracker:
             self.play(FadeIn(whitening_texes))
-        with self.voiceover("") as tracker:
+        with self.voiceover("There are many different whitening matrices, but they will all yield the same Mahalanobis distances. One easy choice for a whitening matrix is one with the same eigenvectors as the covariance matrix, but with the inverse square root of the eigenvalues.") as tracker:
             ...
-        with self.voiceover("") as tracker:
-            ...
-        with self.voiceover("") as tracker:
-            ...
+        
+        formula_texes = VGroup(
+            MathTex(r"D(\vec{x},Q) = D(W \vec{x},W Q)"),
+            MathTex(r"D(\vec{x},Q) = ||W \vec{x} - W \mu||"),
+            MathTex(r"D(\vec{x},Q) = ||W (\vec{x} - \mu)||"),
+            MathTex(r"D(\vec{x},Q) = \sqrt{(W (\vec{x} - \mu))^T W (\vec{x} - \mu)}"),
+            MathTex(r"D(\vec{x},Q) = \sqrt{(\vec{x} - \mu)^T W^T W (\vec{x} - \mu)}"),
+            MathTex(r"D(\vec{x},Q) = \sqrt{(\vec{x} - \mu)^T cov(\vec{x})^{-1} (\vec{x} - \mu)}"),
+        ).arrange(DOWN, aligned_edge = LEFT)
+        with self.voiceover("Now we can use the fact that Mahalanobis distance is invariant under any transformation, which includes a whitening transformation.") as tracker:
+            self.play(FadeIn(formula_texes[0]))
+        with self.voiceover("But WQ has covariance matrix equal to the identity matrix, so Mahalanobis distances there are Euclidean distances from the mean, which is now W mu.") as tracker:
+            self.play(FadeIn(formula_texes[1]))
+            self.play(FadeIn(formula_texes[2]))
+        with self.voiceover("Now we just expand the formula,") as tracker:
+            self.play(FadeIn(formula_texes[3], run_time = self.get_current_voiceover_duration()))
+        with self.voiceover("transpose of a product reverses their order,") as tracker:
+            self.play(FadeIn(formula_texes[4], run_time = self.get_current_voiceover_duration()))
+        with self.voiceover("and then use our result about W transpose W, and this is the formula for Mahalanobis distance.") as tracker:
+            self.play(FadeIn(formula_texes[5], run_time = self.get_current_voiceover_duration()))
