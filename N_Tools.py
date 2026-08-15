@@ -799,3 +799,32 @@ class TransformWithBoxes(Succession):
         ]
 
         super().__init__(*animations, **kwargs)
+
+def latex_vector(elements, orientation="column", bracket="bmatrix", row_sep = ""):
+    """
+    Convert a list of strings into a LaTeX vector.
+
+    Parameters:
+        elements (list of str): The entries of the vector.
+        orientation (str): "column" or "row".
+        bracket (str): LaTeX matrix environment (e.g., "pmatrix", "bmatrix", "vmatrix").
+
+    Returns:
+        str: LaTeX string representing the vector.
+    """
+    if not elements:
+        raise ValueError("elements list cannot be empty")
+
+    if orientation == "col":
+        orientation = "column"
+
+    if orientation not in {"column", "row"}:
+        raise ValueError("orientation must be 'column' or 'row'")
+
+    if orientation == "column":
+        sep = f" \\\\[{row_sep}]\n" if row_sep else " \\\\\n"
+        body = sep.join(elements)
+    else:  # row
+        body = " & ".join(elements)
+
+    return f"\\begin{{{bracket}}}\n{body}\n\\end{{{bracket}}}\n"
