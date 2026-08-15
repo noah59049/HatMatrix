@@ -21,26 +21,35 @@ class Mahalanobis(StitcherScene, ThreeDScene):
         samples = (L @ rng.standard_normal((2, 80))).T + mean
 
         PLOT_RADIUS = 4
+        AXES_LENGTH = 5
         scatter_axes = Axes(
             x_range=[-PLOT_RADIUS, PLOT_RADIUS, 1],
             y_range=[-PLOT_RADIUS, PLOT_RADIUS, 1],
-            x_length=6,
-            y_length=6,
+            x_length=AXES_LENGTH,
+            y_length=AXES_LENGTH,
             tips=False,
-        )
+        ).to_edge(LEFT, buff=0.75)
         scatter_dots = VGroup(*[
             Dot(scatter_axes.c2p(x, y), radius=0.05, color=BLUE_C)
             for x, y in samples
         ])
         scatter_group = VGroup(scatter_axes, scatter_dots)
 
-        # Reuse scatter_axes' own x/y mapping for the surface's base plane
-        # (rather than a separate ThreeDAxes) so the scatterplot and the
-        # density bump agree exactly on where each point sits -- the
-        # scatter is literally the surface's z=0 slice.
+        # A separate plain Axes (not ThreeDAxes) just to get an x/y base
+        # mapping for the surface, positioned to the right of the
+        # scatterplot -- ThreeDAxes crashes under FadeIn in this manim
+        # version (see X_span.py's strip_sheen), so we sidestep it entirely
+        # rather than work around it here.
+        density_axes = Axes(
+            x_range=[-PLOT_RADIUS, PLOT_RADIUS, 1],
+            y_range=[-PLOT_RADIUS, PLOT_RADIUS, 1],
+            x_length=AXES_LENGTH,
+            y_length=AXES_LENGTH,
+            tips=False,
+        ).to_edge(RIGHT, buff=0.75)
         HEIGHT_SCALE = 9.0
         density_surface = Surface(
-            lambda u, v: scatter_axes.c2p(u, v) + OUT * pdf(u, v) * HEIGHT_SCALE,
+            lambda u, v: density_axes.c2p(u, v) + OUT * pdf(u, v) * HEIGHT_SCALE,
             u_range=[-PLOT_RADIUS, PLOT_RADIUS],
             v_range=[-PLOT_RADIUS, PLOT_RADIUS],
             resolution=(32, 32),
@@ -48,32 +57,31 @@ class Mahalanobis(StitcherScene, ThreeDScene):
             checkerboard_colors=[BLUE_D, BLUE_E],
             stroke_width=0.5,
         )
-        
+        density_group = VGroup(density_axes, density_surface)
+
         with self.voiceover("Now let's suppose we have a distribution Q in R^k. This can either be a discrete distribution, which is basically sampling from a set of points,") as tracker:
-            quarter = self.get_current_voiceover_duration() / 4
-            self.play(FadeIn(scatter_group), run_time=quarter)
+            # Locked to screen space so it stays flat and legible once the
+            # camera tilts to show the 3D graph next to it below.
+            self.add_fixed_in_frame_mobjects(scatter_group)
+            self.play(FadeIn(scatter_group), run_time=self.get_current_voiceover_duration())
         with self.voiceover("or a continuous distribution with a PDF.") as tracker:
-            self.move_camera(phi=65 * DEGREES, theta=-60 * DEGREES, run_time=quarter)
-            self.play(
-                scatter_dots.animate.set_opacity(0.15),
-                FadeIn(density_surface),
-                run_time=quarter,
-            )
-            self.play(
-                Rotate(density_surface, angle=PI / 2, axis=OUT, about_point=scatter_axes.get_origin()),
-                run_time=quarter,
-            )
-            self.play(
-                FadeOut(density_surface),
-                scatter_dots.animate.set_opacity(1.0),
-            )
+            half = self.get_current_voiceover_duration() / 2
+            self.move_camera(phi=65 * DEGREES, theta=-60 * DEGREES, run_time=0.6)
+            self.play(FadeIn(density_group), run_time=half)
+            self.play(FadeOut(density_group), run_time=half)
             self.move_camera(phi=0, theta=-90 * DEGREES, run_time=0.6)
             self.play(FadeOut(scatter_group), run_time=0.6)
 
+        formula_tex = MathTex(
+            r"D(\vec{x}, Q) = ", 
+            r"\sqrt{(\vec{x} - \vec{\mu})^T cov(W)^{-1} (\vec{x} - \vec{\mu})}"
+        ).to_corner(UL)
+
         with self.voiceover("The Mahalanobis distance is a measure of the standardized distance between a point and the mean of the distribution.") as tracker:
-            ...
+            ... # TODO: Draw dotted lines from each point to the mean of the 2D graph, then have a small label with the mahalanobis distance of each point
+            self.play(Write(formula_tex[0]))
         with self.voiceover("It's given by this formula.") as tracker:
-            ...
+            self.play(Write(formula_tex[1]))
         with self.voiceover("I think that the best way to explain that formula is to lead with two important properties that Mahalanobis distance should have, and then show how those properties necessitate this formula.") as tracker:
             ...
         with self.voiceover("The first property is that Mahalanobis distance is equal to Euclidean distance from the mean if the covariance matrix is equal to the identity matrix.") as tracker:
