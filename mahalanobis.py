@@ -78,6 +78,7 @@ class Mahalanobis(StitcherScene, ThreeDScene):
 
         with self.voiceover("The Mahalanobis distance is a measure of the standardized distance between a point and the mean of the distribution.") as tracker:
             ... # TODO: Draw dotted lines from each point to the mean of the 2D graph, then have a small label with the mahalanobis distance of each point
+            # The lines should be always redraw, but the distance numbers should not because we will never change them.
             self.play(Write(formula_tex[0]))
         with self.voiceover("It's given by this formula.") as tracker:
             self.play(Write(formula_tex[1]))
@@ -85,13 +86,17 @@ class Mahalanobis(StitcherScene, ThreeDScene):
         properties = VGroup(
             MathTex(r"cov(Q) = I \implies D(\vec{x}, Q) = ||\vec{x} - \vec{\mu}||"),
             MathTex(r"D(\vec{x}, Q) = D(A \vec{x}, A Q) \mathrm{if A is a rotation, reflection, or scales along the axes}")
-        ).arrange(DOWN, aligned_edge = LEFT)
+        ).arrange(DOWN, aligned_edge = LEFT, buff = 0.5)
+        property_numbers = VGroup(*[
+            Tex(f"{i}.").next_to(property, LEFT)
+            for i, property in enumerate(properties, start=1)
+        ])
         with self.voiceover("I think that the best way to explain that formula is to lead with two important properties that Mahalanobis distance should have, and then show how those properties necessitate this formula.") as tracker:
-            ...
+            self.play(FadeIn(property_numbers))
         with self.voiceover("The first property is that Mahalanobis distance is equal to Euclidean distance from the mean if the covariance matrix is equal to the identity matrix.") as tracker:
-            ...
+            self.play(Write(properties[0]))
         with self.voiceover("The second property is that rotating or reflecting the entire distribution should not change the Mahalanobis distance of any of the points, and neither should scaling by a nonzero amount along the coordinate axes.") as tracker:
-            ...
+            self.play(Write(properties[1]))
         with self.voiceover("This property seems intuitive; rotation and reflection should preserve notations of distance.") as tracker:
             ... # TODO: Rotate and reflect the points
         with self.voiceover("Scaling the distribution along the axes is also equivalent to changing the units, say measuring in meters instead of centimeters. It's intuitive that that shouldn't change any measures of distance.") as tracker:
