@@ -201,4 +201,5 @@ class Mahalanobis(StitcherScene, ThreeDScene):
             )
 
         with self.voiceover("This is because any invertible matrix can be written as a product of rotations and scaling the axes. I'm not going to prove this, but you can Google singular value decomposition if you're interested, and here we're just looking at the narrow case of real-valued square matrices.") as tracker:
-            ...
+            svd_image = ImageMobject("images/svd.png")
+            self.add(svd_image)
