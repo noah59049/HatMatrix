@@ -138,6 +138,8 @@ class Mahalanobis(StitcherScene, ThreeDScene):
             self.play(*animations, run_time=run_time)
 
         with self.voiceover("The Mahalanobis distance is a measure of the standardized distance between a point and the mean of the distribution.") as tracker:
+            for label in distance_labels:
+                label.set_opacity(1)
             self.play(FadeIn(distance_lines), FadeIn(distance_labels))
             self.play(Write(formula_tex[0]))
         with self.voiceover("It's given by this formula.") as tracker:
