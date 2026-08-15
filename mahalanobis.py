@@ -75,7 +75,9 @@ class Mahalanobis(StitcherScene, ThreeDScene):
         table_text = latex_table(rows=rows)
         table_tex = Tex(table_text).scale_to_fit_height(7).next_to(scatter_axes, RIGHT)
         table_grid = extract_table_grid(table_tex)
-        print(f"{table_grid=}")
+        self.play(FadeIn(table_tex))
+        print(f"{table_grid.keys()=}")
+        print(f"{len(rows)=}")
         return
         remaining_indices = list(range(len(table_tex[0])))
         transforms = []
