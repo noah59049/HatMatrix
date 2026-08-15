@@ -86,7 +86,7 @@ class Mahalanobis(StitcherScene, ThreeDScene):
         # Closest, two mid-range, and farthest points -- a small, readable
         # spread of labels rather than cluttering all 80 points with numbers.
         order = np.argsort(distances)
-        highlighted_indices = order[[0, len(order) // 3, 2 * len(order) // 3, -1]]
+        highlighted_indices = range(len(scatter_dots))
         highlighted_dots = VGroup(*[scatter_dots[i] for i in highlighted_indices])
 
         # Dots are circles, so "moving" one to a new position looks
