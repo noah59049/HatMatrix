@@ -81,14 +81,21 @@ class Mahalanobis(StitcherScene, ThreeDScene):
             self.play(Write(formula_tex[0]))
         with self.voiceover("It's given by this formula.") as tracker:
             self.play(Write(formula_tex[1]))
+
+        properties = VGroup(
+            MathTex(r"cov(Q) = I \implies D(\vec{x}, Q) = ||\vec{x} - \vec{\mu}||"),
+            MathTex(r"D(\vec{x}, Q) = D(A \vec{x}, A Q) \mathrm{if A is a rotation, reflection, or scales along the axes}")
+        ).arrange(DOWN, aligned_edge = LEFT)
         with self.voiceover("I think that the best way to explain that formula is to lead with two important properties that Mahalanobis distance should have, and then show how those properties necessitate this formula.") as tracker:
             ...
         with self.voiceover("The first property is that Mahalanobis distance is equal to Euclidean distance from the mean if the covariance matrix is equal to the identity matrix.") as tracker:
             ...
         with self.voiceover("The second property is that rotating or reflecting the entire distribution should not change the Mahalanobis distance of any of the points, and neither should scaling by a nonzero amount along the coordinate axes.") as tracker:
             ...
-        with self.voiceover("This property seems intuitive, rotation and reflection should preserve notations of distance. Scaling the axes is also equivalent to changing the units, say measuring in meters instead of centimeters. It's intuitive that that shouldn't change any measures of distance.") as tracker:
-            ...
+        with self.voiceover("This property seems intuitive; rotation and reflection should preserve notations of distance.") as tracker:
+            ... # TODO: Rotate and reflect the points
+        with self.voiceover("Scaling the distribution along the axes is also equivalent to changing the units, say measuring in meters instead of centimeters. It's intuitive that that shouldn't change any measures of distance.") as tracker:
+            ... # TODO: Scale the points on the axes
         with self.voiceover("That's it. That's all you need to derive the formula for Mahalanobis distance.") as tracker: # TODO: Change the voiceover?
             ...
         with self.voiceover("So first, any invertible matrix can be written as a product of rotations and scaling the axes. I'm not going to prove this, but you can Google singular value decomposition if you're interested, and here we're just looking at the narrow case of real-valued square matrices.") as tracker:
