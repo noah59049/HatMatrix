@@ -161,7 +161,7 @@ class Mahalanobis(StitcherScene, ThreeDScene):
             self.play(Write(properties[0]))
         with self.voiceover("The second property is that rotating or reflecting the entire distribution should not change the Mahalanobis distance of any of the points, and neither should scaling by a nonzero amount along the coordinate axes.") as tracker:
             self.play(Write(properties[1]))
-        with self.voiceover("This property seems intuitive; rotation and reflection should preserve notations of distance.") as tracker:
+        with self.voiceover("This property seems intuitive; rotation and reflection should preserve measures of distance.") as tracker:
             third = self.get_current_voiceover_duration() / 3
             theta = 50 * DEGREES
             rotation = np.array([[np.cos(theta), -np.sin(theta)], [np.sin(theta), np.cos(theta)]])
