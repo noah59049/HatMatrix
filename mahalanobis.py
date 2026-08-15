@@ -111,19 +111,28 @@ class Mahalanobis(StitcherScene, ThreeDScene):
             for i in highlighted_indices
         ]))
 
-        def animate_transform(matrix, run_time):
+        def animate_transform(matrix, run_time, path_arc=0):
             """Moves every scatter dot to A @ sample. Labels aren't part of
             any dot's family (see above), so they're shifted by hand here,
             by the same delta as their dot -- a pure translation that
-            leaves the printed number untouched."""
+            leaves the printed number untouched.
+
+            path_arc curves that motion along a circular arc instead of a
+            straight line -- pass the actual rotation angle for a true
+            rotation (path_along_arc derives the arc's center from the
+            start/end points and this angle, and for points genuinely
+            related by a rotation about mean_point, that derived center
+            *is* mean_point). Leave it at 0 for reflections/scales, which
+            really do move each point in a straight line.
+            """
             transformed = samples @ matrix.T
             animations = []
             for i, (x, y) in enumerate(transformed):
                 dot = scatter_dots[i]
                 target = scatter_axes.c2p(x, y)
                 if i in label_by_index:
-                    animations.append(label_by_index[i].animate.shift(target - dot.get_center()))
-                animations.append(dot.animate.move_to(target))
+                    animations.append(label_by_index[i].animate(path_arc=path_arc).shift(target - dot.get_center()))
+                animations.append(dot.animate(path_arc=path_arc).move_to(target))
             self.play(*animations, run_time=run_time)
 
         with self.voiceover("The Mahalanobis distance is a measure of the standardized distance between a point and the mean of the distribution.") as tracker:
@@ -157,7 +166,7 @@ class Mahalanobis(StitcherScene, ThreeDScene):
             theta = 50 * DEGREES
             rotation = np.array([[np.cos(theta), -np.sin(theta)], [np.sin(theta), np.cos(theta)]])
             reflection = np.array([[-1.0, 0.0], [0.0, 1.0]])
-            animate_transform(rotation, run_time=third)
+            animate_transform(rotation, run_time=third, path_arc=theta)
             animate_transform(reflection @ rotation, run_time=third)
             animate_transform(np.eye(2), run_time=third)
         with self.voiceover("Scaling the distribution along the axes is also equivalent to changing the units, say measuring in meters instead of centimeters. It's intuitive that that shouldn't change any measures of distance.") as tracker:
