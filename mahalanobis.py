@@ -59,11 +59,13 @@ class Mahalanobis(StitcherScene, ThreeDScene):
         )
         density_group = VGroup(density_axes, density_surface)
 
-        with self.voiceover("Now let's suppose we have a distribution Q in R^k. This can either be a discrete distribution, which is basically sampling from a set of points,") as tracker:
+        with self.voiceover("Now let's suppose we have a distribution Q in R^k. This can either be a discrete distribution,") as tracker:
             # Locked to screen space so it stays flat and legible once the
             # camera tilts to show the 3D graph next to it below.
             self.add_fixed_in_frame_mobjects(scatter_group)
             self.play(FadeIn(scatter_group))
+        with self.voiceover("which is basically sampling from a set of points,") as tracker:
+            ... # TODO: show each point transform into an ordered pair of its coordinates with other things.
         with self.voiceover("or a continuous distribution with a PDF.") as tracker:
             half = self.get_current_voiceover_duration() / 2
             self.move_camera(phi=65 * DEGREES, theta=-60 * DEGREES, run_time=0.6)
@@ -159,21 +161,19 @@ class Mahalanobis(StitcherScene, ThreeDScene):
             self.play(FadeIn(property_numbers))
         with self.voiceover("The first property is that Mahalanobis distance is equal to Euclidean distance from the mean if the covariance matrix is equal to the identity matrix.") as tracker:
             self.play(Write(properties[0]))
-        with self.voiceover("The second property is that rotating or reflecting the entire distribution should not change the Mahalanobis distance of any of the points, and neither should scaling by a nonzero amount along the coordinate axes.") as tracker:
+        with self.voiceover("The second property is that rotating or reflecting the entire distribution should not change the Mahalanobis distance of any of the points, and neither should scaling by a nonzero amount along the coordinate axes. This property seems intuitive;") as tracker:
             self.play(Write(properties[1]))
-        with self.voiceover("This property seems intuitive; rotation and reflection should preserve measures of distance.") as tracker:
-            third = self.get_current_voiceover_duration() / 3
+        with self.voiceover("rotation and reflection should preserve measures of distance.") as tracker:
             theta = 50 * DEGREES
             rotation = np.array([[np.cos(theta), -np.sin(theta)], [np.sin(theta), np.cos(theta)]])
             reflection = np.array([[-1.0, 0.0], [0.0, 1.0]])
-            animate_transform(rotation, run_time=third, path_arc=theta)
-            animate_transform(reflection @ rotation, run_time=third)
-            animate_transform(np.eye(2), run_time=third)
+            animate_transform(rotation, path_arc=theta)
+            animate_transform(reflection @ rotation)
+            animate_transform(np.eye(2))
         with self.voiceover("Scaling the distribution along the axes is also equivalent to changing the units, say measuring in meters instead of centimeters. It's intuitive that that shouldn't change any measures of distance.") as tracker:
-            half = self.get_current_voiceover_duration() / 2
             scale = np.diag([1.8, 1])
-            animate_transform(scale, run_time=half)
-            animate_transform(np.eye(2), run_time=half)
+            animate_transform(scale)
+            animate_transform(np.eye(2))
         with self.voiceover("That's it. That's all you need to derive the formula for Mahalanobis distance.") as tracker: # TODO: Change the voiceover?
             ...
         with self.voiceover("So first, any invertible matrix can be written as a product of rotations and scaling the axes. I'm not going to prove this, but you can Google singular value decomposition if you're interested, and here we're just looking at the narrow case of real-valued square matrices.") as tracker:
