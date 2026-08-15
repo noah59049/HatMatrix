@@ -19,7 +19,7 @@ class Mahalanobis(StitcherScene, ThreeDScene):
 
         rng = np.random.default_rng(3)
         L = np.linalg.cholesky(cov)
-        samples = (L @ rng.standard_normal((2, 80))).T + mean
+        samples = (L @ rng.standard_normal((2, 15))).T + mean
 
         PLOT_RADIUS = 4
         AXES_LENGTH = 5
