@@ -83,52 +83,51 @@ class Mahalanobis(StitcherScene, ThreeDScene):
             return float(np.sqrt(v @ inv_cov @ v))
 
         distances = np.array([mahalanobis_distance(s) for s in samples])
-        # Closest, two mid-range, and farthest points -- a small, readable
-        # spread of labels rather than cluttering all 80 points with numbers.
-        order = np.argsort(distances)
         highlighted_indices = range(len(scatter_dots))
-        highlighted_dots = VGroup(*[scatter_dots[i] for i in highlighted_indices])
 
-        # Dots are circles, so "moving" one to a new position looks
-        # identical to rotating/reflecting/scaling it in place -- which
-        # means every later transform below can just be a plain move_to,
-        # a pure translation. That's what keeps this simple: translating a
-        # dot carries its attached label along for free, with no rotation
-        # or stretching applied to the label's own shape, so the printed
-        # number never needs to be touched again once it's written.
+        # Labels are kept as independent mobjects, never attached as a
+        # dot's child. Mobject.get_center()/move_to() operate on a
+        # mobject's whole family (itself + all submobjects), so a dot with
+        # a label attached would have its "center" pulled toward the
+        # label -- that's what was making the dashed lines the wrong
+        # length/direction, and made move_to() below shift each dot by a
+        # different, label-offset-dependent amount instead of moving the
+        # cloud as one rigid body.
+        distance_labels = VGroup()
+        label_by_index = {}
         for i in highlighted_indices:
             dot = scatter_dots[i]
             label = Tex(f"{distances[i]:.2f}", font_size=24)
             label.next_to(dot, normalize(dot.get_center() - mean_point), buff=0.12)
-            # dot is already on screen (part of scatter_group), so a plain
-            # add() here would make the label pop in immediately at full
-            # opacity; start it invisible so the FadeIn below is the first
-            # time it actually appears.
-            label.set_opacity(0)
-            dot.add(label)
+            label.set_opacity(0)  # faded in below, once the dots are already on screen
+            label_by_index[i] = label
+            distance_labels.add(label)
 
         # The connecting lines, unlike the labels, do need to be recomputed
         # every frame: their far endpoint is whatever the dot's current
         # (possibly mid-animation) position is.
         distance_lines = always_redraw(lambda: VGroup(*[
-            DashedLine(mean_point, dot.get_center(), color=GRAY, stroke_width=1.5)
-            for dot in highlighted_dots
+            DashedLine(mean_point, scatter_dots[i].get_center(), color=GRAY, stroke_width=1.5)
+            for i in highlighted_indices
         ]))
 
         def animate_transform(matrix, run_time):
-            """Moves every scatter dot (and any label riding along on one of
-            them) to A @ sample, animated as a plain move_to per dot."""
+            """Moves every scatter dot to A @ sample. Labels aren't part of
+            any dot's family (see above), so they're shifted by hand here,
+            by the same delta as their dot -- a pure translation that
+            leaves the printed number untouched."""
             transformed = samples @ matrix.T
-            self.play(
-                *[
-                    dot.animate.move_to(scatter_axes.c2p(x, y))
-                    for dot, (x, y) in zip(scatter_dots, transformed)
-                ],
-                run_time=run_time,
-            )
+            animations = []
+            for i, (x, y) in enumerate(transformed):
+                dot = scatter_dots[i]
+                target = scatter_axes.c2p(x, y)
+                if i in label_by_index:
+                    animations.append(label_by_index[i].animate.shift(target - dot.get_center()))
+                animations.append(dot.animate.move_to(target))
+            self.play(*animations, run_time=run_time)
 
         with self.voiceover("The Mahalanobis distance is a measure of the standardized distance between a point and the mean of the distribution.") as tracker:
-            self.play(FadeIn(distance_lines), *[FadeIn(scatter_dots[i][-1]) for i in highlighted_indices])
+            self.play(FadeIn(distance_lines), FadeIn(distance_labels))
             self.play(Write(formula_tex[0]))
         with self.voiceover("It's given by this formula.") as tracker:
             self.play(Write(formula_tex[1]))
