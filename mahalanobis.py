@@ -69,8 +69,7 @@ class Mahalanobis(StitcherScene, ThreeDScene):
             self.move_camera(phi=65 * DEGREES, theta=-60 * DEGREES, run_time=0.6)
             self.play(FadeIn(density_group), run_time=half)
             self.play(FadeOut(density_group), run_time=half)
-            self.move_camera(phi=0, theta=-90 * DEGREES, run_time=0.6)
-            self.play(FadeOut(scatter_group), run_time=0.6)
+            self.move_camera(phi=0, theta=-90 * DEGREES)
 
         formula_tex = MathTex(
             r"D(\vec{x}, Q) = ", 
