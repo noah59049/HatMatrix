@@ -28,7 +28,7 @@ class Mahalanobis(StitcherScene, ThreeDScene):
             x_length=AXES_LENGTH,
             y_length=AXES_LENGTH,
             tips=False,
-        ).to_edge(LEFT, buff=0.75)
+        ).to_edge(LEFT, buff=0.17)
         scatter_dots = VGroup(*[
             Dot(scatter_axes.c2p(x, y), radius=0.05, color=BLUE_C)
             for x, y in samples
