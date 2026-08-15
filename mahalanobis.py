@@ -87,15 +87,15 @@ class Mahalanobis(StitcherScene, ThreeDScene):
             MathTex(r"cov(Q) = I \implies D(\vec{x}, Q) = ||\vec{x} - \vec{\mu}||"),
             VGroup(
                 MathTex(r"D(\vec{x}, Q) = D(A \vec{x}, A Q)"),
-                Text("if A is a rotation, reflection, or scales along the axes"),
+                Tex("if A is a rotation, reflection, or scales along the axes"),
             ).arrange(DOWN, aligned_edge = LEFT)
         ).arrange(DOWN, aligned_edge = LEFT)
         property_numbers = VGroup(*[
-            Tex(f"{i}.").next_to(property, LEFT)
+            Tex(f"{i}.").next_to(property, LEFT, aligned_edge=UP)
             for i, property in enumerate(properties, start=1)
         ])
         property_numbers.next_to(scatter_axes, RIGHT)
-        properties.next_to(property_numbers, RIGHT)
+        properties.next_to(property_numbers, RIGHT, aligned_edge=UP)
         with self.voiceover("I think that the best way to explain that formula is to lead with two important properties that Mahalanobis distance should have, and then show how those properties necessitate this formula.") as tracker:
             self.play(FadeIn(property_numbers))
         with self.voiceover("The first property is that Mahalanobis distance is equal to Euclidean distance from the mean if the covariance matrix is equal to the identity matrix.") as tracker:
