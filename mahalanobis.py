@@ -183,8 +183,8 @@ class Mahalanobis(StitcherScene, ThreeDScene):
             # points just moved." about_point=mean_point is x=0, so the
             # y-axis (which sits at x=0) doesn't shift.
             animate_transform(scale)
-            self.play(scatter_axes.animate.stretch(SCALE_FACTOR, 0, about_point=mean_point))
             animate_transform(np.eye(2))
+            self.play(scatter_axes.animate.stretch(SCALE_FACTOR, 0, about_point=mean_point))
             self.play(scatter_axes.animate.stretch(1 / SCALE_FACTOR, 0, about_point=mean_point))
         with self.voiceover("That's it. That's all you need to derive the formula for Mahalanobis distance.") as tracker: # TODO: Change the voiceover?
             ...
