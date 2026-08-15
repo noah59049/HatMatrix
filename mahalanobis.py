@@ -63,7 +63,7 @@ class Mahalanobis(StitcherScene, ThreeDScene):
             # Locked to screen space so it stays flat and legible once the
             # camera tilts to show the 3D graph next to it below.
             self.add_fixed_in_frame_mobjects(scatter_group)
-            self.play(FadeIn(scatter_group), run_time=self.get_current_voiceover_duration())
+            self.play(FadeIn(scatter_group))
         with self.voiceover("or a continuous distribution with a PDF.") as tracker:
             half = self.get_current_voiceover_duration() / 2
             self.move_camera(phi=65 * DEGREES, theta=-60 * DEGREES, run_time=0.6)
