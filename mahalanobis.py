@@ -186,9 +186,19 @@ class Mahalanobis(StitcherScene, ThreeDScene):
             animate_transform(np.eye(2))
             self.play(scatter_axes.animate.stretch(SCALE_FACTOR, 0, about_point=mean_point))
             self.play(scatter_axes.animate.stretch(1 / SCALE_FACTOR, 0, about_point=mean_point))
-        with self.voiceover("That's it. That's all you need to derive the formula for Mahalanobis distance.") as tracker: # TODO: Change the voiceover?
+        with self.voiceover("That's it. That's all you need to derive the formula for Mahalanobis distance, which we will do next. First, Mahalanobis distance doesn't change when you multiply the") as tracker: # TODO: Change the voiceover?
             ...
-        with self.voiceover("So first, any invertible matrix can be written as a product of rotations and scaling the axes. I'm not going to prove this, but you can Google singular value decomposition if you're interested, and here we're just looking at the narrow case of real-valued square matrices.") as tracker:
-            ...
-        with self.voiceover("So therefore, Mahalanobis distance doesn't change when you multiply the distribution by any matrix.") as tracker:
+        with self.voiceover("distribution by any matrix.") as tracker:
+            cross_out_lines = VGroup(
+                Line(properties[1][1].get_left() + LEFT * 0.1, properties[1][1].get_right() + RIGHT * 0.1),
+                Line(properties[1][2].get_left() + LEFT * 0.1, properties[1][2].get_right() + RIGHT * 0.1),
+            )
+            self.play(Create(cross_out_lines))
+            self.play(
+                FadeOut(cross_out_lines),
+                FadeOut(properties[1][1]),
+                FadeOut(properties[1][2])
+            )
+
+        with self.voiceover("This is because any invertible matrix can be written as a product of rotations and scaling the axes. I'm not going to prove this, but you can Google singular value decomposition if you're interested, and here we're just looking at the narrow case of real-valued square matrices.") as tracker:
             ...
