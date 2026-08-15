@@ -1,6 +1,7 @@
 import numpy as np
 from manim import *
 from stitcher_scene import StitcherScene
+from N_Tools import *
 
 
 class Mahalanobis(StitcherScene, ThreeDScene):
@@ -64,8 +65,32 @@ class Mahalanobis(StitcherScene, ThreeDScene):
             # camera tilts to show the 3D graph next to it below.
             self.add_fixed_in_frame_mobjects(scatter_group)
             self.play(FadeIn(scatter_group))
+
+        rows = [[r"$\vec{x}$", r"$p(\vec{x})$"]]
+        for coords in samples:
+            coords = f"${latex_vector(coords)}$"
+            prob = r"$\frac{1}{n}$"
+            row = [coords, prob]
+            rows.append(row)
+        table_text = latex_table(rows=rows)
+        table_tex = Tex(table_text).scale_to_fit_height(7).next_to(scatter_axes, RIGHT)
+        table_grid = extract_table_grid(table_tex)
+        remaining_indices = list(range(len(table_tex[0])))
+        transforms = []
+        for i, dot in enumerate(scatter_dots):
+            glyph_indices = table_grid[i + 1, 0]
+            transforms.append(TransformFromCopy(dot, table_tex[0][glyph_indices]))
+            for glyph_index in glyph_indices:
+                remaining_indices.remove(glyph_index)
+
         with self.voiceover("which is basically sampling from a set of points,") as tracker:
-            ... # TODO: show each point transform into an ordered pair of its coordinates with other things.
+            self.play(
+                FadeIn(table_tex[0][remaining_indices]),
+                *transforms
+            )
+            self.wait(self.get_current_voiceover_duration() - 2.1)
+            self.play(FadeOut(table_tex))
+
         with self.voiceover("or a continuous distribution with a PDF.") as tracker:
             half = self.get_current_voiceover_duration() / 2
             self.move_camera(phi=65 * DEGREES, theta=-60 * DEGREES, run_time=0.6)
