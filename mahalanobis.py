@@ -113,7 +113,7 @@ class Mahalanobis(StitcherScene, ThreeDScene):
             for i in highlighted_indices
         ]))
 
-        def animate_transform(matrix, run_time, path_arc=0):
+        def animate_transform(matrix, run_time=1.5, path_arc=0):
             """Moves every scatter dot to A @ sample. Labels aren't part of
             any dot's family (see above), so they're shifted by hand here,
             by the same delta as their dot -- a pure translation that
@@ -171,9 +171,16 @@ class Mahalanobis(StitcherScene, ThreeDScene):
             animate_transform(reflection @ rotation)
             animate_transform(np.eye(2))
         with self.voiceover("Scaling the distribution along the axes is also equivalent to changing the units, say measuring in meters instead of centimeters. It's intuitive that that shouldn't change any measures of distance.") as tracker:
-            scale = np.diag([1.8, 1])
+            SCALE_FACTOR = 1.8
+            scale = np.diag([SCALE_FACTOR, 1])
+            # Stretching the x-axis's own tick spacing after the points
+            # is what sells "this is a change of units" rather than "the
+            # points just moved." about_point=mean_point is x=0, so the
+            # y-axis (which sits at x=0) doesn't shift.
             animate_transform(scale)
+            self.play(scatter_axes.animate.stretch(SCALE_FACTOR, 0, about_point=mean_point))
             animate_transform(np.eye(2))
+            self.play(scatter_axes.animate.stretch(1 / SCALE_FACTOR, 0, about_point=mean_point))
         with self.voiceover("That's it. That's all you need to derive the formula for Mahalanobis distance.") as tracker: # TODO: Change the voiceover?
             ...
         with self.voiceover("So first, any invertible matrix can be written as a product of rotations and scaling the axes. I'm not going to prove this, but you can Google singular value decomposition if you're interested, and here we're just looking at the narrow case of real-valued square matrices.") as tracker:
