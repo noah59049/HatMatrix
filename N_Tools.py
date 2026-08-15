@@ -828,3 +828,43 @@ def latex_vector(elements, orientation="column", bracket="bmatrix", row_sep = ""
         body = " & ".join(elements)
 
     return f"\\begin{{{bracket}}}\n{body}\n\\end{{{bracket}}}\n"
+
+def latex_table(rows, colnames=None, align="c", borders=True):
+    """
+    Convert a 2D array of strings into a LaTeX tabular table.
+
+    Parameters:
+        rows (list of list of str): The table's entries, row by row.
+        colnames (list of str, optional): Header row, prepended above `rows`.
+        align (str): Per-column alignment ("c", "l", or "r"), applied to every column.
+        borders (bool): Whether to draw a full grid ("|c|c|...", \\hline between rows).
+
+    Returns:
+        str: LaTeX string representing the table (a tabular environment).
+    """
+    if not rows:
+        raise ValueError("rows cannot be empty")
+
+    n_cols = len(rows[0])
+    for row in rows:
+        if len(row) != n_cols:
+            raise ValueError("All rows must have the same number of columns")
+
+    if colnames:
+        if len(colnames) != n_cols:
+            raise ValueError("colnames length must match number of columns")
+        rows = [colnames] + [list(row) for row in rows]
+
+    if borders:
+        col_spec = "|" + f" {align} |" * n_cols
+        body = " \\\\\n\\hline\n".join(" & ".join(row) for row in rows)
+        body = f"\\hline\n{body} \\\\\n\\hline"
+    else:
+        col_spec = f" {align} " * n_cols
+        body = " \\\\\n".join(" & ".join(row) for row in rows)
+
+    return (
+        f"\\begin{{tabular}}{{{col_spec}}}\n"
+        f"{body}\n"
+        "\\end{tabular}"
+    )
