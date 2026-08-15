@@ -163,7 +163,7 @@ class Mahalanobis(StitcherScene, ThreeDScene):
             animate_transform(np.eye(2), run_time=third)
         with self.voiceover("Scaling the distribution along the axes is also equivalent to changing the units, say measuring in meters instead of centimeters. It's intuitive that that shouldn't change any measures of distance.") as tracker:
             half = self.get_current_voiceover_duration() / 2
-            scale = np.diag([1.8, 0.5])
+            scale = np.diag([1.8, 1])
             animate_transform(scale, run_time=half)
             animate_transform(np.eye(2), run_time=half)
         with self.voiceover("That's it. That's all you need to derive the formula for Mahalanobis distance.") as tracker: # TODO: Change the voiceover?
