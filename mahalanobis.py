@@ -87,7 +87,8 @@ class Mahalanobis(StitcherScene, ThreeDScene):
             MathTex(r"cov(Q) = I \implies D(\vec{x}, Q) = ||\vec{x} - \vec{\mu}||"),
             VGroup(
                 MathTex(r"D(\vec{x}, Q) = D(A \vec{x}, A Q)"),
-                Tex("if A is a rotation, reflection, or scales along the axes"),
+                Tex("if A is a rotation, reflection, or"),
+                Tex("scales along the axes"),
             ).arrange(DOWN, aligned_edge = LEFT)
         ).arrange(DOWN, aligned_edge = LEFT)
         property_numbers = VGroup(*[
