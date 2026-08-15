@@ -67,14 +67,16 @@ class Mahalanobis(StitcherScene, ThreeDScene):
             self.play(FadeIn(scatter_group))
 
         rows = [[r"$\vec{x}$", r"$p(\vec{x})$"]]
-        for coords in samples:
-            coords = f"${latex_vector(coords)}$"
+        for vec in samples:
+            coords = f"${numpy_to_latex(as_col(vec))}$"
             prob = r"$\frac{1}{n}$"
             row = [coords, prob]
             rows.append(row)
         table_text = latex_table(rows=rows)
         table_tex = Tex(table_text).scale_to_fit_height(7).next_to(scatter_axes, RIGHT)
         table_grid = extract_table_grid(table_tex)
+        print(f"{table_grid=}")
+        return
         remaining_indices = list(range(len(table_tex[0])))
         transforms = []
         for i, dot in enumerate(scatter_dots):
