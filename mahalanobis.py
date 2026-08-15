@@ -200,6 +200,41 @@ class Mahalanobis(StitcherScene, ThreeDScene):
                 FadeOut(properties[1][2])
             )
 
+        def highlight_region(image, x0, y0, x1, y1, color=YELLOW, opacity=0.4):
+            """A translucent rectangle over the given region of `image`, like
+            a highlighter over the screenshotted text. x0/x1 are horizontal
+            fractions of image.width (0=left edge, 1=right edge); y0/y1 are
+            vertical fractions of image.height (0=top edge, 1=bottom edge) --
+            measured directly off the source PNG's pixel coordinates, so
+            these stay correct regardless of how the image gets scaled or
+            positioned on screen.
+            """
+            top_left = image.get_corner(UL)
+            corner1 = top_left + RIGHT * x0 * image.width + DOWN * y0 * image.height
+            corner2 = top_left + RIGHT * x1 * image.width + DOWN * y1 * image.height
+            return Rectangle(
+                width=abs(corner2[0] - corner1[0]),
+                height=abs(corner2[1] - corner1[1]),
+                fill_color=color,
+                fill_opacity=opacity,
+                stroke_width=0,
+            ).move_to((corner1 + corner2) / 2)
+
         with self.voiceover("any invertible matrix can be written as a product of rotations and scaling the axes. I'm not going to prove this, but you can Google singular value decomposition if you're interested, and here we're just looking at the narrow case of real-valued square matrices.") as tracker:
-            svd_image = ImageMobject("images/svd.png")
+            svd_image = ImageMobject("images/svd.png").scale_to_fit_width(11)
             self.add(svd_image)
+
+            # "...a factorization of a real or complex matrix into a
+            # rotation, followed by a scaling, followed by another
+            # rotation." -- wraps across the article's first two lines, so
+            # it takes two rectangles, one per line.
+            svd_highlight = VGroup(
+                highlight_region(svd_image, 0.1245, 0.032, 0.679, 0.088),
+                highlight_region(svd_image, 0.0, 0.137, 0.505, 0.200),
+            )
+            self.play(
+                Create(svd_highlight[0])
+            )
+            self.play(
+                Create(svd_highlight[1])
+            )
