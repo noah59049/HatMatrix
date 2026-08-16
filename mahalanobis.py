@@ -2,7 +2,7 @@ import numpy as np
 from manim import *
 from stitcher_scene import StitcherScene
 from N_Tools import *
-
+from scipy.linalg import sqrtm
 
 class Mahalanobis(StitcherScene, ThreeDScene):
     def construct_scene(self):
@@ -279,12 +279,26 @@ class Mahalanobis(StitcherScene, ThreeDScene):
             self.play(
                 Create(svd_highlight[1])
             )
+            self.wait(self.get_current_voiceover_duration() - 3.1)
+            self.play(FadeOut(
+                svd_image,
+                svd_highlight
+            ))
 
+        tex1 = Tex("Whitening Transformation").to_corner(UR)
+        tex2 = MathTex("cov(WX)=I").next_to(tex1, DOWN, aligned_edge=RIGHT)
+        whiten1 = MathTex(r"D(\vec{x}, Q) = D(W \vec{x}, W Q)").next_to(properties[1][0], DOWN, aligned_edge=LEFT)
+        whiten2 = MathTex(r"D(\vec{x}, Q) = ||W \vec{x} - W \vec{\mu}||").next_to(whiten1, DOWN, aligned_edge=LEFT)
         with self.voiceover("For the next step in the proof we need to understand a whitening transformation.") as tracker:
-            ...
+            self.play(FadeIn(tex1))
         with self.voiceover("A whitening transformation is a linear transformation that transforms a distribution into one with covariance equal to the identity matrix.") as tracker:
-            ...
+            W = sqrtm(np.linalg.inv(cov))
+            animate_transform(W)
+            # animate_transform(np.eye(2)) # maybe put this here, maybe somewhere else
         with self.voiceover("If we represent the whitening transformation as multiplication by W, this means that the covariance of W Q equals the identity matrix.") as tracker:
-            ...
-        with self.voiceover("Now here's an important result: the Mahalanobis distance is equal to Mahalanobis distance after a whitening transformation, which must be equal to the Euclidean distance after a whitening transformation.") as tracker:
-            ...
+            self.play(FadeIn(tex2))
+        with self.voiceover("Now here's an important result, which flows from the first two facts we have: the Mahalanobis distance is equal to Mahalanobis distance after any whitening transformation, which must be equal to the Euclidean distance after a whitening transformation.") as tracker:
+            self.play(TransformByGlyphMap(properties[1][0].copy(), whiten1, ([0], [0])))
+            self.play(TransformMatchingTex(whiten1.copy(), whiten2,
+                                          # TODO: Turn this into TransformByGlyphMap
+            ))
