@@ -108,6 +108,8 @@ class Mahalanobis(StitcherScene, ThreeDScene):
             self.move_camera(phi=65 * DEGREES, theta=-60 * DEGREES, run_time=0.6)
             self.play(FadeIn(density_group))
         with self.voiceover("with a PDF. The Mahalanobis distance") as tracker:
+            self.add_fixed_in_frame_mobjects(pdf_tex)
+            pdf_tex.to_corner(UR)
             self.play(FadeIn(pdf_tex))
             self.play(FadeOut(density_group), FadeOut(pdf_tex))
             self.move_camera(phi=0, theta=-90 * DEGREES)
