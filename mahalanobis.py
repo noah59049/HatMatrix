@@ -101,7 +101,6 @@ class Mahalanobis(StitcherScene, ThreeDScene):
             self.wait(self.get_current_voiceover_duration() - 2.1)
             self.play(FadeOut(table_tex))
 
-        return
         with self.voiceover("or a continuous distribution with a PDF.") as tracker:
             half = self.get_current_voiceover_duration() / 2
             self.move_camera(phi=65 * DEGREES, theta=-60 * DEGREES, run_time=0.6)
