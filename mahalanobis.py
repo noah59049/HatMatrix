@@ -18,7 +18,7 @@ class Mahalanobis(StitcherScene, ThreeDScene):
             v = np.array([x, y]) - mean
             return norm_const * np.exp(-0.5 * v @ inv_cov @ v)
         
-        pdf_tex = MathTex(r"\frac{1}{2 \ pi \sqrt{det(cov) e^{-\frac{1}{2} \vec{x}^T cov^{-1} \vec{x} }}}".replace("cov", numpy_to_latex(cov))).to_corner(UR)
+        pdf_tex = MathTex(r"\frac{1}{2 \ pi \sqrt{det(cov)} e^{-\frac{1}{2} \vec{x}^T cov^{-1} \vec{x} }}".replace("cov", numpy_to_latex(cov))).to_corner(UR)
 
         rng = np.random.default_rng(3)
         L = np.linalg.cholesky(cov)
