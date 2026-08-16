@@ -12,10 +12,13 @@ class Mahalanobis(StitcherScene, ThreeDScene):
         mean = np.array([0.0, 0.0])
         inv_cov = np.linalg.inv(cov)
         norm_const = 1 / (2 * np.pi * np.sqrt(np.linalg.det(cov)))
+        # it's 2 * pi not sqrt(2 * pi) because for multivariate normal, it's (2 * pi) ^ (k/2)
 
         def pdf(x, y):
             v = np.array([x, y]) - mean
             return norm_const * np.exp(-0.5 * v @ inv_cov @ v)
+        
+        pdf_tex = MathTex(r"\frac{1}{2 \ pi \sqrt{det(cov) e^{-\frac{1}{2} \vec{x}^T cov^{-1} \vec{x} }}}".replace("cov", numpy_to_latex(cov))).to_corner(UR)
 
         rng = np.random.default_rng(3)
         L = np.linalg.cholesky(cov)
@@ -101,11 +104,12 @@ class Mahalanobis(StitcherScene, ThreeDScene):
             self.wait(self.get_current_voiceover_duration() - 2.1)
             self.play(FadeOut(table_tex))
 
-        with self.voiceover("or a continuous distribution with a PDF.") as tracker:
-            half = self.get_current_voiceover_duration() / 2
+        with self.voiceover("or a continuous distribution") as tracker:
             self.move_camera(phi=65 * DEGREES, theta=-60 * DEGREES, run_time=0.6)
-            self.play(FadeIn(density_group), run_time=half)
-            self.play(FadeOut(density_group), run_time=half)
+            self.play(FadeIn(density_group))
+        with self.voiceover("with a PDF. The Mahalanobis distance") as tracker:
+            self.play(FadeIn(pdf_tex))
+            self.play(FadeOut(density_group), FadeOut(pdf_tex))
             self.move_camera(phi=0, theta=-90 * DEGREES)
 
         formula_tex = MathTex(
@@ -172,7 +176,7 @@ class Mahalanobis(StitcherScene, ThreeDScene):
                 animations.append(dot.animate(path_arc=path_arc).move_to(target))
             self.play(*animations, run_time=run_time)
 
-        with self.voiceover("The Mahalanobis distance is a measure of the standardized distance between a point and the mean of the distribution.") as tracker:
+        with self.voiceover("is a measure of the standardized distance between a point and the mean of the distribution.") as tracker:
             i = 0
             for label in distance_labels:
                 i += 1
