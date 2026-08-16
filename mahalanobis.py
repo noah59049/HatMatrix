@@ -297,8 +297,11 @@ class Mahalanobis(StitcherScene, ThreeDScene):
             # animate_transform(np.eye(2)) # maybe put this here, maybe somewhere else
         with self.voiceover("If we represent the whitening transformation as multiplication by W, this means that the covariance of W Q equals the identity matrix.") as tracker:
             self.play(FadeIn(tex2))
-        with self.voiceover("Now here's an important result, which flows from the first two facts we have: the Mahalanobis distance is equal to Mahalanobis distance after any whitening transformation, which must be equal to the Euclidean distance after a whitening transformation.") as tracker:
+        with self.voiceover("Now here's an important result, which flows from the first two facts we have: the Mahalanobis distance is equal to Mahalanobis distance") as tracker:
+            ...
+        with self.voiceover("after any whitening transformation, which must be equal to the") as tracker:
             self.play(TransformByGlyphMap(properties[1][0].copy(), whiten1, ([0], [0])))
+        with self.voiceover("Euclidean distance after a whitening transformation.") as tracker:
             self.play(TransformMatchingTex(whiten1.copy(), whiten2,
                                           # TODO: Turn this into TransformByGlyphMap
             ))
