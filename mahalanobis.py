@@ -305,3 +305,5 @@ class Mahalanobis(StitcherScene, ThreeDScene):
             self.play(TransformMatchingTex(whiten1.copy(), whiten2,
                                           # TODO: Turn this into TransformByGlyphMap
             ))
+        # with self.voiceover("Now I'll leave a proof onscreen for why this formula is true.") as tracker:
+        #     ...
