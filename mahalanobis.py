@@ -219,14 +219,40 @@ class Mahalanobis(StitcherScene, ThreeDScene):
         with self.voiceover("Scaling the distribution along the axes is also equivalent to changing the units, say measuring in meters instead of centimeters. It's intuitive that that shouldn't change any measures of distance.") as tracker:
             SCALE_FACTOR = 1.8
             scale = np.diag([SCALE_FACTOR, 1])
-            # Stretching the x-axis's own tick spacing after the points
-            # is what sells "this is a change of units" rather than "the
-            # points just moved." about_point=mean_point is x=0, so the
-            # y-axis (which sits at x=0) doesn't shift.
+            def stretch_x_axis(factor, run_time=1.5):
+                """Slides each x-axis tick to its new position under a
+                horizontal scale by `factor` about mean_point -- and moves
+                the axis line's own endpoints the same way -- instead of
+                calling Mobject.stretch() on the axis. stretch() scales
+                every point in the whole family: each tick is its own
+                little Line with real width, so it would come out wider
+                instead of moving, and calling it on all of scatter_axes
+                (not just x_axis) would do the same to the y-axis's ticks
+                too, which just sit in place bloating since they're
+                centered right on the pivot.
+                """
+                x_axis = scatter_axes.x_axis
+                about_x = mean_point[0]
+
+                def scaled_x(x):
+                    return about_x + (x - about_x) * factor
+
+                animations = []
+                for tick in x_axis.ticks:
+                    old_x = tick.get_center()[0]
+                    animations.append(tick.animate.shift(RIGHT * (scaled_x(old_x) - old_x)))
+
+                start, end = x_axis.get_start(), x_axis.get_end()
+                new_start = np.array([scaled_x(start[0]), start[1], start[2]])
+                new_end = np.array([scaled_x(end[0]), end[1], end[2]])
+                animations.append(x_axis.animate.put_start_and_end_on(new_start, new_end))
+
+                self.play(*animations, run_time=run_time)
+
             animate_transform(scale)
             animate_transform(np.eye(2))
-            self.play(scatter_axes.animate.stretch(SCALE_FACTOR, 0, about_point=mean_point))
-            self.play(scatter_axes.animate.stretch(1 / SCALE_FACTOR, 0, about_point=mean_point))
+            stretch_x_axis(SCALE_FACTOR)
+            stretch_x_axis(1 / SCALE_FACTOR)
         with self.voiceover("That's it. These 2 properties, which I think are pretty reasonable things for a distance measure to have, all you need to derive the formula for Mahalanobis distance, which we will do next. First, Mahalanobis distance doesn't change when you multiply the") as tracker: # TODO: Change the voiceover?
             ...
         with self.voiceover("distribution by any matrix. This is because") as tracker:
