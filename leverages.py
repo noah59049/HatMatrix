@@ -161,4 +161,17 @@ class Leverages(StitcherScene):
                 Y_tracker.animate.set_value(Y)
             )
 
-            
+        leverages
+        leverages_axes = Axes()
+        # leverages_plot = VGroup(
+        #     *[
+        #         Dot(axes.c2p(x, leverage) for x, leverage in zip(X1.flatten(), leverages.flatten()))
+        #     ]
+        # )
+        yeet = []
+        for x, leverage in zip(X1.flatten(), leverages.flatten()):
+            yeet.append(Dot(axes.c2p(x, leverage)))
+        leverages_plot = VGroup(*yeet)
+        self.add(leverages_axes)
+        self.add(leverages_plot)
+        self.wait(2)
