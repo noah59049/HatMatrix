@@ -13,6 +13,7 @@ class LeveragesExplorer(StitcherScene):
         X_tracker.add_updater(lambda m: m.set_value(np.column_stack([as_col(np.ones(n)), X1_tracker.get_value()]))) 
         leverages_tracker = ArrayValueTracker(leverages)
         leverages_tracker.add_updater(lambda m : m.set_value(np.diagonal(X_tracker.get_value() @ np.linalg.inv(X_tracker.get_value().T @ X_tracker.get_value()) @ X_tracker.get_value().T)))
+        self.add(X1_tracker, X_tracker, leverages_tracker)
 
         leverages_axes = Axes()
         leverages_plot = always_redraw(
@@ -24,4 +25,8 @@ class LeveragesExplorer(StitcherScene):
         )
         self.add(leverages_axes)
         self.add(leverages_plot)
-        self.wait(2)
+        self.wait(1)
+
+        X1_ = X1.copy()
+        X1_[-1,0] = 2.5
+        self.play(X1_tracker.animate.set_value(X1_))
