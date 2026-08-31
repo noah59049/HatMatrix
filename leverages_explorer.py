@@ -15,7 +15,16 @@ class LeveragesExplorer(StitcherScene):
         leverages_tracker.add_updater(lambda m : m.set_value(np.diagonal(X_tracker.get_value() @ np.linalg.inv(X_tracker.get_value().T @ X_tracker.get_value()) @ X_tracker.get_value().T)))
         self.add(X1_tracker, X_tracker, leverages_tracker)
 
-        leverages_axes = Axes(y_range = [-0.2, 1.2])
+        #TODO: Make the x axis and X axis of leverages have the same scale so the points line up
+        x_axis = Axis1D().to_edge(DOWN)
+        x_plot = always_redraw(
+            lambda: VGroup(
+                *[
+                    Dot(x_axis.c2p(x), color = X_COLOR) for x in X1_tracker.get_value().flatten()
+                ]
+            )
+        )
+        leverages_axes = Axes(y_range = [-0.2, 1.2]).next_to(x_axis, UP)
         leverages_plot = always_redraw(
             lambda: VGroup(
                 *[
@@ -23,8 +32,12 @@ class LeveragesExplorer(StitcherScene):
                 ]
             )
         )
-        self.add(leverages_axes)
-        self.add(leverages_plot)
+        self.add(
+            x_axis,
+            x_plot,
+            leverages_axes,
+            leverages_plot
+        )
         self.wait(1)
 
         X1_ = X1.copy()
