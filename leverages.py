@@ -5,6 +5,17 @@ from N_Tools import *
 from colors import *
 
 X1 = [0.4, 0.7, 0.7, 1, 1, 1.2, 1.5, 1.59, 1.68, 1.73, 1.8, 5]
+n = len(X1)
+X1 = as_col(np.array(X1))
+X = np.column_stack([as_col(np.ones(n)), X1])
+bhat_ols = as_col(np.array([-1.842, 0.384]))
+yhat = X @ bhat_ols
+rng = np.random.default_rng(42)
+epsilon = as_col(rng.standard_normal(n))
+H = X @ np.linalg.inv(X.T @ X) @ X.T
+e = epsilon - H @ epsilon
+Y = yhat + e
+bhat = np.linalg.inv(X.T @ X) @ X.T @ Y
 
 class Leverages(StitcherScene):
     def construct_scene(self):
@@ -13,17 +24,6 @@ class Leverages(StitcherScene):
         limit_tex = ColoredMathTex(r"\lim_{\Delta Y_i \to 0} \frac{\Delta \hat{Y}_i} {\Delta Y_i} = H_{ii}").next_to(yhat_tex, DOWN)
         frac_tex = ColoredMathTex(r"\frac{\Delta \hat{Y}_i} {\Delta Y_i} = H_{ii}").next_to(yhat_tex, DOWN)
 
-        n = len(X1)
-        X1 = as_col(np.array(X1))
-        X = np.column_stack([as_col(np.ones(n)), X1])
-        bhat_ols = as_col(np.array([-1.842, 0.384]))
-        yhat = X @ bhat_ols
-        rng = np.random.default_rng(42)
-        epsilon = as_col(rng.standard_normal(n))
-        H = X @ np.linalg.inv(X.T @ X) @ X.T
-        e = epsilon - H @ epsilon
-        Y = yhat + e
-        bhat = np.linalg.inv(X.T @ X) @ X.T @ Y
         print(f"{bhat.shape=} {X.shape=} {yhat.shape=} {Y.shape=} {e.shape=} {epsilon.shape=} {bhat=}")        
 
         Y_tracker = ArrayValueTracker(Y)
@@ -160,18 +160,3 @@ class Leverages(StitcherScene):
                 FadeOut(lev_small_tex),
                 Y_tracker.animate.set_value(Y)
             )
-
-        leverages
-        leverages_axes = Axes()
-        # leverages_plot = VGroup(
-        #     *[
-        #         Dot(axes.c2p(x, leverage) for x, leverage in zip(X1.flatten(), leverages.flatten()))
-        #     ]
-        # )
-        yeet = []
-        for x, leverage in zip(X1.flatten(), leverages.flatten()):
-            yeet.append(Dot(axes.c2p(x, leverage)))
-        leverages_plot = VGroup(*yeet)
-        self.add(leverages_axes)
-        self.add(leverages_plot)
-        self.wait(2)
