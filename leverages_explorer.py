@@ -3,6 +3,7 @@ from manim import *
 from stitcher_scene import StitcherScene
 from leverages import X1, X, n, leverages
 from N_Tools import *
+from colors import *
 
 
 class LeveragesExplorer(StitcherScene):
@@ -17,7 +18,7 @@ class LeveragesExplorer(StitcherScene):
         leverages_plot = always_redraw(
             lambda: VGroup(
                 *[
-                    Dot(leverages_axes.c2p(x, leverage)) for x, leverage in zip(X1_tracker.get_value().flatten(), leverages_tracker.get_value().flatten())
+                    Dot(leverages_axes.c2p(x, leverage), color = H_COLOR) for x, leverage in zip(X1_tracker.get_value().flatten(), leverages_tracker.get_value().flatten())
                 ]
             )
         )
