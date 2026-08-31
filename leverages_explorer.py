@@ -15,7 +15,7 @@ class LeveragesExplorer(StitcherScene):
 
         leverages_axes = Axes()
         leverages_plot = always_redraw(
-            VGroup(
+            lambda: VGroup(
                 *[
                     Dot(leverages_axes.c2p(x, leverage)) for x, leverage in zip(X1_tracker.get_value().flatten(), leverages_tracker.get_value().flatten())
                 ]
