@@ -15,7 +15,7 @@ class LeveragesExplorer(StitcherScene):
         leverages_tracker.add_updater(lambda m : m.set_value(np.diagonal(X_tracker.get_value() @ np.linalg.inv(X_tracker.get_value().T @ X_tracker.get_value()) @ X_tracker.get_value().T)))
         self.add(X1_tracker, X_tracker, leverages_tracker)
 
-        leverages_axes = Axes()
+        leverages_axes = Axes(y_range = [-0.2, 1.2])
         leverages_plot = always_redraw(
             lambda: VGroup(
                 *[
