@@ -180,6 +180,130 @@ def bhat_extremes(axes, X, base, direction):
 
     return base + t_min * direction, base + t_max * direction
 
+class Axes1D(NumberLine):
+    """A one-dimensional ``Axes``: a single ``NumberLine`` that accepts the
+    ``Axes(...)``-style keywords (``x_range``, ``x_length``, ``tips``) so it
+    drops in next to the 2D ``Axes`` used elsewhere in this project, plus
+    helpers for scattering a 1D dataset along it.
+
+    ``NumberLine`` already provides ``n2p``/``c2p``, ``p2c``, ticks and
+    ``add_coordinates``; this subclass adds the familiar constructor, an
+    ``x_axis`` / ``get_axis`` alias so ``Axes``-style call sites keep working,
+    a ``vertical`` orientation, ``get_dots`` for a strip / stacked dot plot,
+    and ``get_interval`` for highlighting a range ``[a, b]``.
+    """
+
+    def __init__(
+        self,
+        x_range=None,
+        x_length=None,
+        orientation="horizontal",
+        tips=False,
+        axis_config=None,
+        **kwargs,
+    ):
+        if orientation not in ("horizontal", "vertical"):
+            raise ValueError("orientation must be 'horizontal' or 'vertical'")
+
+        cfg = dict(include_tip=tips)
+        if orientation == "vertical":
+            cfg.setdefault("rotation", PI / 2)
+            cfg.setdefault("label_direction", LEFT)
+        if axis_config:
+            cfg.update(axis_config)
+        cfg.update(kwargs)
+
+        super().__init__(
+            x_range=x_range if x_range is not None else [-1, 1, 1],
+            length=x_length,
+            **cfg,
+        )
+        self.orientation = orientation
+
+    # --- Axes-compatible aliases ------------------------------------------
+    @property
+    def x_axis(self):
+        return self
+
+    def get_axis(self, index=0):
+        return self
+
+    # NumberLine exposes n2p/p2n; add the Axes spellings so shared call sites
+    # (``axes.c2p(x, y)`` style) work with a single coordinate too.
+    def coords_to_point(self, x):
+        return self.number_to_point(x)
+
+    def point_to_coords(self, point):
+        return self.point_to_number(point)
+
+    c2p = coords_to_point
+    p2c = point_to_coords
+
+    def add_coordinates(self, *values, **kwargs):
+        """``Axes.add_coordinates`` spelling for ``NumberLine.add_numbers``."""
+        return self.add_numbers(*values, **kwargs)
+
+    def _perp(self):
+        """Unit vector perpendicular to the axis (UP for a horizontal axis),
+        the direction dots are offset / stacked along."""
+        return rotate_vector(self.get_unit_vector(), PI / 2)
+
+    # --- 1D data helpers -----------------------------------------------------
+    def get_dots(
+        self,
+        values,
+        *,
+        buff=0.0,
+        stack=False,
+        stack_buff=0.0,
+        bin_width=None,
+        radius=0.06,
+        **dot_kwargs,
+    ):
+        """A ``VGroup`` of ``Dot``s, one per value in ``values``, placed at that
+        coordinate on the axis.
+
+        buff        perpendicular offset of the whole strip off the axis line.
+        stack       bin the values and stack collisions into a dot-plot column
+                    (Wilkinson style) instead of overplotting on the line.
+        bin_width   bin size when ``stack`` (defaults to one dot diameter).
+        stack_buff  extra gap between stacked dots.
+        """
+        values = np.asarray(list(values), dtype=float).flatten()
+        perp = self._perp()
+
+        if not stack:
+            return VGroup(*[
+                Dot(self.n2p(v) + perp * buff, radius=radius, **dot_kwargs)
+                for v in values
+            ])
+
+        step = bin_width if bin_width is not None else 2 * radius
+        spacing = 2 * radius + stack_buff
+        counts: dict[int, int] = {}
+        dots = VGroup()
+        for v in sorted(values):
+            b = round(v / step)
+            k = counts.get(b, 0)
+            counts[b] = k + 1
+            dots.add(Dot(
+                self.n2p(b * step) + perp * (buff + radius + k * spacing),
+                radius=radius,
+                **dot_kwargs,
+            ))
+        return dots
+
+    # An alias mirroring Axes.plot_line_graph naming for scatter-style use.
+    plot_points = get_dots
+
+    def get_interval(self, a, b, *, buff=0.0, **line_kwargs):
+        """A thick ``Line`` covering the segment of the axis between coords
+        ``a`` and ``b`` (optionally shifted off the line by ``buff``)."""
+        line_kwargs.setdefault("stroke_width", 6)
+        offset = self._perp() * buff
+        return Line(self.n2p(a) + offset, self.n2p(b) + offset, **line_kwargs)
+
+
 class ArrayValueTracker(ValueTracker):
     """A ValueTracker that holds a numpy array of any shape instead of a single
     scalar, so it can be animated the same way with `.animate.set_value(new_array)`.
