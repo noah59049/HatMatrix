@@ -4,6 +4,7 @@ from stitcher_scene import StitcherScene
 from N_Tools import *
 from colors import *
 
+X1 = [0.4, 0.7, 0.7, 1, 1, 1.2, 1.5, 1.59, 1.68, 1.73, 1.8, 5]
 
 class Leverages(StitcherScene):
     def construct_scene(self):
@@ -12,7 +13,6 @@ class Leverages(StitcherScene):
         limit_tex = ColoredMathTex(r"\lim_{\Delta Y_i \to 0} \frac{\Delta \hat{Y}_i} {\Delta Y_i} = H_{ii}").next_to(yhat_tex, DOWN)
         frac_tex = ColoredMathTex(r"\frac{\Delta \hat{Y}_i} {\Delta Y_i} = H_{ii}").next_to(yhat_tex, DOWN)
 
-        X1 = [0.4, 0.7, 0.7, 1, 1, 1.2, 1.5, 1.59, 1.68, 1.73, 1.8, 5]
         n = len(X1)
         X1 = as_col(np.array(X1))
         X = np.column_stack([as_col(np.ones(n)), X1])
