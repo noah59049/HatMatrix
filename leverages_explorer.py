@@ -15,8 +15,12 @@ class LeveragesExplorer(StitcherScene):
         leverages_tracker.add_updater(lambda m : m.set_value(np.diagonal(X_tracker.get_value() @ np.linalg.inv(X_tracker.get_value().T @ X_tracker.get_value()) @ X_tracker.get_value().T)))
         self.add(X1_tracker, X_tracker, leverages_tracker)
 
-        #TODO: Make the x axis and X axis of leverages have the same scale so the points line up
-        x_axis = Axis1D().to_edge(DOWN)
+        # Shared x scale so identical X values sit at the same horizontal position
+        # on both the standalone x axis and the X axis of leverages_axes.
+        X_RANGE = [-0.5, 5.5, 1]
+        X_LENGTH = 10
+
+        x_axis = Axis1D(x_range = X_RANGE, x_length = X_LENGTH).to_edge(DOWN)
         x_plot = always_redraw(
             lambda: VGroup(
                 *[
@@ -24,7 +28,16 @@ class LeveragesExplorer(StitcherScene):
                 ]
             )
         )
-        leverages_axes = Axes(y_range = [-0.2, 1.2]).next_to(x_axis, UP)
+        leverages_axes = Axes(
+            x_range = X_RANGE,
+            x_length = X_LENGTH,
+            y_range = [-0.2, 1.2],
+        ).next_to(x_axis, UP)
+        # Same range + length already gives both axes the same unit spacing;
+        # align one shared x value horizontally so every x value lines up.
+        leverages_axes.shift(
+            (x_axis.c2p(0)[0] - leverages_axes.c2p(0, 0)[0]) * RIGHT
+        )
         leverages_plot = always_redraw(
             lambda: VGroup(
                 *[
