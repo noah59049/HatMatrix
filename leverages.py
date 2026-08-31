@@ -16,6 +16,7 @@ H = X @ np.linalg.inv(X.T @ X) @ X.T
 e = epsilon - H @ epsilon
 Y = yhat + e
 bhat = np.linalg.inv(X.T @ X) @ X.T @ Y
+leverages = np.diagonal(H)
 
 class Leverages(StitcherScene):
     def construct_scene(self):
@@ -62,7 +63,6 @@ class Leverages(StitcherScene):
                 FadeIn(trendline)
             )
 
-        leverages = np.diagonal(H)
         i_big = np.argmax(leverages)
         i_small = np.argmin(leverages)
         with self.voiceover("Here's a point with a high leverage value. Now let's look at what would happen") as tracker:
