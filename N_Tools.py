@@ -180,7 +180,7 @@ def bhat_extremes(axes, X, base, direction):
 
     return base + t_min * direction, base + t_max * direction
 
-class Axes1D(NumberLine):
+class Axis1D(NumberLine):
     """A one-dimensional ``Axes``: a single ``NumberLine`` that accepts the
     ``Axes(...)``-style keywords (``x_range``, ``x_length``, ``tips``) so it
     drops in next to the 2D ``Axes`` used elsewhere in this project, plus
