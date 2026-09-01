@@ -64,16 +64,18 @@ class LeveragesExplorer(StitcherScene):
         # --- Add the parabola ---
 
         # Calculate the parabola
-        parabola_X = np.column_stack([X_tracker.get_value(), X1_tracker.get_value() * X1_tracker.get_value()])
-        parabola_Y = as_col(leverages_tracker.get_value())
-        parabola_bhat = np.linalg.inv(parabola_X.T @ parabola_X) @ parabola_X.T @ parabola_Y
-        parabola_bhat = parabola_bhat.flatten()
-        def parabola_yhat(parabola_x):
-            return parabola_bhat[0] + parabola_bhat[1] * parabola_x + parabola_bhat[2] * parabola_x **2
-        parabola_ink = leverages_axes.plot(
-            parabola_yhat,
-            x_range = [X1_tracker.get_value().min(), X1_tracker.get_value().max()]
+
+        def parabola_yhat(parabola_graph_x_point):
+            parabola_X = np.column_stack([X_tracker.get_value(), X1_tracker.get_value() * X1_tracker.get_value()])
+            parabola_Y = as_col(leverages_tracker.get_value())
+            parabola_bhat = np.linalg.inv(parabola_X.T @ parabola_X) @ parabola_X.T @ parabola_Y
+            parabola_bhat = parabola_bhat.flatten()
+            return parabola_bhat[0] + parabola_bhat[1] * parabola_graph_x_point + parabola_bhat[2] * parabola_graph_x_point **2
+        parabola_ink = always_redraw(
+            leverages_axes.plot(
+                parabola_yhat,
+                x_range = [X1_tracker.get_value().min(), X1_tracker.get_value().max()]
+            )
         )
         self.add(parabola_ink)
         self.wait(1)
-        # TODO: Make the parabola always_redraw too
