@@ -76,3 +76,4 @@ class LeveragesExplorer(StitcherScene):
         )
         self.add(parabola_ink)
         self.wait(1)
+        # TODO: Make the parabola always_redraw too
