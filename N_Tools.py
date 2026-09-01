@@ -337,6 +337,15 @@ class ArrayValueTracker(ValueTracker):
         self.set_value(self.get_value() + np.array(d_array))
         return self
 
+    def set_value_at(self, index, value):
+        """Set a single element (or numpy-fancy-indexed slice) of the tracked
+        array, leaving the rest untouched. Works through `.animate` too:
+        `tracker.animate.set_value_at((-1, 0), 2.5)`.
+        """
+        arr = self.get_value()
+        arr[index] = value
+        return self.set_value(arr)
+
 class FlashOn(Succession):
     """
     Fades a mobject in, holds it, then fades it out.
