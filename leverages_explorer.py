@@ -60,3 +60,19 @@ class LeveragesExplorer(StitcherScene):
         self.wait(1)
         self.play(X1_tracker.animate.set_value(as_col(np.arange(1, 4, 0.1)[:X1.shape[0]])))
         self.wait(1)
+
+        # --- Add the parabola ---
+
+        # Calculate the parabola
+        parabola_X = np.column_stack([X_tracker.get_value(), X1_tracker.get_value() * X1_tracker.get_value()])
+        parabola_Y = as_col(leverages_tracker.get_value())
+        parabola_bhat = np.linalg.inv(parabola_X.T @ parabola_X) @ parabola_X.T @ parabola_Y
+        parabola_bhat = parabola_bhat.flatten()
+        def parabola_yhat(parabola_x):
+            return parabola_bhat[0] + parabola_bhat[1] * parabola_x + parabola_bhat[2] * parabola_x **2
+        parabola_ink = leverages_axes.plot(
+            parabola_yhat,
+            x_range = [X1_tracker.get_value().min(), X1_tracker.get_value().max()]
+        )
+        self.add(parabola_ink)
+        self.wait(1)
