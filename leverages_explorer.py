@@ -70,7 +70,7 @@ class LeveragesExplorer(StitcherScene):
             parabola_bhat = parabola_bhat.flatten()
             return parabola_bhat[0] + parabola_bhat[1] * parabola_graph_x_point + parabola_bhat[2] * parabola_graph_x_point **2
         parabola_ink = always_redraw(
-            leverages_axes.plot(
+            lambda: leverages_axes.plot(
                 parabola_yhat,
                 x_range = [X1_tracker.get_value().min(), X1_tracker.get_value().max()]
             )
