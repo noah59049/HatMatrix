@@ -8,6 +8,8 @@ from colors import *
 
 class LeveragesExplorer(StitcherScene):
     def construct_scene(self):
+
+        # --- ArrayValueTrackers ---
         X1_tracker = ArrayValueTracker(X1)
         X_tracker = ArrayValueTracker(X)
         X_tracker.add_updater(lambda m: m.set_value(np.column_stack([as_col(np.ones(n)), X1_tracker.get_value()]))) 
@@ -15,11 +17,16 @@ class LeveragesExplorer(StitcherScene):
         leverages_tracker.add_updater(lambda m : m.set_value(np.diagonal(X_tracker.get_value() @ np.linalg.inv(X_tracker.get_value().T @ X_tracker.get_value()) @ X_tracker.get_value().T)))
         self.add(X1_tracker, X_tracker, leverages_tracker)
 
+        # --- Axes ---
+        # We have 2 axes
+        # One is a 1D axis with just the X variables
+        # The other is a 2D axes with X and leverages
         # Shared x scale so identical X values sit at the same horizontal position
         # on both the standalone x axis and the X axis of leverages_axes.
         X_RANGE = [-0.5, 5.5, 1]
         X_LENGTH = 10
 
+        # X axis
         x_axis = Axis1D(x_range = X_RANGE, x_length = X_LENGTH).to_edge(DOWN)
         x_plot = always_redraw(
             lambda: VGroup(
@@ -28,6 +35,8 @@ class LeveragesExplorer(StitcherScene):
                 ]
             )
         )
+        
+        # Leverages axes
         leverages_axes = Axes(
             x_range = X_RANGE,
             x_length = X_LENGTH,
@@ -45,23 +54,8 @@ class LeveragesExplorer(StitcherScene):
                 ]
             )
         )
-        self.add(
-            x_axis,
-            x_plot,
-            leverages_axes,
-            leverages_plot
-        )
-        self.wait(1)
 
-        self.play(X1_tracker.animate.set_value_at((-1, 0), 2.5))
-
-        self.wait(1)
-        self.play(X1_tracker.animate.set_value(as_col(np.arange(1, 4, 0.1)[:X1.shape[0]])))
-        self.wait(1)
-
-        # --- Add the parabola ---
-
-        # Calculate the parabola
+        # --- Parabola ---
         # So the relationship between X and leverage is a parabola, no matter what our X's are, and we are graphing that parabola.
         # So that's where the name parabola comes from
 
@@ -98,10 +92,24 @@ class LeveragesExplorer(StitcherScene):
                 x_range = [X1_tracker.get_value().min(), X1_tracker.get_value().max()]
             )
         )
-        self.add(parabola_ink)
+        parabola_vertex_dot = always_redraw(lambda: Dot(leverages_axes.c2p(*parabola_vertex())))
+
+        # --- The actual scene being played ---
+        self.add(
+            x_axis,
+            x_plot,
+            leverages_axes,
+            leverages_plot
+        )
         self.wait(1)
 
-        parabola_vertex_dot = always_redraw(lambda: Dot(leverages_axes.c2p(*parabola_vertex())))
+        self.play(X1_tracker.animate.set_value_at((-1, 0), 2.5))
+
+        self.wait(1)
+        self.play(X1_tracker.animate.set_value(as_col(np.arange(1, 4, 0.1)[:X1.shape[0]])))
+        self.wait(1)
+
+        self.add(parabola_ink)
         self.add(parabola_vertex_dot)
         
         # Shift right
