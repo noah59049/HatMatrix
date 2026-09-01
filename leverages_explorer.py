@@ -53,9 +53,7 @@ class LeveragesExplorer(StitcherScene):
         )
         self.wait(1)
 
-        X1_ = X1.copy()
-        X1_[-1,0] = 2.5
-        self.play(X1_tracker.animate.set_value(X1_))
+        self.play(X1_tracker.animate.set_value_at((-1, 0), 2.5))
 
         self.wait(1)
         self.play(X1_tracker.animate.set_value(as_col(np.arange(1, 4, 0.1)[:X1.shape[0]])))
