@@ -62,13 +62,36 @@ class LeveragesExplorer(StitcherScene):
         # --- Add the parabola ---
 
         # Calculate the parabola
+        # So the relationship between X and leverage is a parabola, no matter what our X's are, and we are graphing that parabola.
+        # So that's where the name parabola comes from
 
-        def parabola_yhat(parabola_graph_x_point):
+        def get_parabola_bhat():
             parabola_X = np.column_stack([X_tracker.get_value(), X1_tracker.get_value() * X1_tracker.get_value()])
             parabola_Y = as_col(leverages_tracker.get_value())
             parabola_bhat = np.linalg.inv(parabola_X.T @ parabola_X) @ parabola_X.T @ parabola_Y
             parabola_bhat = parabola_bhat.flatten()
+            return parabola_bhat
+        
+        def parabola_vertex():
+            parabola_bhat = get_parabola_bhat()
+            # In general for a parabola y(x)
+            # y = ax^2 + bx + c
+            # y'(x) = 2ax + b
+            # y'(x) = 0 iff x = -b/(2a)
+            # The vertex is at x = -b/(2a)
+            # And also at y = c
+            # For this specific parabola
+            # parabola_bhat = np.array([c, b, a])
+            c, b, a = parabola_bhat
+            vertex_x = -b / (2 * a)
+            vertex_y = a * vertex_x ** 2 + b * vertex_x + c
+            return vertex_x, vertex_y
+
+        
+        def parabola_yhat(parabola_graph_x_point):
+            parabola_bhat = get_parabola_bhat()
             return parabola_bhat[0] + parabola_bhat[1] * parabola_graph_x_point + parabola_bhat[2] * parabola_graph_x_point **2
+        
         parabola_ink = always_redraw(
             lambda: leverages_axes.plot(
                 parabola_yhat,
@@ -78,6 +101,9 @@ class LeveragesExplorer(StitcherScene):
         self.add(parabola_ink)
         self.wait(1)
 
+        parabola_vertex_dot = always_redraw(lambda: Dot(leverages_axes.c2p(*parabola_vertex())))
+        self.add(parabola_vertex_dot)
+        
         # Shift right
         self.play(X1_tracker.animate.set_value(X1_tracker.get_value() + 1))
 
