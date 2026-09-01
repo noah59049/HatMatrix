@@ -77,3 +77,14 @@ class LeveragesExplorer(StitcherScene):
         )
         self.add(parabola_ink)
         self.wait(1)
+
+        # Shift right
+        self.play(X1_tracker.animate.set_value(X1_tracker.get_value() + 1))
+
+        # Contract
+        self.play(X1_tracker.animate.set_value(X1_tracker.get_value() * 0.8))
+
+        # Move the rightmost value
+        self.play(X1_tracker.animate.increase_value_at((-1, 0), 2.5))
+
+        self.wait(1)
