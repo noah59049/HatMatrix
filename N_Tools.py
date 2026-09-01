@@ -345,6 +345,16 @@ class ArrayValueTracker(ValueTracker):
         arr = self.get_value()
         arr[index] = value
         return self.set_value(arr)
+    
+    def increase_value_at(self, index, value):
+        """Increase (or decrease, if value is negative) a single element 
+        (or numpy-fancy-indexed slice) of the tracked
+        array, leaving the rest untouched. Works through `.animate` too:
+        `tracker.animate.increase_value_at((-1, 0), 1.0)`.
+        """
+        arr = self.get_value()
+        arr[index] += value
+        return self.set_value(arr)    
 
 class FlashOn(Succession):
     """
