@@ -66,6 +66,10 @@ class LeveragesExplorer(StitcherScene):
             parabola_bhat = parabola_bhat.flatten()
             return parabola_bhat
         
+        def parabola_yhat(parabola_graph_x_point):
+            parabola_bhat = get_parabola_bhat()
+            return parabola_bhat[0] + parabola_bhat[1] * parabola_graph_x_point + parabola_bhat[2] * parabola_graph_x_point **2
+        
         def parabola_vertex():
             parabola_bhat = get_parabola_bhat()
             # In general for a parabola y(x)
@@ -79,20 +83,22 @@ class LeveragesExplorer(StitcherScene):
             c, b, a = parabola_bhat
             vertex_x = -b / (2 * a)
             vertex_y = a * vertex_x ** 2 + b * vertex_x + c
-            return vertex_x, vertex_y
+            return np.array([vertex_x, vertex_y])
 
-        
-        def parabola_yhat(parabola_graph_x_point):
-            parabola_bhat = get_parabola_bhat()
-            return parabola_bhat[0] + parabola_bhat[1] * parabola_graph_x_point + parabola_bhat[2] * parabola_graph_x_point **2
-        
+        # It appears as if I don't actually need this
+        vertex_tracker = ArrayValueTracker(parabola_vertex())
+        vertex_tracker.add_updater(lambda m: m.set_value(parabola_vertex()))
+        self.add(vertex_tracker)
+
         parabola_ink = always_redraw(
             lambda: leverages_axes.plot(
                 parabola_yhat,
                 x_range = [X1_tracker.get_value().min(), X1_tracker.get_value().max()]
             )
         )
-        parabola_vertex_dot = always_redraw(lambda: Dot(leverages_axes.c2p(*parabola_vertex())))
+        vertex_dot = always_redraw(lambda: Dot(leverages_axes.c2p(*parabola_vertex())))
+
+        vertex_label = always_redraw(lambda: MathTex(f"({parabola_vertex()[0]:.3f}, {parabola_vertex()[1]:.3f})").to_corner(UR))
 
         # --- The actual scene being played ---
         self.add(
@@ -110,7 +116,8 @@ class LeveragesExplorer(StitcherScene):
         self.wait(1)
 
         self.add(parabola_ink)
-        self.add(parabola_vertex_dot)
+        self.add(vertex_dot)
+        self.add(vertex_label)
         
         # Shift right
         self.play(X1_tracker.animate.set_value(X1_tracker.get_value() + 1))
