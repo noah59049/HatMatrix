@@ -124,11 +124,15 @@ class LeveragesExplorer(StitcherScene):
                 X1_curr = X1_tracker.get_value()
                 muX = X1_curr.mean()
                 new_value = (X1_curr - muX) * 0.5 + muX
+            else:
+                raise ValueError("dot_dance got an invalid number")
 
             if run_time == 0:
                 X1_tracker.set_value(new_value)
             else:
                 self.play(X1_tracker.animate.set_value(new_value), run_time = run_time)
+
+        
 
         ##############################
         ### Part 3: Play the scene ###
