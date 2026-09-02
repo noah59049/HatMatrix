@@ -9,6 +9,9 @@ from colors import *
 class LeveragesExplorer(StitcherScene):
     def construct_scene(self):
 
+        ############################################################
+        ### Part 1: The value trackers and always_redraw objects ###
+        ############################################################
         # --- ArrayValueTrackers ---
         X1_tracker = ArrayValueTracker(X1)
         X_tracker = ArrayValueTracker(X)
@@ -100,6 +103,9 @@ class LeveragesExplorer(StitcherScene):
 
         vertex_label = always_redraw(lambda: MathTex(f"({parabola_vertex()[0]:.3f}, {parabola_vertex()[1]:.3f})").to_corner(UR))
 
+        #######################################
+        ### Part 2: Defining the animations ###
+        #######################################
         def dot_dance(number, run_time = 1):
             if   number == 0: # Reset
                 new_value = X1.copy()
@@ -124,6 +130,9 @@ class LeveragesExplorer(StitcherScene):
             else:
                 self.play(X1_tracker.animate.set_value(new_value), run_time = run_time)
 
+        ##############################
+        ### Part 3: Play the scene ###
+        ##############################
         # --- The actual scene being played ---
         self.add(
             x_axis,
