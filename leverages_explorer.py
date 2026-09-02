@@ -100,32 +100,41 @@ class LeveragesExplorer(StitcherScene):
 
         vertex_label = always_redraw(lambda: MathTex(f"({parabola_vertex()[0]:.3f}, {parabola_vertex()[1]:.3f})").to_corner(UR))
 
+        def dot_dance(number, run_time = 1):
+            if   number == 0: # Reset
+                new_value = X1.copy()
+            elif number == 1: # Decrease rightmost value
+                new_value = X1_tracker.get_value()
+                new_value[(-1, 0)] -= 2.5
+            elif number == 2: # Become evenly spaced
+                new_value = as_col(np.arange(1, 4, 0.1)[:X1.shape[0]])
+            elif number == 3: # Shift right
+                new_value = X1_tracker.get_value() + 1
+            elif number == 4: # Expand
+                X1_curr = X1_tracker.get_value()
+                muX = X1_curr.mean()
+                new_value = (X1_curr - muX) * 2 + muX
+            elif number == 5: # Contract
+                X1_curr = X1_tracker.get_value()
+                muX = X1_curr.mean()
+                new_value = (X1_curr - muX) * 0.5 + muX
+
+            if run_time == 0:
+                X1_tracker.set_value(new_value)
+            else:
+                self.play(X1_tracker.animate.set_value(new_value), run_time = run_time)
+
         # --- The actual scene being played ---
         self.add(
             x_axis,
             x_plot,
             leverages_axes,
-            leverages_plot
+            leverages_plot,
+            parabola_ink,
+            vertex_dot,
+            vertex_label
         )
-        self.wait(1)
 
-        self.play(X1_tracker.animate.set_value_at((-1, 0), 2.5))
-
-        self.wait(1)
-        self.play(X1_tracker.animate.set_value(as_col(np.arange(1, 4, 0.1)[:X1.shape[0]])))
-        self.wait(1)
-
-        self.add(parabola_ink)
-        self.add(vertex_dot)
-        self.add(vertex_label)
-        
-        # Shift right
-        self.play(X1_tracker.animate.set_value(X1_tracker.get_value() + 1))
-
-        # Contract
-        self.play(X1_tracker.animate.set_value(X1_tracker.get_value() * 0.8))
-
-        # Move the rightmost value
-        self.play(X1_tracker.animate.increase_value_at((-1, 0), 2.5))
-
-        self.wait(1)
+        for i in range(6):
+            dot_dance(i)
+            self.wait(1)
