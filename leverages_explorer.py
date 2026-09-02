@@ -132,7 +132,14 @@ class LeveragesExplorer(StitcherScene):
             else:
                 self.play(X1_tracker.animate.set_value(new_value), run_time = run_time)
 
-        
+        # TODO: What are all the properties I want to explore and show?
+        # The vertex is always the same y
+        # Translating just translates the parabola
+        # Stretching just stretches the parabola
+        # The maximum you can reach is 1
+        # If you keep the mean and standard deviation, you keep the parabola (I think).
+        # If you plot the parabola in z-space, it is always the same.
+        # The vertex of the parabola is always at x = mu.
 
         ##############################
         ### Part 3: Play the scene ###
