@@ -125,12 +125,17 @@ class LeveragesExplorer(StitcherScene):
                 muX = X1_curr.mean()
                 new_value = (X1_curr - muX) * 0.5 + muX
             elif number < 10: # Random values
+                if number in (6,9):
+                    scale = 0.3
+                elif number == 7:
+                    scale = 0.84
+                elif number == 8:
+                    scale = 0.6
                 new_value = rng.normal(
-                    loc = 2.5, 
-                    scale = 1, 
+                    loc = number - 5, 
+                    scale = scale, 
                     size = n
                 )
-                # TODO: Change the mean of these
             else:
                 raise ValueError("dot_dance got an invalid number")
 
