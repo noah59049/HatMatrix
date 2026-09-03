@@ -111,6 +111,12 @@ class LeveragesExplorer(StitcherScene):
             ).set_opacity(0.5)
         )
 
+        a_label = always_redraw(
+            lambda: MathTex(
+                f"a={parabola_vertex()[2]:.3f}"
+            ).next_to(vertex_label, DOWN)
+        )
+
         #######################################
         ### Part 2: Defining the animations ###
         #######################################
@@ -181,7 +187,8 @@ class LeveragesExplorer(StitcherScene):
             parabola_ink,
             vertex_dot,
             vertex_label,
-            mean_line
+            mean_line,
+            a_label,
         )
 
         for i in range(10):
