@@ -108,7 +108,7 @@ class LeveragesExplorer(StitcherScene):
 
         a_label = always_redraw(
             lambda: MathTex(
-                f"a={parabola_vertex()[2]:.3f}"
+                f"a={get_parabola_bhat()[2]:.3f}"
             ).next_to(vertex_label, DOWN)
         )
 
