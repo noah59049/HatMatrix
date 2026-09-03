@@ -1,7 +1,7 @@
 import numpy as np
 from manim import *
 from stitcher_scene import StitcherScene
-from leverages import X1, X, n, leverages
+from leverages import X1, X, n, leverages, rng
 from N_Tools import *
 from colors import *
 
@@ -124,6 +124,13 @@ class LeveragesExplorer(StitcherScene):
                 X1_curr = X1_tracker.get_value()
                 muX = X1_curr.mean()
                 new_value = (X1_curr - muX) * 0.5 + muX
+            elif number < 10: # Random values
+                new_value = rng.normal(
+                    loc = 2.5, 
+                    scale = 1, 
+                    size = n
+                )
+                # TODO: Change the mean of these
             else:
                 raise ValueError("dot_dance got an invalid number")
 
@@ -141,6 +148,14 @@ class LeveragesExplorer(StitcherScene):
         # If you plot the parabola in z-space, it is always the same.
         # The vertex of the parabola is always at x = mu.
 
+        # That was a good list. Now what's the order?
+        ### Start, move it in, evenly spaced
+        # 1. It is a parabola
+        ### Translate, stretch, move, random
+        # 2. The vertex Y is always the same
+        # 3. The vertex X is always at the mean
+        # 4. The a of the parabola
+
         ##############################
         ### Part 3: Play the scene ###
         ##############################
@@ -155,6 +170,6 @@ class LeveragesExplorer(StitcherScene):
             vertex_label
         )
 
-        for i in range(6):
+        for i in range(10):
             dot_dance(i)
             self.wait(1)
