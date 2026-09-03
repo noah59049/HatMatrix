@@ -88,11 +88,6 @@ class LeveragesExplorer(StitcherScene):
             vertex_y = a * vertex_x ** 2 + b * vertex_x + c
             return np.array([vertex_x, vertex_y])
 
-        # It appears as if I don't actually need this
-        vertex_tracker = ArrayValueTracker(parabola_vertex())
-        vertex_tracker.add_updater(lambda m: m.set_value(parabola_vertex()))
-        self.add(vertex_tracker)
-
         parabola_ink = always_redraw(
             lambda: leverages_axes.plot(
                 parabola_yhat,
