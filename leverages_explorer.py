@@ -103,6 +103,14 @@ class LeveragesExplorer(StitcherScene):
 
         vertex_label = always_redraw(lambda: MathTex(f"({parabola_vertex()[0]:.3f}, {parabola_vertex()[1]:.3f})").to_corner(UR))
 
+        mean_line = always_redraw(
+            lambda: DashedLine(
+                leverages_axes.c2p(X1_tracker.get_value().mean(), 0),
+                leverages_axes.c2p(X1_tracker.get_value().mean(), 1/3),
+                color = GRAY
+            ).set_opacity(0.5)
+        )
+
         #######################################
         ### Part 2: Defining the animations ###
         #######################################
@@ -172,7 +180,8 @@ class LeveragesExplorer(StitcherScene):
             leverages_plot,
             parabola_ink,
             vertex_dot,
-            vertex_label
+            vertex_label,
+            mean_line
         )
 
         for i in range(10):
