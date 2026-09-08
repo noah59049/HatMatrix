@@ -3,6 +3,7 @@ from manim import *
 from stitcher_scene import StitcherScene
 from N_Tools import *
 from colors import *
+from manim_particles import Materialize, Disintegrate
 
 X1 = [0.4, 0.7, 0.7, 1, 1, 1.2, 1.5, 1.59, 1.68, 1.73, 1.8, 5]
 n = len(X1)
@@ -148,7 +149,7 @@ class Leverages(StitcherScene):
             self.play(equations_small.draw_parts(0))
         with self.voiceover("the leverage times the") as tracker:
             self.play(equations_small.draw_parts(1))
-        with self.voiceover("change in Y, which this time is much lower.") as tracker:
+        with self.voiceover("change in Y, which this time is much lower. You may have noticed that the point with") as tracker:
             self.play(
                 FadeIn(Y_stem_small),
                 equations_small.draw_parts(2)
@@ -161,11 +162,39 @@ class Leverages(StitcherScene):
                 Y_tracker.animate.set_value(Y)
             )
 
-        with self.voiceover("You may have noticed that the point with high leverage is an outlier, and the point with low leverage is near the center of the distribution.") as tracker:
-            ...
+        with self.voiceover("high leverage is an outlier, and the point with") as tracker:
+            self.play(
+                Circumscribe(points[i_big]),
+                run_time = self.get_current_voiceover_duration()
+            )
+        with self.voiceover("low leverage is near the center of the distribution. This is no accident, and the explanation of why has to do") as tracker:
+            self.play(
+                Circumscribe(points[i_small]),
+                run_time = self.get_current_voiceover_duration()
+            )
 
-        with self.voiceover("This is no accident, and the explanation of why has to do with Mahalanobis distance.") as tracker:
-            ...
+        with self.voiceover("with Mahalanobis distance.") as tracker:
+            mahalanobis_text = (
+                Tex("Mahalanobis Distance")
+                .set_color_by_gradient(RED, ORANGE, YELLOW, GREEN, BLUE, PURPLE)
+                .scale(2)
+                .to_corner(UR)
+            )
+            self.play(
+                LaggedStart(
+                    FadeOut(
+                        yhat_tex,
+                        frac_tex
+                    ),
+                    Materialize(
+                        mahalanobis_text,
+                        piece_size = (0.05, 0.0125),
+                        introducer = False
+                    ),
+                    lag_ratio=0.0
+                )
+            )
+            self.wait(0.1)
 
         # with self.voiceover("In my first draft of the video, I was going to define the Mahalanobis distance here, and prove a bunch of things about it.") as tracker:
         #     ...
