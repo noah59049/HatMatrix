@@ -189,7 +189,7 @@ class Leverages(StitcherScene):
                     Materialize(
                         mahalanobis_text,
                         piece_size = (0.05, 0.0125),
-                        introducer = False
+                        remover = True
                     ),
                     lag_ratio=0.0
                 )
