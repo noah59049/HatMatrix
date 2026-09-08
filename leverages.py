@@ -160,3 +160,18 @@ class Leverages(StitcherScene):
                 FadeOut(lev_small_tex),
                 Y_tracker.animate.set_value(Y)
             )
+
+        with self.voiceover("You may have noticed that the point with high leverage is an outlier, and the point with low leverage is near the center of the distribution.") as tracker:
+            ...
+
+        with self.voiceover("This is no accident, and the explanation of why has to do with Mahalanobis distance.") as tracker:
+            ...
+
+        # with self.voiceover("In my first draft of the video, I was going to define the Mahalanobis distance here, and prove a bunch of things about it.") as tracker:
+        #     ...
+
+        # with self.voiceover("I'm still going to talk about the Mahalanobis distance, but I'm going to do it in a way that feels like discovering it.") as tracker: # TODO: Make this better wording
+        #     ...
+
+        # with self.voiceover("I'm going to talk about a bunch of things that I understood.") as tracker:
+        #     ...
