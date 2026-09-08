@@ -346,6 +346,7 @@ version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "manim" },
+    { name = "manim-particles" },
     { name = "manim-voiceover" },
     { name = "mf-tools" },
     { name = "stitch-tools" },
@@ -354,6 +355,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "manim", specifier = ">=0.20.1" },
+    { name = "manim-particles", git = "https://github.com/noah59049/manim-particles" },
     { name = "manim-voiceover", specifier = ">=0.4.0" },
     { name = "mf-tools", specifier = ">=1.4.9" },
     { name = "stitch-tools", editable = "../stitch-tools" },
@@ -496,6 +498,14 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/dc/3b/ad54ce02f3e95d17d016cb1254708ae3795b60d5661f3b2085655940a565/manim-0.20.1.tar.gz", hash = "sha256:1e9747fb2fc1bde58ad09bcbd77d141793ce4b61811726a7fce537193d92e16b", size = 553537, upload-time = "2026-02-27T07:32:53.54Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/4b/74/7a54f81bbb3016036662c5497edc89c5d053a8ab1e8f7c8faaca5d43b174/manim-0.20.1-py3-none-any.whl", hash = "sha256:2c76784716aef88630eace2762645e1eb25f236fe750cb1b3c4fdd3558de49e1", size = 652109, upload-time = "2026-02-27T07:32:55.066Z" },
+]
+
+[[package]]
+name = "manim-particles"
+version = "0.1.0"
+source = { git = "https://github.com/noah59049/manim-particles#1b13514d83c11662536ebdf2036990f8b48dd05f" }
+dependencies = [
+    { name = "manim" },
 ]
 
 [[package]]

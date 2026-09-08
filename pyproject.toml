@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "manim>=0.20.1",
+    "manim-particles",
     "manim-voiceover>=0.4.0",
     "mf-tools>=1.4.9",
     "stitch-tools",
@@ -13,3 +14,4 @@ dependencies = [
 
 [tool.uv.sources]
 stitch-tools = { path = "../stitch-tools", editable = true }
+manim-particles = { git = "https://github.com/noah59049/manim-particles" }
