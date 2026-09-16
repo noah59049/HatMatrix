@@ -253,7 +253,9 @@ class LeveragesExplorer(StitcherScene):
             for i in range(1, 10):
                 dot_dance(i, run_time = 0.5)
         with self.voiceover("Wow! The y-coordinate of the vertex of the parabola never changes.") as tracker:
-            ...
+            self.play(FadeOut(vertex_tex_rect))
+        
+        
 
 
 # TODO: I should probably explain at some point how I made this applet.
