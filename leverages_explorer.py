@@ -112,6 +112,17 @@ class LeveragesExplorer(StitcherScene):
             ).next_to(vertex_label, DOWN)
         )
 
+        def get_horizontal_lines():
+            lines = []
+            for y_val in leverages_tracker.get_value().flatten():
+                line = DashedLine(
+                    leverages_axes.c2p(X_RANGE[0], y_val),
+                    leverages_axes.c2p(X_RANGE[1], y_val),
+                )
+                line.set_opacity(0.3)
+                lines.append(line)
+            return VGroup(*lines)
+
         #######################################
         ### Part 2: Defining the animations ###
         #######################################
@@ -223,10 +234,12 @@ class LeveragesExplorer(StitcherScene):
         with self.voiceover("scale the leverages? Seems like again, the leverages corresponding to each point didn't change.") as tracker:
             dot_dance(4)
         with self.voiceover("And if we draw a horizontal line at each point, you can see that each point stays locked on those horizontal lines as we scale.") as tracker:
+            hlines = get_horizontal_lines()
+            self.play(FadeIn(hlines))
             dot_dance(5)
             dot_dance(4)
             dot_dance(5)
-            # TODO: Draw horizontal lines
+            self.play(FadeOut(hlines))
         with self.voiceover("Now let's set the points to a couple of randomly chosen values and see what happens.") as tracker:
             for i in 6,7,8,9:
                 dot_dance(i)
