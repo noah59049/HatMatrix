@@ -243,15 +243,3 @@ class LeveragesExplorer(StitcherScene):
         with self.voiceover("Now let's set the points to a couple of randomly chosen values and see what happens.") as tracker:
             for i in 6,7,8,9:
                 dot_dance(i)
-        return
-        self.add(
-            x_axis,
-            x_plot,
-            leverages_axes,
-            leverages_plot,
-            parabola_ink,
-            vertex_dot,
-            vertex_label,
-            mean_line,
-            a_label,
-        )
