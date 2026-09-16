@@ -145,6 +145,7 @@ class LeveragesExplorer(StitcherScene):
                     scale = scale, 
                     size = n
                 )
+                new_value = np.sort(new_value.flatten()).reshape(new_value.shape)
             else:
                 raise ValueError("dot_dance got an invalid number")
 
@@ -221,8 +222,14 @@ class LeveragesExplorer(StitcherScene):
             ...
         with self.voiceover("scale the leverages? Seems like again, the leverages corresponding to each point didn't change.") as tracker:
             dot_dance(4)
-
-        dot_dance(5)
+        with self.voiceover("And if we draw a horizontal line at each point, you can see that each point stays locked on those horizontal lines as we scale.") as tracker:
+            dot_dance(5)
+            dot_dance(4)
+            dot_dance(5)
+            # TODO: Draw horizontal lines
+        with self.voiceover("Now let's set the points to a couple of randomly chosen values and see what happens.") as tracker:
+            for i in 6,7,8,9:
+                dot_dance(i)
         return
         self.add(
             x_axis,
