@@ -205,22 +205,17 @@ class LeveragesExplorer(StitcherScene):
             dot_dance(1)
 
         with self.voiceover("fit a parabola to this and find out. That is a perfect fit to a parabola. Wow. What if we change the Xs to be") as tracker:
-            self.add(parabola_ink)
-            # TODO: Get the Create animation to work, right now it adds it in the wrong place
-            # self.play(Create(parabola_ink))
+            self.play(IntroduceRedraw(parabola_ink, Create))
 
         with self.voiceover("uniformly spaced? Still a parabola.") as tracker:
             dot_dance(2)
         
         with self.voiceover("I have a hypothesis that the relationship between X and leverages is always a parabola. I want to track how the parabola depends on the Xs.") as tracker:
-            self.add(vertex_dot)
-            # self.play(FadeIn(vertex_dot))
+            self.play(IntroduceRedraw(vertex_dot))
         with self.voiceover("So let's add a dot for the vertex for the parabola. And let's show the coordinates of it.") as tracker:
-            self.add(vertex_label)
-            # self.play(FadeIn(vertex_label))
+            self.play(IntroduceRedraw(vertex_label))
         with self.voiceover("Let's also add a tracker for a, the coefficient in front of x squared that controls how wide or narrow the parabola is.") as tracker:
-            self.add(a_label)
-            # self.play(FadeIn(a_label))
+            self.play(IntroduceRedraw(a_label))
         with self.voiceover("And of course, if I'm wrong about it always being a parabola, then that will show here too.") as tracker:
             ...
         with self.voiceover("I wonder what happens if we") as tracker:

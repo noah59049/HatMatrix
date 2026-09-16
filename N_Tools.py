@@ -403,6 +403,55 @@ class Combine(AnimationGroup):
             animation.begin()
             animation.interpolate(alpha)
 
+class IntroduceRedraw(Animation):
+    """
+    Plays an introducer animation (FadeIn, Create, Write, ...) on an
+    always_redraw() mobject.
+
+    Animation.begin() suspends the mobject's updaters and animates off
+    whatever points it already has at that moment. If the always_redraw
+    mobject hasn't been in the scene yet, its updater never got a chance to
+    run, so those points are stale (frozen from the instant always_redraw()
+    first called its function) rather than current - the animation plays
+    the wrong shape and only snaps correct once updating resumes at the end.
+
+    This assumes the always_redraw mobject is NOT changing over the course
+    of the animation. Under that assumption: force one refresh to capture
+    the current state, copy it with updaters cleared, and play the
+    requested introducer animation on that static copy. On cleanup, swap
+    the copy back out for the live original.
+    """
+    def __init__(self, always_redraw_mobject, animation_type=FadeIn, **kwargs):
+        self.original = always_redraw_mobject
+        self.original.update()
+        static_copy = self.original.copy()
+        static_copy.clear_updaters()
+        self.inner = animation_type(static_copy, **kwargs)
+        super().__init__(
+            static_copy,
+            run_time=self.inner.run_time,
+            rate_func=self.inner.rate_func,
+            lag_ratio=self.inner.lag_ratio,
+            introducer=True,
+        )
+
+    def begin(self) -> None:
+        self.inner.begin()
+
+    def finish(self) -> None:
+        self.inner.finish()
+
+    def interpolate(self, alpha: float) -> None:
+        self.inner.interpolate(alpha)
+
+    def update_mobjects(self, dt: float) -> None:
+        self.inner.update_mobjects(dt)
+
+    def clean_up_from_scene(self, scene: Scene) -> None:
+        self.inner.clean_up_from_scene(scene)
+        scene.remove(self.mobject)
+        scene.add(self.original)
+
 class Testing3(ThreeDScene):
     def construct(self):
         sq = Cube(
