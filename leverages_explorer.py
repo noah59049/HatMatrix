@@ -255,7 +255,16 @@ class LeveragesExplorer(StitcherScene):
         with self.voiceover("Wow! The y-coordinate of the vertex of the parabola never changes.") as tracker:
             self.play(FadeOut(vertex_tex_rect))
         
+        with self.voiceover("I also notice that the x-coordinate of the vertex of the parabola seems to be at the mean of the data.") as tracker:
+            ...
         
+        with self.voiceover("To test this, let's make a vertical line that tracks the mean of the data, and see if it always lines up with the vertex of the parabola.") as tracker:
+            self.play(IntroduceRedraw(mean_line))
+
+        with self.voiceover("Now let's cycle X through the same set of values we did before") as tracker:
+            dot_dance(0, run_time = 0)
+            for i in range(1, 10):
+                dot_dance(i, run_time = 0.5)
 
 
 # TODO: I should probably explain at some point how I made this applet.
