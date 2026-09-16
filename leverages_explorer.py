@@ -189,3 +189,18 @@ class LeveragesExplorer(StitcherScene):
         for i in range(10):
             dot_dance(i)
             self.wait(1)
+
+        with self.voiceover("Now instead of the scatterplot of X and Y, we're going to just plot our X values; Y has no effect on leverages. And we're going to show a graph with X values on the X-axis and leverages on the Y-axis. This will show how leverages change with X.") as tracker:
+            ...
+
+        with self.voiceover("Looks like the outlier is a high-leverage point, and all the others are low leverage.") as tracker:
+            ...
+
+        with self.voiceover("I wonder what happens if that outlier were closer to the distribution, say, if it were 2.5") as tracker:
+            ...
+
+        with self.voiceover("Hmm, it looks like the leverages are making a curved shape. It kind of looks like a parabola. I wonder if it is a parabola. Let's fit a parabola to this and find out.") as tracker:
+            ...
+
+        with self.voiceover("That is a perfect fit to a parabola. Wow. What if we change the Xs to be uniformly spaced? Still a parabola.") as tracker:
+            ...
