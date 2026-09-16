@@ -96,7 +96,9 @@ class LeveragesExplorer(StitcherScene):
         )
         vertex_dot = always_redraw(lambda: Dot(leverages_axes.c2p(*parabola_vertex())))
 
-        vertex_label = always_redraw(lambda: MathTex(f"({parabola_vertex()[0]:.3f}, {parabola_vertex()[1]:.3f})").to_corner(UR))
+        def get_vertex_text():
+            return f"({parabola_vertex()[0]:.3f}, {parabola_vertex()[1]:.3f})"
+        vertex_label = always_redraw(lambda: MathTex(get_vertex_text()).to_corner(UR))
 
         mean_line = always_redraw(
             lambda: DashedLine(
@@ -238,3 +240,21 @@ class LeveragesExplorer(StitcherScene):
         with self.voiceover("Now let's set the points to a couple of randomly chosen values and see what happens.") as tracker:
             for i in 6,7,8,9:
                 dot_dance(i)
+        
+        with self.voiceover("One thing I noticed was that the y-coordinate, or maybe rather the leverage coordinate, if we can call it that, of the vertex of the parabola never changed.") as tracker:
+            ...
+        with self.voiceover("So let's keep a closer eye on the y-coordinate of the vertex.") as tracker:
+            num_chars_kinda = len(get_vertex_text().split(",")[-1])
+            vertex_y_coord_tex = vertex_label[0][-num_chars_kinda+1:-1]
+            vertex_tex_rect = SurroundingRectangle(vertex_y_coord_tex)
+            self.play(Create(vertex_tex_rect))
+        with self.voiceover("And let's see what happens if the X values are everything they were before.") as tracker:
+            dot_dance(0, run_time = 0)
+            for i in range(1, 10):
+                dot_dance(i, run_time = 0.5)
+        with self.voiceover("Wow! The y-coordinate of the vertex of the parabola never changes.") as tracker:
+            ...
+
+
+# TODO: I should probably explain at some point how I made this applet.
+# It just requires applying the hat matrix to calculate leverages.
