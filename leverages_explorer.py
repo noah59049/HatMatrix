@@ -249,8 +249,7 @@ class LeveragesExplorer(StitcherScene):
             vertex_tex_rect = SurroundingRectangle(vertex_y_coord_tex)
             self.play(Create(vertex_tex_rect))
         with self.voiceover("And let's see what happens if the X values are everything they were before.") as tracker:
-            dot_dance(0, run_time = 0)
-            for i in range(1, 10):
+            for i in range(10):
                 dot_dance(i, run_time = 0.5)
         with self.voiceover("Wow! The y-coordinate of the vertex of the parabola never changes.") as tracker:
             self.play(FadeOut(vertex_tex_rect))
@@ -262,8 +261,7 @@ class LeveragesExplorer(StitcherScene):
             self.play(IntroduceRedraw(mean_line))
 
         with self.voiceover("Now let's cycle X through the same set of values we did before") as tracker:
-            dot_dance(0, run_time = 0)
-            for i in range(1, 10):
+            for i in range(10):
                 dot_dance(i, run_time = 0.5)
 
 
