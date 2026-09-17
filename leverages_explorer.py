@@ -123,6 +123,12 @@ class LeveragesExplorer(StitcherScene):
             ).next_to(a_label, DOWN)
         )
 
+        var_times_a_label = always_redraw(
+            lambda: MathTex(
+                f"\\sigma^2 a = {get_variance(X1_tracker.get_value().flatten()) * get_parabola_bhat()[2]:.3f}"
+            ).next_to(var_label, DOWN)
+        )
+
         def get_horizontal_lines():
             lines = []
             for y_val in leverages_tracker.get_value().flatten():
@@ -279,7 +285,7 @@ class LeveragesExplorer(StitcherScene):
         with self.voiceover("Now my last question about the parabola is what affects the x squared term.") as tracker:
             ...
 
-        self.add(var_label)
+        self.add(var_label, var_times_a_label)
         for i in range(10):
             dot_dance(i, run_time = 0.5)
 
