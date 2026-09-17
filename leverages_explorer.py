@@ -298,12 +298,9 @@ class LeveragesExplorer(StitcherScene):
             self.wait(0.7)
             dot_dance(5)
 
-        with self.voiceover("") as tracker:
-            ...
-        with self.voiceover("") as tracker:
-            ...
+        with self.voiceover("So let's add a tracker for the variance and see what happens when we run through all the X values we had before.") as tracker:
+            self.play(IntroduceRedraw(var_label))
 
-        self.add(var_label, var_times_a_label)
         for i in range(10):
             dot_dance(i, run_time = 0.5)
 
