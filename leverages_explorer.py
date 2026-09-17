@@ -127,11 +127,13 @@ class LeveragesExplorer(StitcherScene):
         )
 
         var_a_axes = Axes(
-            x_length = 3, 
+            x_length = 3,
             y_length = 2,
             x_range = [0,2],
-            y_range = [0,2]
+            y_range = [0,2],
+            axis_config = {"tip_length": 0.15, "tip_width": 0.15},
         )
+        var_a_axis_labels = var_a_axes.get_axis_labels(x_label = "\\sigma^2", y_label = "a")
         var_a_dot = always_redraw(
             lambda: Dot(
                 var_a_axes.c2p(
@@ -142,11 +144,12 @@ class LeveragesExplorer(StitcherScene):
             )
         )
         var_a_box = SurroundingRectangle(
-            var_a_axes, 
+            VGroup(var_a_axes, var_a_axis_labels), 
             color = GREEN_D
         )
         var_a_group = VGroup(
             var_a_axes,
+            var_a_axis_labels,
             var_a_dot,
             var_a_box
         ).to_corner(UL, buff=0)
