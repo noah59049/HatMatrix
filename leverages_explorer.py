@@ -129,10 +129,15 @@ class LeveragesExplorer(StitcherScene):
         var_a_axes = Axes(
             x_length = 3, 
             y_length = 2,
+            x_range = [0,2],
+            y_range = [0,2]
         )
         var_a_dot = always_redraw(
             lambda: Dot(
-                var_a_axes.c2p(get_variance(X1_tracker.get_value().flatten())),
+                var_a_axes.c2p(
+                    get_variance(X1_tracker.get_value().flatten()),
+                    get_parabola_bhat()[2]
+                ),
                 color = BLUE # this could change
             )
         )
