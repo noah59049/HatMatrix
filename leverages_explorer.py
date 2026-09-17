@@ -114,6 +114,15 @@ class LeveragesExplorer(StitcherScene):
             ).next_to(vertex_label, DOWN)
         )
 
+        def get_variance(array):
+            mu = np.mean(array)
+            return np.mean(array * array) - mu * mu
+        var_label = always_redraw(
+            lambda: MathTex(
+                f"\\sigma^2 = {get_variance(X1_tracker.get_value().flatten()):.3f}"
+            ).next_to(a_label, DOWN)
+        )
+
         def get_horizontal_lines():
             lines = []
             for y_val in leverages_tracker.get_value().flatten():
@@ -263,6 +272,22 @@ class LeveragesExplorer(StitcherScene):
         with self.voiceover("Now let's cycle X through the same set of values we did before") as tracker:
             for i in range(10):
                 dot_dance(i, run_time = 0.5)
+
+        with self.voiceover("Indeed, the vertex of the parabola is always at the mean of X.") as tracker:
+            ...
+
+        with self.voiceover("Now my last question about the parabola is what affects the x squared term.") as tracker:
+            ...
+
+        self.add(var_label)
+        for i in range(10):
+            dot_dance(i, run_time = 0.5)
+
+
+# I have a suspicion that it has to do with the variance of the data.
+# When we shifted all the Xs to the right, the x squared term of the parabola didn't change at all.
+# When we shifted 
+        
 
 
 # TODO: I should probably explain at some point how I made this applet.
