@@ -30,7 +30,10 @@ class LeveragesExplorer(StitcherScene):
         X_LENGTH = 10
 
         # X axis
-        x_axis = Axis1D(x_range = X_RANGE, x_length = X_LENGTH).to_edge(DOWN)
+        x_axis = Axis1D(
+            x_range = X_RANGE, 
+            x_length = X_LENGTH
+        ).to_edge(DOWN)
         x_plot = always_redraw(
             lambda: VGroup(
                 *[
@@ -122,6 +125,26 @@ class LeveragesExplorer(StitcherScene):
                 f"\\sigma^2 = {get_variance(X1_tracker.get_value().flatten()):.3f}"
             ).next_to(a_label, DOWN)
         )
+
+        var_a_axes = Axes(
+            x_length = 3, 
+            y_length = 2,
+        )
+        var_a_dot = always_redraw(
+            lambda: Dot(
+                var_a_axes.c2p(get_variance(X1_tracker.get_value().flatten())),
+                color = BLUE # this could change
+            )
+        )
+        var_a_box = SurroundingRectangle(
+            var_a_axes, 
+            color = GREEN_D
+        )
+        var_a_group = VGroup(
+            var_a_axes,
+            var_a_dot,
+            var_a_box
+        ).to_corner(UL, buff=0)
 
         var_times_a_label = always_redraw(
             lambda: MathTex(
@@ -298,9 +321,16 @@ class LeveragesExplorer(StitcherScene):
             self.wait(0.7)
             dot_dance(5)
 
-        with self.voiceover("So let's add a tracker for the variance and see what happens when we run through all the X values we had before.") as tracker:
+        with self.voiceover("So let's add a tracker for the variance and see what happens to our variance and a when we run through all the X values we had before.") as tracker:
             self.play(IntroduceRedraw(var_label))
 
+        for i in range(10):
+            dot_dance(i, run_time = 0.5)
+
+        with self.voiceover("a seemed to increase as variance decreased.") as tracker:
+            ...
+        with self.voiceover("Let's graph the relationship between variance and a to see more closely. This here is a graph, the x-axis is variance. The y-axis is a, the x squared term of the parabola. And we just have one point on the graph that will move as a and the variance change.") as tracker:
+            self.play(IntroduceRedraw(var_a_group))
         for i in range(10):
             dot_dance(i, run_time = 0.5)
 
