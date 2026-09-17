@@ -347,12 +347,5 @@ class LeveragesExplorer(StitcherScene):
         for i in range(10):
             dot_dance(i, run_time = 0.5)
 
-
-# I have a suspicion that it has to do with the variance of the data.
-# When we shifted all the Xs to the right, the x squared term of the parabola didn't change at all.
-# When we shifted 
-        
-
-
 # TODO: I should probably explain at some point how I made this applet.
 # It just requires applying the hat matrix to calculate leverages.
