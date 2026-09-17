@@ -282,7 +282,25 @@ class LeveragesExplorer(StitcherScene):
         with self.voiceover("Indeed, the vertex of the parabola is always at the mean of X.") as tracker:
             ...
 
-        with self.voiceover("Now my last question about the parabola is what affects the x squared term.") as tracker:
+        with self.voiceover("Now my last question about the parabola is what affects a, the x squared term.") as tracker:
+            ...
+
+        with self.voiceover("It seems to be connected with the variance.") as tracker:
+            ...
+
+        with self.voiceover("When we translated our Xs, a didn't change at all.") as tracker:
+            dot_dance(2, run_time = 0)
+            self.wait(0.7)
+            dot_dance(3)
+        
+        with self.voiceover("And when we scaled our Xs, increasing the variance, a decreased.") as tracker:
+            dot_dance(4, run_time = 0)
+            self.wait(0.7)
+            dot_dance(5)
+
+        with self.voiceover("") as tracker:
+            ...
+        with self.voiceover("") as tracker:
             ...
 
         self.add(var_label, var_times_a_label)
