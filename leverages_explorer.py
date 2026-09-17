@@ -144,14 +144,19 @@ class LeveragesExplorer(StitcherScene):
             )
         )
         var_a_box = SurroundingRectangle(
-            VGroup(var_a_axes, var_a_axis_labels), 
-            color = GREEN_D
+            VGroup(var_a_axes, var_a_axis_labels),
+            color = GREEN_D,
+            fill_color = BLACK,
+            fill_opacity = 1,
         )
+        # var_a_box first so it's drawn behind everything else in the group,
+        # opaquely blotting out whatever (e.g. leverages_axes' y axis) sits
+        # behind this corner rather than letting it show through.
         var_a_group = VGroup(
+            var_a_box,
             var_a_axes,
             var_a_axis_labels,
             var_a_dot,
-            var_a_box
         ).to_corner(UL, buff=0)
 
         var_times_a_label = always_redraw(
