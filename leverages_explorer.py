@@ -347,5 +347,16 @@ class LeveragesExplorer(StitcherScene):
         for i in range(10):
             dot_dance(i, run_time = 0.5)
 
+        with self.voiceover("I'm guessing there's an inverse relationship between them. Let's show sigma squared times a to verify if this is true.") as tracker:
+            self.play(IntroduceRedraw(var_times_a_label))
+
+        for i in range(10):
+            dot_dance(i, run_time = 0.5)
+
+        with self.voiceover("Yes there is. Their product is always constant.") as tracker:
+            ...
+
+        
+
 # TODO: I should probably explain at some point how I made this applet.
 # It just requires applying the hat matrix to calculate leverages.
