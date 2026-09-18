@@ -15,13 +15,19 @@ class ZScene(Scene):
         
         vertex_forms = [
             rf"y=a(x-h)^2+k",
-            rf"H_ii=a(x-h)^2+k",
-            rf"H_ii=a(x-\mu_X)^2+k",
-            rf"H_ii=a(x-\mu_X)^2+{1/n:.3f}",
-            rf"H_ii=a(x-\mu_X)^2+{1/n:.3f}",
+            rf"H_{{ii}}=a(x-h)^2+k",
+            rf"H_{{ii}}=a(x-\mu_X)^2+k",
+            rf"H_{{ii}}=a(x-\mu_X)^2+{1/n:.3f}",
+            rf"H_{{ii}}=a(x-\mu_X)^2+{1/n:.3f}",
+            rf"H_{{ii}}=\frac{{{1/n:.3f}}}{{\sigma^2}}(x-\mu_X)^2+{1/n:.3f}",
+            rf"H_{{ii}}=\frac{{{1/n:.3f}}}{{\sigma^2}}(x-\mu_X)^2+{1/n:.3f}",
+            rf"H_{{ii}}={1/n:.3f}(\frac{{x-\mu_X}}{{\sigma}})^2+{1/n:.3f}",
+            rf"H_{{ii}}={1/n:.3f}z^2+{1/n:.3f}"
         ]
 
         vertex_form_texes_list = [MathTex(v).to_edge(DOWN) for v in vertex_forms]
         vertex_form_texes = VGroup(*vertex_form_texes_list)
 
-
+        self.add(vertex_form_texes[0])
+        for i, v in enumerate(vertex_form_texes[1:]):
+            self.play(TransformMatchingShapes(vertex_form_texes[i], v))
