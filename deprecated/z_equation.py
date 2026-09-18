@@ -10,5 +10,5 @@ class ZScene(Scene):
         self.add(var_a_tex)
         a_var_tex = MathTex(rf"a = \frac{{{1/n:.3f}}}{{\sigma^2}}").next_to(vertex_tex, DOWN)
         self.play(TransformByGlyphMap(var_a_tex, a_var_tex,
-                                      ([], [7])
+                                      ([], [7]),
                                       ([0,1], [8,9])))
