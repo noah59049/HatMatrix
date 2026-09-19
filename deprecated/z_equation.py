@@ -26,8 +26,6 @@ class ZScene(Scene):
         vertex_form_texes_list = [MathTex(v).next_to(a_var_tex,DOWN).to_edge(LEFT) for v in vertex_forms]
         vertex_form_texes = VGroup(*vertex_form_texes_list)
 
-        num_base_glyphs = len(f"{1/n:.3f}") # always 5, we don't need this do we?
-
         self.add(vertex_form_texes[0])
         
         self.play(TransformByGlyphMap(vertex_form_texes[0], vertex_form_texes[1],
