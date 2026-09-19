@@ -363,17 +363,6 @@ class LeveragesExplorer(StitcherScene):
         var_a_tex = MathTex(rf"\sigma^2 a = {1/n:.3f}").next_to(vertex_tex, DOWN)
         a_var_tex = MathTex(rf"a = \frac{{{1/n:.3f}}}{{\sigma^2}}").next_to(vertex_tex, DOWN)
 
-        with self.voiceover("It's vertex always seems to fall at mu comma 0.083") as tracker:
-            self.add(vertex_tex)
-        
-        with self.voiceover("The variance times the x squared term, a, seems to be constant at 0.083.") as tracker:
-            self.add(var_a_tex)
-
-        with self.voiceover("Or to put it another way, a is equal to 0.083 divided by the variance.") as tracker:
-            self.play(TransformByGlyphMap(var_a_tex, a_var_tex,
-                                        ([], [7]),
-                                        ([0,1], [8,9])))
-        
         vertex_forms = [
             rf"y=a(x-h)^2+k",
             rf"H_{{ii}}=a(x-h)^2+k",
@@ -386,6 +375,18 @@ class LeveragesExplorer(StitcherScene):
 
         vertex_form_texes_list = [MathTex(v).next_to(a_var_tex,DOWN).to_edge(LEFT) for v in vertex_forms]
         vertex_form_texes = VGroup(*vertex_form_texes_list)
+        
+        with self.voiceover("It's vertex always seems to fall at mu comma 0.083") as tracker:
+            self.add(vertex_tex)
+        
+        with self.voiceover("The variance times the x squared term, a, seems to be constant at 0.083.") as tracker:
+            self.add(var_a_tex)
+
+        with self.voiceover("Or to put it another way, a is equal to 0.083 divided by the variance.") as tracker:
+            self.play(TransformByGlyphMap(var_a_tex, a_var_tex,
+                                        ([], [7]),
+                                        ([0,1], [8,9])))
+        
 
         with self.voiceover("Let's try writing the equation of the parabola in vertex form. What we start with is just a vertex form for a general parabola.") as tracker:
             self.add(vertex_form_texes[0])
