@@ -218,6 +218,43 @@ class LeveragesExplorer(StitcherScene):
             else:
                 self.play(X1_tracker.animate.set_value(new_value), run_time = run_time)
 
+        
+        vertex_tex = Tex(rf"Vertex: $(\mu_X, {1/n:.3f})$").to_corner(UL)
+        var_a_tex = MathTex(rf"\sigma^2 a = {1/n:.3f}").next_to(vertex_tex, DOWN)
+        a_var_tex = MathTex(rf"a = \frac{{{1/n:.3f}}}{{\sigma^2}}").next_to(vertex_tex, DOWN)
+
+        vertex_forms = [
+            rf"y=a(x-h)^2+k",
+            rf"H_{{ii}}=a(x-h)^2+k",
+            rf"H_{{ii}}=a(x-\mu_X)^2+k",
+            rf"H_{{ii}}=a(x-\mu_X)^2+{1/n:.3f}",
+            rf"H_{{ii}}=\frac{{{1/n:.3f}}}{{\sigma^2}}(x-\mu_X)^2+{1/n:.3f}",
+            rf"H_{{ii}}={1/n:.3f}(\frac{{x-\mu_X}}{{\sigma}})^2+{1/n:.3f}",
+            rf"H_{{ii}}={1/n:.3f}z^2+{1/n:.3f}"
+        ]
+
+        vertex_form_texes_list = [MathTex(v).next_to(a_var_tex,DOWN).to_edge(LEFT) for v in vertex_forms]
+        vertex_form_texes = VGroup(*vertex_form_texes_list)
+
+        vertex_form_group0 = VGroup(
+            vertex_tex,
+            var_a_tex,
+            a_var_tex,
+            vertex_form_texes
+        )
+        vertex_form_box = SurroundingRectangle(
+            vertex_form_group0,
+            color = GREEN_D,
+            fill_color = BLACK,
+            fill_opacity = 1,
+        )
+
+        vertex_form_group = VGroup(
+            vertex_form_group0,
+            vertex_form_box,
+        ).to_corner(UL, buff=0)
+
+
         # TODO: What are all the properties I want to explore and show?
         # The vertex is always the same y
         # Translating just translates the parabola
@@ -357,27 +394,13 @@ class LeveragesExplorer(StitcherScene):
             ...
 
         with self.voiceover("So let's recap all the facts that seem to be true about this parabola that we find all the leverages falling on.") as tracker:
-            ...
-
-        vertex_tex = Tex(rf"Vertex: $(\mu_X, {1/n:.3f})$").to_corner(UL)
-        var_a_tex = MathTex(rf"\sigma^2 a = {1/n:.3f}").next_to(vertex_tex, DOWN)
-        a_var_tex = MathTex(rf"a = \frac{{{1/n:.3f}}}{{\sigma^2}}").next_to(vertex_tex, DOWN)
-
-        vertex_forms = [
-            rf"y=a(x-h)^2+k",
-            rf"H_{{ii}}=a(x-h)^2+k",
-            rf"H_{{ii}}=a(x-\mu_X)^2+k",
-            rf"H_{{ii}}=a(x-\mu_X)^2+{1/n:.3f}",
-            rf"H_{{ii}}=\frac{{{1/n:.3f}}}{{\sigma^2}}(x-\mu_X)^2+{1/n:.3f}",
-            rf"H_{{ii}}={1/n:.3f}(\frac{{x-\mu_X}}{{\sigma}})^2+{1/n:.3f}",
-            rf"H_{{ii}}={1/n:.3f}z^2+{1/n:.3f}"
-        ]
-
-        vertex_form_texes_list = [MathTex(v).next_to(a_var_tex,DOWN).to_edge(LEFT) for v in vertex_forms]
-        vertex_form_texes = VGroup(*vertex_form_texes_list)
+            self.play(FadeOut(var_a_group))
         
-        with self.voiceover("It's vertex always seems to fall at mu comma 0.083") as tracker:
-            self.add(vertex_tex)
+        with self.voiceover("Its vertex always seems to fall at mu comma 0.083") as tracker:
+            self.play(FadeIn(
+                vertex_tex,
+                vertex_form_box
+            ))
         
         with self.voiceover("The variance times the x squared term, a, seems to be constant at 0.083.") as tracker:
             self.add(var_a_tex)
