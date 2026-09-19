@@ -356,7 +356,68 @@ class LeveragesExplorer(StitcherScene):
         with self.voiceover("Yes there is. Their product is always constant.") as tracker:
             ...
 
+        with self.voiceover("So let's recap all the facts that seem to be true about this parabola that we find all the leverages falling on.") as tracker:
+            ...
+
+        vertex_tex = Tex(rf"Vertex: $(\mu_X, {1/n:.3f})$").to_corner(UL)
+        var_a_tex = MathTex(rf"\sigma^2 a = {1/n:.3f}").next_to(vertex_tex, DOWN)
+        a_var_tex = MathTex(rf"a = \frac{{{1/n:.3f}}}{{\sigma^2}}").next_to(vertex_tex, DOWN)
+
+        with self.voiceover("It's vertex always seems to fall at mu comma 0.083") as tracker:
+            self.add(vertex_tex)
         
+        with self.voiceover("The variance times the x squared term, a, seems to be constant at 0.083.") as tracker:
+            self.add(var_a_tex)
+
+        with self.voiceover("Or to put it another way, a is equal to 0.083 divided by the variance.") as tracker:
+            self.play(TransformByGlyphMap(var_a_tex, a_var_tex,
+                                        ([], [7]),
+                                        ([0,1], [8,9])))
+        
+        vertex_forms = [
+            rf"y=a(x-h)^2+k",
+            rf"H_{{ii}}=a(x-h)^2+k",
+            rf"H_{{ii}}=a(x-\mu_X)^2+k",
+            rf"H_{{ii}}=a(x-\mu_X)^2+{1/n:.3f}",
+            rf"H_{{ii}}=\frac{{{1/n:.3f}}}{{\sigma^2}}(x-\mu_X)^2+{1/n:.3f}",
+            rf"H_{{ii}}={1/n:.3f}(\frac{{x-\mu_X}}{{\sigma}})^2+{1/n:.3f}",
+            rf"H_{{ii}}={1/n:.3f}z^2+{1/n:.3f}"
+        ]
+
+        vertex_form_texes_list = [MathTex(v).next_to(a_var_tex,DOWN).to_edge(LEFT) for v in vertex_forms]
+        vertex_form_texes = VGroup(*vertex_form_texes_list)
+
+        with self.voiceover("Let's try writing the equation of the parabola in vertex form. What we start with is just a vertex form for a general parabola.") as tracker:
+            self.add(vertex_form_texes[0])
+        
+        with self.voiceover("We know that the y value of the parabola is the leverage") as tracker:
+            self.play(TransformByGlyphMap(vertex_form_texes[0], vertex_form_texes[1],
+                                        ([0], [0,1,2])))
+        
+        with self.voiceover("The h, the x-coordinate of the vertex, is the mean of X.") as tracker:
+            self.play(TransformByGlyphMap(vertex_form_texes[1], vertex_form_texes[2],
+                                        ([8], [8,9])))
+        
+        with self.voiceover("The k, the y-coordinate of the vertex, is 0.083.") as tracker:
+            self.play(TransformByGlyphMap(vertex_form_texes[2], vertex_form_texes[3],
+                                        ([13], range(13, 18))))
+        
+        with self.voiceover("And a here is 0.083 divided by the variance of X.") as tracker:
+            self.play(TransformByGlyphMap(vertex_form_texes[3], vertex_form_texes[4],
+                                        ([4], range(4,12))))
+        
+        with self.voiceover("I'm starting to notice something. If we take this sigma squared in the denominator, and put it as a sigma in the denominator of what's inside the squared term here,") as tracker:
+            self.play(TransformByGlyphMap(vertex_form_texes[4], vertex_form_texes[5],
+                                        ([9], [14]),
+                                        ([10], [15]),
+                                        ([11], [])
+                                        ))
+        
+        with self.voiceover("Then this just turns into the z-score! So our little calculation here showed that the formula for leverages showed that the formula for leverages only depends on the z-scores of our X-variables.") as tracker:
+            self.play(TransformByGlyphMap(vertex_form_texes[5], vertex_form_texes[6],
+                                        (range(9,17), [9])))
+
+# TODO: Sigma squared needs to show that it's sigma X squared.
 
 # TODO: I should probably explain at some point how I made this applet.
 # It just requires applying the hat matrix to calculate leverages.
