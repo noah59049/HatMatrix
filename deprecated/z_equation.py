@@ -18,8 +18,6 @@ class ZScene(Scene):
             rf"H_{{ii}}=a(x-h)^2+k",
             rf"H_{{ii}}=a(x-\mu_X)^2+k",
             rf"H_{{ii}}=a(x-\mu_X)^2+{1/n:.3f}",
-            rf"H_{{ii}}=a(x-\mu_X)^2+{1/n:.3f}",
-            rf"H_{{ii}}=\frac{{{1/n:.3f}}}{{\sigma^2}}(x-\mu_X)^2+{1/n:.3f}",
             rf"H_{{ii}}=\frac{{{1/n:.3f}}}{{\sigma^2}}(x-\mu_X)^2+{1/n:.3f}",
             rf"H_{{ii}}={1/n:.3f}(\frac{{x-\mu_X}}{{\sigma}})^2+{1/n:.3f}",
             rf"H_{{ii}}={1/n:.3f}z^2+{1/n:.3f}"
@@ -28,6 +26,29 @@ class ZScene(Scene):
         vertex_form_texes_list = [MathTex(v).next_to(a_var_tex,DOWN).to_edge(LEFT) for v in vertex_forms]
         vertex_form_texes = VGroup(*vertex_form_texes_list)
 
+        num_base_glyphs = len(f"{1/n:.3f}") # always 5, we don't need this do we?
+
         self.add(vertex_form_texes[0])
-        for i, v in enumerate(vertex_form_texes[1:]):
-            self.play(TransformMatchingShapes(vertex_form_texes[i], v))
+        
+        self.play(TransformByGlyphMap(vertex_form_texes[0], vertex_form_texes[1],
+                                      ([0], [0,1,2])))
+        
+        self.play(TransformByGlyphMap(vertex_form_texes[1], vertex_form_texes[2],
+                                      ([8], [8,9])))
+        
+        self.play(TransformByGlyphMap(vertex_form_texes[2], vertex_form_texes[3],
+                                      ([13], range(13, 18))))
+        
+        self.play(TransformByGlyphMap(vertex_form_texes[3], vertex_form_texes[4],
+                                      ([4], range(4,12))))
+        
+        self.play(TransformByGlyphMap(vertex_form_texes[4], vertex_form_texes[5],
+                                      ([9], [14]),
+                                      ([10], [15]),
+                                      ([11], [])
+                                      ))
+        
+        self.play(TransformByGlyphMap(vertex_form_texes[5], vertex_form_texes[6],
+                                      (range(9,17), [9])))
+        
+        
