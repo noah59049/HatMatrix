@@ -442,7 +442,7 @@ class LeveragesExplorer(StitcherScene):
                                         (range(9,17), [9])))
             
         with self.voiceover("I want to add a graph here showing the z-scores versus the leverages. If this formula is right, they should always be on a parabola, and that parabola should always have this formula.") as tracker:
-            ...
+            ... # TODO: Actually add the graph of z-scores versus leverages.
 
         with self.voiceover("Looks like they do! Wow.") as tracker:
             ...
