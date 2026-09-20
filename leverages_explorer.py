@@ -122,7 +122,7 @@ class LeveragesExplorer(StitcherScene):
             return np.mean(array * array) - mu * mu
         var_label = always_redraw(
             lambda: MathTex(
-                f"\\sigma^2 = {get_variance(X1_tracker.get_value().flatten()):.4f}"
+                f"\\sigma^2_X = {get_variance(X1_tracker.get_value().flatten()):.4f}"
             ).next_to(a_label, DOWN)
         )
 
@@ -133,7 +133,7 @@ class LeveragesExplorer(StitcherScene):
             y_range = [0,2],
             axis_config = {"tip_length": 0.15, "tip_width": 0.15},
         )
-        var_a_axis_labels = var_a_axes.get_axis_labels(x_label = "\\sigma^2", y_label = "a")
+        var_a_axis_labels = var_a_axes.get_axis_labels(x_label = "\\sigma^2_X", y_label = "a")
         var_a_dot = always_redraw(
             lambda: Dot(
                 var_a_axes.c2p(
@@ -161,7 +161,7 @@ class LeveragesExplorer(StitcherScene):
 
         var_times_a_label = always_redraw(
             lambda: MathTex(
-                f"\\sigma^2 a = {get_variance(X1_tracker.get_value().flatten()) * get_parabola_bhat()[2]:.4f}"
+                f"\\sigma^2_X a = {get_variance(X1_tracker.get_value().flatten()) * get_parabola_bhat()[2]:.4f}"
             ).next_to(var_label, DOWN)
         )
 
@@ -220,16 +220,16 @@ class LeveragesExplorer(StitcherScene):
 
         
         vertex_tex = Tex(rf"Vertex: $(\mu_X, {1/n:.4f})$").to_corner(UL)
-        var_a_tex = MathTex(rf"\sigma^2 a = {1/n:.4f}").next_to(vertex_tex, DOWN)
-        a_var_tex = MathTex(rf"a = \frac{{{1/n:.4f}}}{{\sigma^2}}").next_to(vertex_tex, DOWN)
+        var_a_tex = MathTex(rf"\sigma^2_X a = {1/n:.4f}").next_to(vertex_tex, DOWN)
+        a_var_tex = MathTex(rf"a = \frac{{{1/n:.4f}}}{{\sigma^2_X}}").next_to(vertex_tex, DOWN)
 
         vertex_forms = [
             rf"y=a(x-h)^2+k",
             rf"H_{{ii}}=a(x-h)^2+k",
             rf"H_{{ii}}=a(x-\mu_X)^2+k",
             rf"H_{{ii}}=a(x-\mu_X)^2+{1/n:.4f}",
-            rf"H_{{ii}}=\frac{{{1/n:.4f}}}{{\sigma^2}}(x-\mu_X)^2+{1/n:.4f}",
-            rf"H_{{ii}}={1/n:.4f}(\frac{{x-\mu_X}}{{\sigma}})^2+{1/n:.4f}",
+            rf"H_{{ii}}=\frac{{{1/n:.4f}}}{{\sigma^2_X}}(x-\mu_X)^2+{1/n:.4f}",
+            rf"H_{{ii}}={1/n:.4f}(\frac{{x-\mu_X}}{{\sigma_X}})^2+{1/n:.4f}",
             rf"H_{{ii}}={1/n:.4f}z^2+{1/n:.4f}"
         ]
 
@@ -407,8 +407,8 @@ class LeveragesExplorer(StitcherScene):
 
         with self.voiceover("Or to put it another way, a is equal to 0.0833 divided by the variance.") as tracker:
             self.play(TransformByGlyphMap(var_a_tex, a_var_tex,
-                                        ([], [7]),
-                                        ([0,1], [8,9])))
+                                        ([], [8]),
+                                        ([0,1,2], [9,10,11])))
         
 
         with self.voiceover("Let's try writing the equation of the parabola in vertex form. What we start with is just a vertex form for a general parabola.") as tracker:
@@ -424,22 +424,22 @@ class LeveragesExplorer(StitcherScene):
         
         with self.voiceover("The k, the y-coordinate of the vertex, is 0.0833.") as tracker:
             self.play(TransformByGlyphMap(vertex_form_texes[2], vertex_form_texes[3],
-                                        ([13], range(13, 18))))
+                                        ([13], range(13, 19))))
         
         with self.voiceover("And a here is 0.0833 divided by the variance of X.") as tracker:
             self.play(TransformByGlyphMap(vertex_form_texes[3], vertex_form_texes[4],
-                                        ([4], range(4,12))))
+                                        ([4], range(4,14))))
         
         with self.voiceover("I'm starting to notice something. If we take this sigma squared in the denominator, and put it as a sigma in the denominator of what's inside the squared term here,") as tracker:
             self.play(TransformByGlyphMap(vertex_form_texes[4], vertex_form_texes[5],
                                         ([9], [14]),
-                                        ([10], [15]),
+                                        ([10,12], [15,16]),
                                         ([11], [])
                                         ))
         
         with self.voiceover("Then this just turns into the z-score! So our little calculation here showed that the formula for leverages showed that the formula for leverages only depends on the z-scores of our X-variables.") as tracker:
             self.play(TransformByGlyphMap(vertex_form_texes[5], vertex_form_texes[6],
-                                        (range(9,17), [9])))
+                                        (range(9,18), [9])))
             
         with self.voiceover("I want to add a graph here showing the z-scores versus the leverages. If this formula is right, they should always be on a parabola, and that parabola should always have this formula.") as tracker:
             ... # TODO: Actually add the graph of z-scores versus leverages.
