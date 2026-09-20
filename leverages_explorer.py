@@ -100,7 +100,7 @@ class LeveragesExplorer(StitcherScene):
         vertex_dot = always_redraw(lambda: Dot(leverages_axes.c2p(*parabola_vertex())))
 
         def get_vertex_text():
-            return f"({parabola_vertex()[0]:.3f}, {parabola_vertex()[1]:.3f})"
+            return f"({parabola_vertex()[0]:.4f}, {parabola_vertex()[1]:.4f})"
         vertex_label = always_redraw(lambda: MathTex(get_vertex_text()).to_corner(UR))
 
         mean_line = always_redraw(
@@ -113,7 +113,7 @@ class LeveragesExplorer(StitcherScene):
 
         a_label = always_redraw(
             lambda: MathTex(
-                f"a={get_parabola_bhat()[2]:.3f}"
+                f"a={get_parabola_bhat()[2]:.4f}"
             ).next_to(vertex_label, DOWN)
         )
 
@@ -122,7 +122,7 @@ class LeveragesExplorer(StitcherScene):
             return np.mean(array * array) - mu * mu
         var_label = always_redraw(
             lambda: MathTex(
-                f"\\sigma^2 = {get_variance(X1_tracker.get_value().flatten()):.3f}"
+                f"\\sigma^2 = {get_variance(X1_tracker.get_value().flatten()):.4f}"
             ).next_to(a_label, DOWN)
         )
 
@@ -161,7 +161,7 @@ class LeveragesExplorer(StitcherScene):
 
         var_times_a_label = always_redraw(
             lambda: MathTex(
-                f"\\sigma^2 a = {get_variance(X1_tracker.get_value().flatten()) * get_parabola_bhat()[2]:.3f}"
+                f"\\sigma^2 a = {get_variance(X1_tracker.get_value().flatten()) * get_parabola_bhat()[2]:.4f}"
             ).next_to(var_label, DOWN)
         )
 
@@ -219,18 +219,18 @@ class LeveragesExplorer(StitcherScene):
                 self.play(X1_tracker.animate.set_value(new_value), run_time = run_time)
 
         
-        vertex_tex = Tex(rf"Vertex: $(\mu_X, {1/n:.3f})$").to_corner(UL)
-        var_a_tex = MathTex(rf"\sigma^2 a = {1/n:.3f}").next_to(vertex_tex, DOWN)
-        a_var_tex = MathTex(rf"a = \frac{{{1/n:.3f}}}{{\sigma^2}}").next_to(vertex_tex, DOWN)
+        vertex_tex = Tex(rf"Vertex: $(\mu_X, {1/n:.4f})$").to_corner(UL)
+        var_a_tex = MathTex(rf"\sigma^2 a = {1/n:.4f}").next_to(vertex_tex, DOWN)
+        a_var_tex = MathTex(rf"a = \frac{{{1/n:.4f}}}{{\sigma^2}}").next_to(vertex_tex, DOWN)
 
         vertex_forms = [
             rf"y=a(x-h)^2+k",
             rf"H_{{ii}}=a(x-h)^2+k",
             rf"H_{{ii}}=a(x-\mu_X)^2+k",
-            rf"H_{{ii}}=a(x-\mu_X)^2+{1/n:.3f}",
-            rf"H_{{ii}}=\frac{{{1/n:.3f}}}{{\sigma^2}}(x-\mu_X)^2+{1/n:.3f}",
-            rf"H_{{ii}}={1/n:.3f}(\frac{{x-\mu_X}}{{\sigma}})^2+{1/n:.3f}",
-            rf"H_{{ii}}={1/n:.3f}z^2+{1/n:.3f}"
+            rf"H_{{ii}}=a(x-\mu_X)^2+{1/n:.4f}",
+            rf"H_{{ii}}=\frac{{{1/n:.4f}}}{{\sigma^2}}(x-\mu_X)^2+{1/n:.4f}",
+            rf"H_{{ii}}={1/n:.4f}(\frac{{x-\mu_X}}{{\sigma}})^2+{1/n:.4f}",
+            rf"H_{{ii}}={1/n:.4f}z^2+{1/n:.4f}"
         ]
 
         vertex_form_texes_list = [MathTex(v).next_to(a_var_tex,DOWN).to_edge(LEFT) for v in vertex_forms]
@@ -396,16 +396,16 @@ class LeveragesExplorer(StitcherScene):
         with self.voiceover("So let's recap all the facts that seem to be true about this parabola that we find all the leverages falling on.") as tracker:
             self.play(FadeOut(var_a_group))
         
-        with self.voiceover("Its vertex always seems to fall at mu comma 0.083") as tracker:
+        with self.voiceover("Its vertex always seems to fall at mu comma 0.0833") as tracker:
             self.play(FadeIn(
                 vertex_tex,
                 vertex_form_box
             ))
         
-        with self.voiceover("The variance times the x squared term, a, seems to be constant at 0.083.") as tracker:
+        with self.voiceover("The variance times the x squared term, a, seems to be constant at 0.0833.") as tracker:
             self.add(var_a_tex)
 
-        with self.voiceover("Or to put it another way, a is equal to 0.083 divided by the variance.") as tracker:
+        with self.voiceover("Or to put it another way, a is equal to 0.0833 divided by the variance.") as tracker:
             self.play(TransformByGlyphMap(var_a_tex, a_var_tex,
                                         ([], [7]),
                                         ([0,1], [8,9])))
@@ -422,11 +422,11 @@ class LeveragesExplorer(StitcherScene):
             self.play(TransformByGlyphMap(vertex_form_texes[1], vertex_form_texes[2],
                                         ([8], [8,9])))
         
-        with self.voiceover("The k, the y-coordinate of the vertex, is 0.083.") as tracker:
+        with self.voiceover("The k, the y-coordinate of the vertex, is 0.0833.") as tracker:
             self.play(TransformByGlyphMap(vertex_form_texes[2], vertex_form_texes[3],
                                         ([13], range(13, 18))))
         
-        with self.voiceover("And a here is 0.083 divided by the variance of X.") as tracker:
+        with self.voiceover("And a here is 0.0833 divided by the variance of X.") as tracker:
             self.play(TransformByGlyphMap(vertex_form_texes[3], vertex_form_texes[4],
                                         ([4], range(4,12))))
         
@@ -447,10 +447,10 @@ class LeveragesExplorer(StitcherScene):
         with self.voiceover("Looks like they do! Wow.") as tracker:
             ...
 
-        with self.voiceover("One last thing here is: Where did this 0.083 come from?") as tracker:
+        with self.voiceover("One last thing here is: Where did this 0.0833 come from?") as tracker:
             ...
 
-        with self.voiceover("I notice that it's the first 3 digits of one twelfth, and that n equals twelve.") as tracker:
+        with self.voiceover("I notice that it's the first 4 digits of one twelfth, and that n equals twelve.") as tracker:
             ...
 
         with self.voiceover("So we can substitute in one over n here.") as tracker:
