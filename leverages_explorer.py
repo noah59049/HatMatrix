@@ -398,8 +398,8 @@ class LeveragesExplorer(StitcherScene):
         
         with self.voiceover("Its vertex always seems to fall at mu comma 0.0833") as tracker:
             self.play(FadeIn(
+                vertex_form_box,
                 vertex_tex,
-                vertex_form_box
             ))
         
         with self.voiceover("The variance times the x squared term, a, seems to be constant at 0.0833.") as tracker:
