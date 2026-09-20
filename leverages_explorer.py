@@ -440,7 +440,27 @@ class LeveragesExplorer(StitcherScene):
         with self.voiceover("Then this just turns into the z-score! So our little calculation here showed that the formula for leverages showed that the formula for leverages only depends on the z-scores of our X-variables.") as tracker:
             self.play(TransformByGlyphMap(vertex_form_texes[5], vertex_form_texes[6],
                                         (range(9,17), [9])))
+            
+        with self.voiceover("I want to add a graph here showing the z-scores versus the leverages. If this formula is right, they should always be on a parabola, and that parabola should always have this formula.") as tracker:
+            ...
 
+        with self.voiceover("Looks like they do! Wow.") as tracker:
+            ...
+
+        with self.voiceover("One last thing here is: Where did this 0.083 come from?") as tracker:
+            ...
+
+        with self.voiceover("I notice that it's the first 3 digits of one twelfth, and that n equals twelve.") as tracker:
+            ...
+
+        with self.voiceover("So we can substitute in one over n here.") as tracker:
+            ...
+
+        with self.voiceover("And if I wanted to be scientifically rigorous about this, I would test whether we also get the same equation with one over n for different values of n.") as tracker:
+            ...
+
+        with self.voiceover("I'm not going to, though, because the point of this was never to prove this equation. It was to explore, notice patterns, and form a hypothesis. The mathematical proof comes later.") as tracker:
+            ...
 # TODO: Sigma squared needs to show that it's sigma X squared.
 
 # TODO: I should probably explain at some point how I made this applet.
