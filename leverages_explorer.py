@@ -254,24 +254,6 @@ class LeveragesExplorer(StitcherScene):
             vertex_form_box,
         ).to_corner(UL, buff=0)
 
-
-        # TODO: What are all the properties I want to explore and show?
-        # The vertex is always the same y
-        # Translating just translates the parabola
-        # Stretching just stretches the parabola
-        # The maximum you can reach is 1
-        # If you keep the mean and standard deviation, you keep the parabola (I think).
-        # If you plot the parabola in z-space, it is always the same.
-        # The vertex of the parabola is always at x = mu.
-
-        # That was a good list. Now what's the order?
-        ### Start, move it in, evenly spaced
-        # 1. It is a parabola
-        ### Translate, stretch, move, random
-        # 2. The vertex Y is always the same
-        # 3. The vertex X is always at the mean
-        # 4. The a of the parabola
-
         ##############################
         ### Part 3: Play the scene ###
         ##############################
@@ -461,7 +443,6 @@ class LeveragesExplorer(StitcherScene):
 
         with self.voiceover("I'm not going to, though, because the point of this was never to prove this equation. It was to explore, notice patterns, and form a hypothesis. The mathematical proof comes later.") as tracker:
             ...
-# TODO: Sigma squared needs to show that it's sigma X squared.
 
 # TODO: I should probably explain at some point how I made this applet.
 # It just requires applying the hat matrix to calculate leverages.
