@@ -432,9 +432,9 @@ class LeveragesExplorer(StitcherScene):
         
         with self.voiceover("I'm starting to notice something. If we take this sigma squared in the denominator, and put it as a sigma in the denominator of what's inside the squared term here,") as tracker:
             self.play(TransformByGlyphMap(vertex_form_texes[4], vertex_form_texes[5],
-                                        ([9], [14]),
-                                        ([10,12], [15,16]),
-                                        ([11], [])
+                                        ([10], [15]),
+                                        ([11,13], [16,17]),
+                                        ([12], []),
                                         ))
         
         with self.voiceover("Then this just turns into the z-score! So our little calculation here showed that the formula for leverages showed that the formula for leverages only depends on the z-scores of our X-variables.") as tracker:
