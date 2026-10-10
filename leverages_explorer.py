@@ -265,32 +265,31 @@ class LeveragesExplorer(StitcherScene):
             z_parabola_Y = leverages_tracker.get_value().flatten()
             return np.linalg.inv(z_parabola_X.T @ z_parabola_X) @ z_parabola_X.T @ z_parabola_Y
 
+        # Same size and spot as the vertex form box, since it covers it.
+        z_lev_box = vertex_form_box.copy()
         z_lev_axes = Axes(
-            x_length = 3,
-            y_length = 2,
+            x_length = z_lev_box.width - 1.0,
+            y_length = z_lev_box.height - 1.0,
             x_range = [-3.5, 3.5, 1],
-            y_range = [0, 1, 0.5],
+            y_range = [0, 1.2, 0.5],
             axis_config = {"tip_length": 0.15, "tip_width": 0.15},
         )
         z_lev_axis_labels = z_lev_axes.get_axis_labels(x_label = "z", y_label = "H_{ii}")
+        VGroup(z_lev_axes, z_lev_axis_labels).move_to(z_lev_box)
+        # Plotted over the whole z axis rather than just the z-scores' range,
+        # so the parabola keeps a fixed size as the Xs move.
         z_lev_parabola = always_redraw(
             lambda: z_lev_axes.plot(
                 lambda z: get_z_parabola_bhat() @ np.array([1, z, z * z]),
-                x_range = [get_z_scores().min(), get_z_scores().max()],
+                x_range = [-3.5, 3.5],
             )
         )
         z_lev_plot = always_redraw(
             lambda: VGroup(
                 *[
-                    Dot(z_lev_axes.c2p(z, leverage), radius = 0.05, color = H_COLOR) for z, leverage in zip(get_z_scores(), leverages_tracker.get_value().flatten())
+                    Dot(z_lev_axes.c2p(z, leverage), color = H_COLOR) for z, leverage in zip(get_z_scores(), leverages_tracker.get_value().flatten())
                 ]
             )
-        )
-        z_lev_box = SurroundingRectangle(
-            VGroup(z_lev_axes, z_lev_axis_labels),
-            color = GREEN_D,
-            fill_color = BLACK,
-            fill_opacity = 1,
         )
         # Box first so it opaquely covers whatever is behind it (see var_a_group).
         z_lev_group = VGroup(
@@ -299,7 +298,7 @@ class LeveragesExplorer(StitcherScene):
             z_lev_axis_labels,
             z_lev_parabola,
             z_lev_plot,
-        ).to_corner(UL, buff=0)
+        )
 
         ##############################
         ### Part 3: Play the scene ###
@@ -477,13 +476,16 @@ class LeveragesExplorer(StitcherScene):
             dot_dance(i, run_time = 0.5)
 
         with self.voiceover("Looks like they do! Wow.") as tracker:
-            ...
+            self.play(FadeOut(z_lev_group))
 
         with self.voiceover("One last thing here is: Where did this 0.0833 come from?") as tracker:
-            self.play(FadeOut(z_lev_group))
+            pass
+            # TODO: Circle the 0.0833
 
         with self.voiceover("I notice that it's the first 4 digits of one twelfth, and that n equals twelve.") as tracker:
             ...
+            # TODO: change it into 1/12
+            # TODO: Change 12 into n
 
         with self.voiceover("So we can substitute in one over n here.") as tracker:
             ...
