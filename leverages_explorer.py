@@ -443,20 +443,16 @@ class LeveragesExplorer(StitcherScene):
             self.add(vertex_form_texes[0])
         
         with self.voiceover("We know that the y value of the parabola is the leverage") as tracker:
-            self.play(TransformByGlyphMap(vertex_form_texes[0], vertex_form_texes[1],
-                                        ([0], [0,1,2])))
+            self.play(TransformBySubstitution(vertex_form_texes[0], vertex_form_texes[1]))
         
         with self.voiceover("The h, the x-coordinate of the vertex, is the mean of X.") as tracker:
-            self.play(TransformByGlyphMap(vertex_form_texes[1], vertex_form_texes[2],
-                                        ([8], [8,9])))
+            self.play(TransformBySubstitution(vertex_form_texes[1], vertex_form_texes[2]))
         
         with self.voiceover("The k, the y-coordinate of the vertex, is 0.0833.") as tracker:
-            self.play(TransformByGlyphMap(vertex_form_texes[2], vertex_form_texes[3],
-                                        ([13], range(13, 19))))
+            self.play(TransformBySubstitution(vertex_form_texes[2], vertex_form_texes[3]))
         
         with self.voiceover("And a here is 0.0833 divided by the variance of X.") as tracker:
-            self.play(TransformByGlyphMap(vertex_form_texes[3], vertex_form_texes[4],
-                                        ([4], range(4,14))))
+            self.play(TransformBySubstitution(vertex_form_texes[3], vertex_form_texes[4]))
         
         with self.voiceover("I'm starting to notice something. If we take this sigma squared in the denominator, and put it as a sigma in the denominator of what's inside the squared term here,") as tracker:
             self.play(TransformByGlyphMap(vertex_form_texes[4], vertex_form_texes[5],
@@ -466,8 +462,7 @@ class LeveragesExplorer(StitcherScene):
                                         ))
         
         with self.voiceover("Then this just turns into the z-score! So our little calculation here showed that the formula for leverages showed that the formula for leverages only depends on the z-scores of our X-variables.") as tracker:
-            self.play(TransformByGlyphMap(vertex_form_texes[5], vertex_form_texes[6],
-                                        (range(9,18), [9])))
+            self.play(TransformBySubstitution(vertex_form_texes[5], vertex_form_texes[6]))
             
         with self.voiceover("I want to add a graph here showing the z-scores versus the leverages. If this formula is right, they should always be on a parabola, and that parabola should always have this formula.") as tracker:
             self.play(IntroduceRedraw(z_lev_group))

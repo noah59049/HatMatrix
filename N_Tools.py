@@ -1040,6 +1040,104 @@ class TransformWithBoxes(Succession):
 
         super().__init__(*animations, **kwargs)
 
+def _tex_tokens(latex):
+    """Split LaTeX into tokens: control words (\\frac), control symbols (\\{),
+    or single characters. Diffing on tokens keeps a diff from cutting \\mu in half."""
+    import re
+    return re.findall(r"\\[a-zA-Z]+|\\.|.", latex, re.DOTALL)
+
+def _braces_balanced(tokens):
+    depth = 0
+    for t in tokens:
+        depth += (t == "{") - (t == "}")
+        if depth < 0:
+            return False
+    return depth == 0
+
+def _tex_glyph_count(latex, tex_class, cache):
+    """Number of glyphs `latex` renders to on its own, or None if it won't render."""
+    if not latex.strip():
+        return 0
+    if latex not in cache:
+        try:
+            cache[latex] = len(tex_class(latex)[0])
+        except Exception:
+            cache[latex] = None
+    return cache[latex]
+
+def substitution_glyph_map(texA, texB):
+    """
+    Glyph-map entries for turning texA into texB when texB is texA with one
+    contiguous chunk of LaTeX swapped out, e.g.
+        "y=a(x-h)^2+k"  ->  "H_{ii}=a(x-h)^2+k"   gives  [([0], [0, 1, 2])]
+    Everything before and after the chunk is left for TransformByGlyphMap to
+    pair up in order, exactly like a hand-written single-entry map.
+
+    Works by diffing the token strings (common prefix / common suffix), then
+    counting glyphs by rendering the prefix and the changed chunks on their own.
+    If the chunk boundary falls somewhere that won't render standalone (inside a
+    \\frac argument, right after a ^, ...) the chunk is widened until it does and
+    the glyph counts add up to the real totals.
+
+    If the two strings differ in several separate places, the chunk spans from
+    the first change to the last, so everything in between is morphed as one block.
+    """
+    tex_class = Tex if isinstance(texA, Tex) else MathTex
+    a, b = _tex_tokens(texA.tex_string), _tex_tokens(texB.tex_string)
+    total_a, total_b = len(_tex_glyphs(texA)), len(_tex_glyphs(texB))
+
+    # Longest common prefix / suffix (suffix not allowed to overlap the prefix).
+    p = 0
+    while p < min(len(a), len(b)) and a[p] == b[p]:
+        p += 1
+    s = 0
+    while s < min(len(a), len(b)) - p and a[-1 - s] == b[-1 - s]:
+        s += 1
+
+    cache = {}
+    while True:
+        prefix, suffix = a[:p], a[len(a) - s:]
+        mid_a, mid_b = a[p:len(a) - s], b[p:len(b) - s]
+        # Cheap structural checks before paying for a render: the prefix and
+        # suffix must be self-contained, and the chunk can't be a dangling
+        # argument ({...}) of a command sitting in the prefix.
+        if p and (not _braces_balanced(prefix) or prefix[-1] in "^_"
+                  or (mid_a + mid_b + suffix)[:1] == ["{"]):
+            p -= 1
+            continue
+        if s and (not _braces_balanced(suffix) or suffix[0] == "{"):
+            s -= 1
+            continue
+
+        counts = [_tex_glyph_count("".join(x), tex_class, cache)
+                  for x in (prefix, mid_a, mid_b, suffix)]
+        n_pre, n_a, n_b, n_suf = counts
+        if None not in counts and n_pre + n_a + n_suf == total_a and n_pre + n_b + n_suf == total_b:
+            break
+        if p == 0 and s == 0:
+            raise ValueError(
+                f"Couldn't find a substitution between {texA.tex_string!r} and "
+                f"{texB.tex_string!r} whose glyph counts add up; use "
+                f"TransformByGlyphMap with explicit indices (show_indices=True helps)."
+            )
+        p, s = max(p - 1, 0), max(s - 1, 0)
+
+    if n_a == 0 and n_b == 0:
+        return []
+    return [(list(range(n_pre, n_pre + n_a)), list(range(n_pre, n_pre + n_b)))]
+
+def TransformBySubstitution(texA, texB, *extra_glyph_map, **kwargs):
+    """
+    TransformByGlyphMap where the glyph map is worked out from the LaTeX: texB
+    should be texA with one chunk replaced (see substitution_glyph_map). Any
+    extra entries are appended to the computed one, and kwargs pass straight
+    through to TransformByGlyphMap.
+
+        self.play(TransformBySubstitution(eq0, eq1))   # y -> H_{ii}
+    """
+    return TransformByGlyphMap(texA, texB, *substitution_glyph_map(texA, texB),
+                               *extra_glyph_map, **kwargs)
+
 def latex_vector(elements, orientation="column", bracket="bmatrix", row_sep = ""):
     """
     Convert a list of strings into a LaTeX vector.
