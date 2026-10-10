@@ -254,6 +254,53 @@ class LeveragesExplorer(StitcherScene):
             vertex_form_box,
         ).to_corner(UL, buff=0)
 
+        # --- z-scores vs leverages graph ---
+        def get_z_scores():
+            X1_curr = X1_tracker.get_value().flatten()
+            return (X1_curr - X1_curr.mean()) / np.sqrt(get_variance(X1_curr))
+
+        def get_z_parabola_bhat():
+            z = get_z_scores()
+            z_parabola_X = np.column_stack([np.ones(n), z, z * z])
+            z_parabola_Y = leverages_tracker.get_value().flatten()
+            return np.linalg.inv(z_parabola_X.T @ z_parabola_X) @ z_parabola_X.T @ z_parabola_Y
+
+        z_lev_axes = Axes(
+            x_length = 3,
+            y_length = 2,
+            x_range = [-3.5, 3.5, 1],
+            y_range = [0, 1, 0.5],
+            axis_config = {"tip_length": 0.15, "tip_width": 0.15},
+        )
+        z_lev_axis_labels = z_lev_axes.get_axis_labels(x_label = "z", y_label = "H_{ii}")
+        z_lev_parabola = always_redraw(
+            lambda: z_lev_axes.plot(
+                lambda z: get_z_parabola_bhat() @ np.array([1, z, z * z]),
+                x_range = [get_z_scores().min(), get_z_scores().max()],
+            )
+        )
+        z_lev_plot = always_redraw(
+            lambda: VGroup(
+                *[
+                    Dot(z_lev_axes.c2p(z, leverage), radius = 0.05, color = H_COLOR) for z, leverage in zip(get_z_scores(), leverages_tracker.get_value().flatten())
+                ]
+            )
+        )
+        z_lev_box = SurroundingRectangle(
+            VGroup(z_lev_axes, z_lev_axis_labels),
+            color = GREEN_D,
+            fill_color = BLACK,
+            fill_opacity = 1,
+        )
+        # Box first so it opaquely covers whatever is behind it (see var_a_group).
+        z_lev_group = VGroup(
+            z_lev_box,
+            z_lev_axes,
+            z_lev_axis_labels,
+            z_lev_parabola,
+            z_lev_plot,
+        ).to_corner(UL, buff=0)
+
         ##############################
         ### Part 3: Play the scene ###
         ##############################
@@ -424,7 +471,10 @@ class LeveragesExplorer(StitcherScene):
                                         (range(9,18), [9])))
             
         with self.voiceover("I want to add a graph here showing the z-scores versus the leverages. If this formula is right, they should always be on a parabola, and that parabola should always have this formula.") as tracker:
-            ... # TODO: Actually add the graph of z-scores versus leverages.
+            self.play(IntroduceRedraw(z_lev_group))
+
+        for i in range(10):
+            dot_dance(i, run_time = 0.5)
 
         with self.voiceover("Looks like they do! Wow.") as tracker:
             ...
