@@ -475,20 +475,18 @@ class LeveragesExplorer(StitcherScene):
         with self.voiceover("Looks like they do! Wow.") as tracker:
             self.play(FadeOut(z_lev_group))
 
+        my_map = replacement_glyph_map(vertex_form_texes[6], vertex_form_texes[7],
+                                       (f"{1/n:.4f}", rf"\frac{{1}}{{{n}}}"))
+        my_transform = TransformWithBoxes(vertex_form_texes[6], vertex_form_texes[7],
+                           *my_map)
         with self.voiceover("One last thing here is: Where did this 0.0833 come from?") as tracker:
-            constant_boxes = [
-                SurroundingRectangle(vertex_form_texes[6][0][4:10]),
-                SurroundingRectangle(vertex_form_texes[6][0][13:19]),
-            ]
-            self.play(AnimationGroup(
-                Create(box) for box in constant_boxes
-            ))
+            self.play(my_transform.animations[0])
 
         with self.voiceover("I notice that it's the first 4 digits of one twelfth, and") as tracker:
-            self.play(TransformByReplacement(vertex_form_texes[6], vertex_form_texes[7],
-                                             (f"{1/n:.4f}", rf"\frac{{1}}{{{n}}}")))
+            self.play(my_transform.animations[1])
+            self.play(my_transform.animations[2])
         with self.voiceover("that n equals twelve in this specific case.") as tracker:
-            ... # TODO: Add n=12 somewhere
+            ... # TODO: Add n=12 somewhere, actually maybe not
 
         with self.voiceover("So we can substitute in one over n here.") as tracker:
             self.play(TransformByReplacement(vertex_form_texes[7], vertex_form_texes[8],
