@@ -474,8 +474,13 @@ class LeveragesExplorer(StitcherScene):
             self.play(FadeOut(z_lev_group))
 
         with self.voiceover("One last thing here is: Where did this 0.0833 come from?") as tracker:
-            pass
-            # TODO: Circle the 0.0833
+            constant_boxes = [
+                SurroundingRectangle(vertex_form_texes[6][0][range(4,10)]),
+                SurroundingRectangle(vertex_form_texes[6][0][range(13,19)]),
+            ]
+            self.play(AnimationGroup(
+                Create(box) for box in constant_boxes
+            ))
 
         with self.voiceover("I notice that it's the first 4 digits of one twelfth, and that n equals twelve.") as tracker:
             ...
