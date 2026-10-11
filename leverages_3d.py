@@ -1,13 +1,15 @@
 import numpy as np
 from manim import *
 from stitcher_scene import StitcherScene
-from leverages import X1, n, rng
 from N_Tools import *
 from colors import *
 
-# Second predictor, same length as X1. Chosen arbitrarily.
-X2 = as_col(np.array([2.1, 1.0, 3.2, 1.8, 2.6, 0.9, 2.4, 3.5, 1.4, 2.9, 2.0, 4.6]))
-X12 = np.column_stack([X1, X2])
+# 8x8 grid of (x1, x2) points, centered at (2.5, 2.5).
+GRID_SIDE = 8
+grid_1d = np.linspace(1, 4, GRID_SIDE)
+X12 = np.array([[x1, x2] for x2 in grid_1d for x1 in grid_1d])
+n = len(X12)
+SKYSCRAPER_COLOR = GREEN
 
 
 def get_leverages(X):
@@ -39,7 +41,10 @@ class Leverages3d(StitcherScene, ThreeDScene):
         # X_span.py's strip_sheen and mahalanobis.py).
         X_RANGE = [-0.5, 5.5, 1]
         AXES_LENGTH = 6
-        HEIGHT_SCALE = 3.0  # scene units per unit of leverage
+        # Scene units per unit of leverage. Leverages are small with n = 64
+        # (around 1/n to 6/n on the grid), so this has to be large.
+        HEIGHT_SCALE = 20.0
+        SKYSCRAPER_WIDTH = 0.22
 
         base_axes = Axes(
             x_range = X_RANGE,
@@ -68,12 +73,21 @@ class Leverages3d(StitcherScene, ThreeDScene):
                 ]
             )
         )
-        # Vertical stems from each X dot up to its leverage, so it's clear
-        # which height belongs to which point once the camera moves.
-        leverage_stems = always_redraw(
+        # A green "skyscraper" under each leverage dot: a box rising from
+        # the X dot on the base plane up to that point's leverage.
+        def skyscraper(x1, x2, leverage):
+            return Prism(
+                dimensions = [SKYSCRAPER_WIDTH, SKYSCRAPER_WIDTH, leverage * HEIGHT_SCALE],
+                fill_color = SKYSCRAPER_COLOR,
+                fill_opacity = 0.7,
+                stroke_color = SKYSCRAPER_COLOR,
+                stroke_width = 0.5,
+            ).move_to(c2p3(x1, x2, leverage / 2))
+
+        skyscrapers = always_redraw(
             lambda: VGroup(
                 *[
-                    DashedLine(c2p3(x1, x2), c2p3(x1, x2, leverage), color = GRAY).set_opacity(0.5)
+                    skyscraper(x1, x2, leverage)
                     for (x1, x2), leverage in zip(X12_tracker.get_value(), leverages_tracker.get_value().flatten())
                 ]
             )
@@ -129,7 +143,7 @@ class Leverages3d(StitcherScene, ThreeDScene):
         mean_line = always_redraw(
             lambda: DashedLine(
                 c2p3(*X12_tracker.get_value().mean(axis = 0), 0),
-                c2p3(*X12_tracker.get_value().mean(axis = 0), 1/3),
+                c2p3(*X12_tracker.get_value().mean(axis = 0), 3/n),
                 color = GRAY
             ).set_opacity(0.5)
         )
@@ -146,36 +160,44 @@ class Leverages3d(StitcherScene, ThreeDScene):
         #######################################
         ### Part 2: Defining the animations ###
         #######################################
-        def dot_dance(number, run_time = 1):
-            X12_curr = X12_tracker.get_value()
-            mu = X12_curr.mean(axis = 0)
-            if   number == 0: # Reset
-                new_value = X12.copy()
-            elif number == 1: # Pull the outlier in
-                new_value = X12_curr.copy()
-                new_value[-1] -= np.array([2.5, 1.5])
-            elif number == 2: # Shift
-                new_value = X12_curr + np.array([0.5, -0.5])
-            elif number == 3: # Expand
-                new_value = (X12_curr - mu) * 1.5 + mu
-            elif number == 4: # Contract
-                new_value = (X12_curr - mu) * 0.5 + mu
-            elif number == 5: # Rotate about the mean
-                angle = PI / 4
-                R = np.array([[np.cos(angle), -np.sin(angle)], [np.sin(angle), np.cos(angle)]])
-                new_value = (X12_curr - mu) @ R.T + mu
-            elif number == 6: # Stretch along x1 only
-                new_value = (X12_curr - mu) * np.array([1.6, 1.0]) + mu
-            elif number < 10: # Random correlated values
-                cov = np.array([[0.6, 0.3 * (number - 7)], [0.3 * (number - 7), 0.6]])
-                new_value = rng.multivariate_normal(mean = [2.5, 2.5], cov = cov, size = n)
-            else:
-                raise ValueError("dot_dance got an invalid number")
+        # Every move is a linear map about the mean of the Xs, applied
+        # continuously (M(alpha) at each frame) rather than by interpolating
+        # start and end positions, so a rotation actually rotates instead of
+        # cutting straight through the middle.
+        def transform_about_mean(matrix_at, run_time = 1):
+            start = X12_tracker.get_value().copy()
+            mu = start.mean(axis = 0)
+            self.play(
+                UpdateFromAlphaFunc(
+                    X12_tracker,
+                    lambda m, alpha: m.set_value((start - mu) @ matrix_at(alpha).T + mu),
+                ),
+                run_time = run_time,
+            )
 
-            if run_time == 0:
-                X12_tracker.set_value(new_value)
-            else:
-                self.play(X12_tracker.animate.set_value(new_value), run_time = run_time)
+        def scale_along(direction, from_factor, to_factor, run_time = 1):
+            """Scales along direction from from_factor to to_factor, both
+            measured relative to the original grid, so scale_along(d, 2, 1)
+            exactly undoes scale_along(d, 1, 2)."""
+            d = np.array(direction, dtype = float)
+            d = as_col(d / np.linalg.norm(d))
+            def matrix_at(alpha):
+                factor = from_factor + (to_factor - from_factor) * alpha
+                return np.eye(2) + (factor / from_factor - 1) * (d @ d.T)
+            transform_about_mean(matrix_at, run_time)
+
+        def rotate_by(angle, run_time = 1):
+            def matrix_at(alpha):
+                a = angle * alpha
+                return np.array([[np.cos(a), -np.sin(a)], [np.sin(a), np.cos(a)]])
+            transform_about_mean(matrix_at, run_time)
+
+        def dot_dance(run_time = 1):
+            scale_along([1, 0], 1, 2, run_time)       # Stretch the x1 axis
+            scale_along([1, 0], 2, 1, run_time)       # Shrink it back
+            rotate_by(PI / 2, run_time)               # Rotate 90 degrees
+            scale_along([1, -1], 1, 0.3, run_time)    # Squish along y = -x
+            scale_along([1, -1], 0.3, 1, run_time)    # Move it back
 
         ##############################
         ### Part 3: Play the scene ###
@@ -192,7 +214,7 @@ class Leverages3d(StitcherScene, ThreeDScene):
 
         with self.voiceover("and we'll plot each point's leverage as its height above that plane.") as tracker:
             self.add(
-                leverage_stems,
+                skyscrapers,
                 leverages_plot,
             )
 
@@ -202,15 +224,13 @@ class Leverages3d(StitcherScene, ThreeDScene):
         with self.voiceover("Let's move the Xs around and see if that holds up.") as tracker:
             self.begin_ambient_camera_rotation(rate = 0.1)
 
-        for i in range(10):
-            dot_dance(i, run_time = 0.5)
+        dot_dance()
 
         with self.voiceover("Where's the vertex?") as tracker:
             self.add_fixed_in_frame_mobjects(vertex_label)
             self.add(vertex_dot, mean_line)
 
-        for i in range(10):
-            dot_dance(i, run_time = 0.5)
+        dot_dance()
 
         with self.voiceover("TODO") as tracker:
             self.stop_ambient_camera_rotation()
