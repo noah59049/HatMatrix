@@ -230,7 +230,9 @@ class LeveragesExplorer(StitcherScene):
             rf"H_{{ii}}=a(x-\mu_X)^2+{1/n:.4f}",
             rf"H_{{ii}}=\frac{{{1/n:.4f}}}{{\sigma^2_X}}(x-\mu_X)^2+{1/n:.4f}",
             rf"H_{{ii}}={1/n:.4f}(\frac{{x-\mu_X}}{{\sigma_X}})^2+{1/n:.4f}",
-            rf"H_{{ii}}={1/n:.4f}z^2+{1/n:.4f}"
+            rf"H_{{ii}}={1/n:.4f}z^2+{1/n:.4f}",
+            rf"H_{{ii}}=\frac{{1}}{{{n}}}z^2+\frac{{1}}{{{n}}}",
+            rf"H_{{ii}}=\frac{{1}}{{n}}z^2+\frac{{1}}{{n}}",
         ]
 
         vertex_form_texes_list = [MathTex(v).next_to(a_var_tex,DOWN).to_edge(LEFT) for v in vertex_forms]
