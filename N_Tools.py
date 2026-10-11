@@ -1138,6 +1138,82 @@ def TransformBySubstitution(texA, texB, *extra_glyph_map, **kwargs):
     return TransformByGlyphMap(texA, texB, *substitution_glyph_map(texA, texB),
                                *extra_glyph_map, **kwargs)
 
+# Tall thin rules at both ends pin the bounding box, so MathTex's auto-centering
+# puts every glyph in the same place whether or not part of the formula is phantomed.
+_PHANTOM_ANCHOR = r"\rule[-4em]{0.4pt}{8em}\;"
+
+def _phantomed_glyph_indices(latex_tokens, start, stop, tex_class):
+    """Glyph indices (into the plain render of the tokens) produced by the
+    tokens in [start, stop). Found by rendering again with that span inside
+    \\phantom{...} and seeing which glyphs vanish; \\phantom keeps the spacing,
+    so every other glyph stays exactly where it was. Works anywhere in the
+    formula, including inside \\frac arguments and superscripts."""
+    full_src = _PHANTOM_ANCHOR + "".join(latex_tokens) + _PHANTOM_ANCHOR
+    hidden_src = (_PHANTOM_ANCHOR + "".join(latex_tokens[:start])
+                  + r"\phantom{" + "".join(latex_tokens[start:stop]) + "}"
+                  + "".join(latex_tokens[stop:]) + _PHANTOM_ANCHOR)
+    full, hidden = tex_class(full_src)[0], tex_class(hidden_src)[0]
+    tol = 1e-3 * full.height
+    missing = [
+        i for i, g in enumerate(full)
+        if not any(np.linalg.norm(g.get_center() - h.get_center()) < tol for h in hidden)
+    ]
+    if len(missing) != len(full) - len(hidden):
+        raise RuntimeError(f"phantom diff of {full_src!r} didn't line up "
+                           f"({len(missing)} moved vs {len(full) - len(hidden)} hidden)")
+    return [i - 1 for i in missing]  # drop the leading anchor
+
+def replacement_glyph_map(texA, texB, *replacements):
+    """
+    Glyph-map entries for turning texA into texB, where texB is texA with every
+    occurrence of each `old` replaced by its `new`:
+        replacement_glyph_map(eq7, eq8, ("12", "n"))
+        -> [([6, 7], [6]), ([13, 14], [12])]     # one entry per occurrence
+    `replacements` are (old, new) pairs of LaTeX strings, applied together in one
+    left-to-right pass (so ("a", "b"), ("b", "a") swaps them). Matching is by
+    LaTeX token, so "\\mu" won't match inside "\\mul", but "12" WILL match inside
+    "112". Raises if applying the replacements to texA doesn't give texB exactly.
+    """
+    tex_class = Tex if isinstance(texA, Tex) else MathTex
+    a, b_expected = _tex_tokens(texA.tex_string), _tex_tokens(texB.tex_string)
+    # Longest `old` first, so ("12", ...) beats ("1", ...) at the same spot.
+    pairs = sorted(((_tex_tokens(o), _tex_tokens(n)) for o, n in replacements),
+                   key=lambda p: -len(p[0]))
+
+    b, spans = [], []  # spans: ((a_start, a_stop), (b_start, b_stop)) per occurrence
+    i = 0
+    while i < len(a):
+        for old, new in pairs:
+            if old and a[i:i + len(old)] == old:
+                spans.append(((i, i + len(old)), (len(b), len(b) + len(new))))
+                b += new
+                i += len(old)
+                break
+        else:
+            b.append(a[i])
+            i += 1
+    if b != b_expected:
+        raise ValueError(f"Replacing {replacements} in {texA.tex_string!r} gives "
+                         f"{''.join(b)!r}, not {texB.tex_string!r}")
+
+    return [
+        (_phantomed_glyph_indices(a, *span_a, tex_class),
+         _phantomed_glyph_indices(b, *span_b, tex_class))
+        for span_a, span_b in spans
+    ]
+
+def TransformByReplacement(texA, texB, *replacements, **kwargs):
+    """
+    TransformByGlyphMap for "replace every `old` with `new`": each occurrence
+    morphs into its replacement and everything else pairs up in order. kwargs
+    pass straight through to TransformByGlyphMap.
+
+        self.play(TransformByReplacement(eq6, eq7, ("0.0833", r"\\frac{1}{12}")))
+        self.play(TransformByReplacement(eq7, eq8, ("12", "n")))
+    """
+    return TransformByGlyphMap(texA, texB, *replacement_glyph_map(texA, texB, *replacements),
+                               **kwargs)
+
 def latex_vector(elements, orientation="column", bracket="bmatrix", row_sep = ""):
     """
     Convert a list of strings into a LaTeX vector.
