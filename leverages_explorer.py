@@ -477,26 +477,22 @@ class LeveragesExplorer(StitcherScene):
 
         with self.voiceover("One last thing here is: Where did this 0.0833 come from?") as tracker:
             constant_boxes = [
-                SurroundingRectangle(vertex_form_texes[6][0][range(4,10)]),
-                SurroundingRectangle(vertex_form_texes[6][0][range(13,19)]),
+                SurroundingRectangle(vertex_form_texes[6][0][4:10]),
+                SurroundingRectangle(vertex_form_texes[6][0][13:19]),
             ]
             self.play(AnimationGroup(
                 Create(box) for box in constant_boxes
             ))
 
         with self.voiceover("I notice that it's the first 4 digits of one twelfth, and") as tracker:
-            self.play(TransformByGlyphMap(vertex_form_texes[6], vertex_form_texes[7],
-                                          (range(4,10), range(4,8)),
-                                          (range(13,19), range(11,15)),
-                                          ))
+            self.play(TransformByReplacement(vertex_form_texes[6], vertex_form_texes[7],
+                                             (f"{1/n:.4f}", rf"\frac{{1}}{{{n}}}")))
         with self.voiceover("that n equals twelve in this specific case.") as tracker:
             ... # TODO: Add n=12 somewhere
 
         with self.voiceover("So we can substitute in one over n here.") as tracker:
-            self.play(TransformByGlyphMap(vertex_form_texes[7], vertex_form_texes[8],
-                                          ([6,7], [6]),
-                                          ([13,14], [12]),
-                                          ))
+            self.play(TransformByReplacement(vertex_form_texes[7], vertex_form_texes[8],
+                                             (f"{n}", "n")))
 
         with self.voiceover("Disclaimer: I wanted to be scientifically rigorous about this, I would test whether we also get the same equation with one over n for different values of n.") as tracker:
             ...
