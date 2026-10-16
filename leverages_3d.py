@@ -44,7 +44,7 @@ class Leverages3d(StitcherScene, ThreeDScene):
         # Scene units per unit of leverage. Leverages are small with n = 64
         # (around 1/n to 6/n on the grid), so this has to be large.
         HEIGHT_SCALE = 20.0
-        SKYSCRAPER_WIDTH = 0.22
+        SKYSCRAPER_WIDTH = 0.12
 
         base_axes = Axes(
             x_range = X_RANGE,
@@ -79,7 +79,7 @@ class Leverages3d(StitcherScene, ThreeDScene):
             return Prism(
                 dimensions = [SKYSCRAPER_WIDTH, SKYSCRAPER_WIDTH, leverage * HEIGHT_SCALE],
                 fill_color = SKYSCRAPER_COLOR,
-                fill_opacity = 0.7,
+                fill_opacity = 1,
                 stroke_color = SKYSCRAPER_COLOR,
                 stroke_width = 0.5,
             ).move_to(c2p3(x1, x2, leverage / 2))
