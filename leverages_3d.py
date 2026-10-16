@@ -210,41 +210,35 @@ class Leverages3d(StitcherScene, ThreeDScene):
         ### Part 3: Play the scene ###
         ##############################
         # --- The actual scene being played ---
-        self.set_camera_orientation(phi = 65 * DEGREES, theta = -60 * DEGREES)
+        self.set_camera_orientation(phi = 55 * DEGREES, theta = -60 * DEGREES)
 
         self.silent = True # TODO: Remove
 
-        with self.voiceover("Now let's add a second X variable. Our X values now live in a plane,") as tracker:
-            self.add(
-                base_axes,
-                base_axis_labels,
-                # x_plot,
-            )
+        self.add(
+            base_axes,
+            base_axis_labels,
+            # x_plot,
+        )
 
-        with self.voiceover("and we'll plot each point's leverage as its height above that plane.") as tracker:
-            self.add(
-                skyscrapers,
-                leverages_plot,
-            )
+        self.add(
+            skyscrapers,
+            leverages_plot,
+        )
 
         return # TODO: Remove
 
-        with self.voiceover("In one dimension the leverages fell on a parabola. In two dimensions, let's see if they fall on a paraboloid.") as tracker:
-            self.play(IntroduceRedraw(paraboloid_surface, Create))
+        self.play(IntroduceRedraw(paraboloid_surface, Create))
 
-        with self.voiceover("Let's move the Xs around and see if that holds up.") as tracker:
-            self.begin_ambient_camera_rotation(rate = 0.1)
+        self.begin_ambient_camera_rotation(rate = 0.1)
 
         dot_dance() # TODO: change
 
-        with self.voiceover("Where's the vertex?") as tracker:
-            self.add_fixed_in_frame_mobjects(vertex_label)
-            self.add(vertex_dot, mean_line)
+        self.add_fixed_in_frame_mobjects(vertex_label)
+        self.add(vertex_dot, mean_line)
 
         dot_dance() # TODO: change
 
-        with self.voiceover("TODO") as tracker:
-            self.stop_ambient_camera_rotation()
+        self.stop_ambient_camera_rotation()
 
 # TODO: Connect the leverages to the Mahalanobis distance:
 # H_ii = 1/n + (squared Mahalanobis distance) / n, via get_mahalanobis_sq().
