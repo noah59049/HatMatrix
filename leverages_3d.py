@@ -223,14 +223,15 @@ class Leverages3d(StitcherScene, ThreeDScene):
             leverages_plot,
         )
 
-        return # TODO: Remove
+        self.add(paraboloid_surface)
 
-        self.play(IntroduceRedraw(paraboloid_surface, Create))
 
         self.begin_ambient_camera_rotation(rate = 0.1)
 
-        dot_dance() # TODO: change
-
+        for i in range(5):
+            dot_dance(i)
+            
+        return
         self.add_fixed_in_frame_mobjects(vertex_label)
         self.add(vertex_dot, mean_line)
 
