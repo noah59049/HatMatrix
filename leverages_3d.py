@@ -212,8 +212,6 @@ class Leverages3d(StitcherScene, ThreeDScene):
         # --- The actual scene being played ---
         self.set_camera_orientation(phi = 55 * DEGREES, theta = -60 * DEGREES)
 
-        self.silent = True # TODO: Remove
-
         self.add(
             base_axes,
             base_axis_labels,
