@@ -192,12 +192,19 @@ class Leverages3d(StitcherScene, ThreeDScene):
                 return np.array([[np.cos(a), -np.sin(a)], [np.sin(a), np.cos(a)]])
             transform_about_mean(matrix_at, run_time)
 
-        def dot_dance(run_time = 1):
-            scale_along([1, 0], 1, 2, run_time)       # Stretch the x1 axis
-            scale_along([1, 0], 2, 1, run_time)       # Shrink it back
-            rotate_by(PI / 2, run_time)               # Rotate 90 degrees
-            scale_along([1, -1], 1, 0.3, run_time)    # Squish along y = -x
-            scale_along([1, -1], 0.3, 1, run_time)    # Move it back
+        def dot_dance(i, run_time = 1):
+            if i == 0:
+                scale_along([1, 0], 1, 2, run_time)       # Stretch the x1 axis
+            elif i == 1:
+                scale_along([1, 0], 2, 1, run_time)       # Shrink it back
+            elif i == 2:
+                rotate_by(PI / 2, run_time)               # Rotate 90 degrees
+            elif i == 3:
+                scale_along([1, -1], 1, 0.3, run_time)    # Squish along y = -x
+            elif i == 4:
+                scale_along([1, -1], 0.3, 1, run_time)    # Move it back
+            else:
+                raise ValueError(f"dot_dance got incorrect value of i: {i}")
 
         ##############################
         ### Part 3: Play the scene ###
@@ -205,11 +212,13 @@ class Leverages3d(StitcherScene, ThreeDScene):
         # --- The actual scene being played ---
         self.set_camera_orientation(phi = 65 * DEGREES, theta = -60 * DEGREES)
 
+        self.silent = True # TODO: Remove
+
         with self.voiceover("Now let's add a second X variable. Our X values now live in a plane,") as tracker:
             self.add(
                 base_axes,
                 base_axis_labels,
-                x_plot,
+                # x_plot,
             )
 
         with self.voiceover("and we'll plot each point's leverage as its height above that plane.") as tracker:
@@ -218,19 +227,21 @@ class Leverages3d(StitcherScene, ThreeDScene):
                 leverages_plot,
             )
 
+        return # TODO: Remove
+
         with self.voiceover("In one dimension the leverages fell on a parabola. In two dimensions, let's see if they fall on a paraboloid.") as tracker:
             self.play(IntroduceRedraw(paraboloid_surface, Create))
 
         with self.voiceover("Let's move the Xs around and see if that holds up.") as tracker:
             self.begin_ambient_camera_rotation(rate = 0.1)
 
-        dot_dance()
+        dot_dance() # TODO: change
 
         with self.voiceover("Where's the vertex?") as tracker:
             self.add_fixed_in_frame_mobjects(vertex_label)
             self.add(vertex_dot, mean_line)
 
-        dot_dance()
+        dot_dance() # TODO: change
 
         with self.voiceover("TODO") as tracker:
             self.stop_ambient_camera_rotation()
