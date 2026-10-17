@@ -2,4 +2,3 @@ X_span
 leverages
 leverages_explorer
 leverages_3d
-mahalanobis
