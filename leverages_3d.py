@@ -4,11 +4,16 @@ from stitcher_scene import StitcherScene
 from N_Tools import *
 from colors import *
 
-# 8x8 grid of (x1, x2) points, centered at (2.5, 2.5).
-GRID_SIDE = 8
-grid_1d = np.linspace(1, 4, GRID_SIDE)
-X12 = np.array([[x1, x2] for x2 in grid_1d for x1 in grid_1d])
-n = len(X12)
+# n points uniformly distributed inside a disk centered at (2.5, 2.5).
+# Radius uses sqrt(u) so the density is uniform over the disk's area,
+# rather than bunching up near the center.
+n = 20
+DISK_CENTER = np.array([2.5, 2.5])
+DISK_RADIUS = 1.5
+rng = np.random.default_rng(0)
+_r = DISK_RADIUS * np.sqrt(rng.uniform(size = n))
+_theta = rng.uniform(0, 2 * np.pi, size = n)
+X12 = DISK_CENTER + np.column_stack([_r * np.cos(_theta), _r * np.sin(_theta)])
 SKYSCRAPER_COLOR = GREEN
 
 
@@ -41,9 +46,9 @@ class Leverages3d(StitcherScene, ThreeDScene):
         # X_span.py's strip_sheen and mahalanobis.py).
         X_RANGE = [-0.5, 5.5, 1]
         AXES_LENGTH = 6
-        # Scene units per unit of leverage. Leverages are small with n = 64
-        # (around 1/n to 6/n on the grid), so this has to be large.
-        HEIGHT_SCALE = 20.0
+        # Scene units per unit of leverage. Leverages here run from about
+        # 1/n near the mean to about 5/n at the edge of the disk.
+        HEIGHT_SCALE = 8.0
         SKYSCRAPER_WIDTH = 0.12
 
         base_axes = Axes(
@@ -106,31 +111,49 @@ class Leverages3d(StitcherScene, ThreeDScene):
             paraboloid_bhat = np.linalg.inv(paraboloid_X.T @ paraboloid_X) @ paraboloid_X.T @ paraboloid_Y
             return paraboloid_bhat.flatten()
 
-        def paraboloid_yhat(x1, x2):
-            return (quadratic_features(np.atleast_1d(x1), np.atleast_1d(x2)) @ get_paraboloid_bhat())[0]
+        def paraboloid_yhat(x1, x2, paraboloid_bhat):
+            return (quadratic_features(np.atleast_1d(x1), np.atleast_1d(x2)) @ paraboloid_bhat)[0]
 
         def paraboloid_vertex():
             # y = c + b1 x1 + b2 x2 + a11 x1^2 + a12 x1 x2 + a22 x2^2
             #   = c + b.x + x^T A x, with A = [[a11, a12/2], [a12/2, a22]]
-            # grad y = b + 2 A x = 0  iff  x = -A^{-1} b / 2
+            # grad y = b + 2 A x 
+            # grad y = 0  iff  x = -A^{-1} b / 2
             c, b1, b2, a11, a12, a22 = get_paraboloid_bhat()
-            A = np.array([[a11, a12 / 2], [a12 / 2, a22]])
+            A = np.array([
+                [a11,     a12 / 2], 
+                [a12 / 2, a22    ]
+            ])
             b = np.array([b1, b2])
             vertex_x = -np.linalg.solve(A, b) / 2
             vertex_y = c + b @ vertex_x + vertex_x @ A @ vertex_x
             return np.array([*vertex_x, vertex_y])
 
-        paraboloid_surface = always_redraw(
-            lambda: Surface(
-                lambda u, v: c2p3(u, v, paraboloid_yhat(u, v)),
-                u_range = [X12_tracker.get_value()[:, 0].min(), X12_tracker.get_value()[:, 0].max()],
-                v_range = [X12_tracker.get_value()[:, 1].min(), X12_tracker.get_value()[:, 1].max()],
-                resolution = (16, 16),
+        # Domain is a disk centered at the mean of the Xs, with radius just
+        # big enough to reach the farthest point. Parametrized in polar
+        # coordinates: u is the fraction of the radius, v the angle.
+        def get_paraboloid_surface():
+            X12_curr = X12_tracker.get_value()
+            mu = X12_curr.mean(axis = 0)
+            radius = np.linalg.norm(X12_curr - mu, axis = 1).max()
+            # Fit once per frame, not once per surface vertex.
+            paraboloid_bhat = get_paraboloid_bhat()
+
+            def point(u, v):
+                x1, x2 = mu + u * radius * np.array([np.cos(v), np.sin(v)])
+                return c2p3(x1, x2, paraboloid_yhat(x1, x2, paraboloid_bhat))
+
+            return Surface(
+                point,
+                u_range = [0, 1],
+                v_range = [0, TAU],
+                resolution = (8, 24),
                 fill_opacity = 0.5,
                 checkerboard_colors = [BLUE_D, BLUE_E],
                 stroke_width = 0.5,
             )
-        )
+
+        paraboloid_surface = always_redraw(get_paraboloid_surface)
         vertex_dot = always_redraw(lambda: Dot3D(c2p3(*paraboloid_vertex()), radius = 0.06))
 
         def get_vertex_text():
@@ -177,7 +200,7 @@ class Leverages3d(StitcherScene, ThreeDScene):
 
         def scale_along(direction, from_factor, to_factor, run_time = 1):
             """Scales along direction from from_factor to to_factor, both
-            measured relative to the original grid, so scale_along(d, 2, 1)
+            measured relative to the original points, so scale_along(d, 2, 1)
             exactly undoes scale_along(d, 1, 2)."""
             d = np.array(direction, dtype = float)
             d = as_col(d / np.linalg.norm(d))
@@ -228,9 +251,11 @@ class Leverages3d(StitcherScene, ThreeDScene):
 
         self.begin_ambient_camera_rotation(rate = 0.1)
 
+        dot_dance(0)
+        return
         for i in range(5):
             dot_dance(i)
-            
+
         return
         self.add_fixed_in_frame_mobjects(vertex_label)
         self.add(vertex_dot, mean_line)
