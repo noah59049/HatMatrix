@@ -17,6 +17,14 @@ media/
 # VSCode
 .vscode
 
+# Tex
+tex/*.aux
+tex/*.fdb_latexmk
+tex/*.fls
+tex/*.log
+tex/*.pdf
+tex/*.synctex.gz
+
 # Other
 .DS_Store
 todos.txt
