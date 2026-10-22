@@ -55,7 +55,23 @@ class LeveragePhysics(StitcherScene):
         self.play(theta.animate.set_value(-0.35), rate_func=there_and_back, run_time=2)
         self.wait()
 
-        self.play(Circumscribe(one_over_n_z, Circle, fade_out=True, color=YELLOW))
-        self.play(Circumscribe(VGroup(one_over_n, plus), Circle, fade_out=True, color=YELLOW))
-        self.play(Circumscribe(squared, Circle, fade_out=True, color=YELLOW))
+        self.play(Circumscribe(one_over_n_z, Rectangle, fade_out=True, color=YELLOW))
+        self.play(Circumscribe(squared, Rectangle, fade_out=True, color=YELLOW))
+        self.play(Circumscribe(one_over_n), Rectangle, fade_out=True, color=YELLOW)
         self.wait()
+
+
+        """
+        The term 'leverage' has some relation to leverage in physics.
+        Now, a disclaimer before we get started, my knowledge of physics is one class on it in high school, so take my physics stuff with a grain of salt.
+        Anyway, the idea of leverage is that if you push on a lever near the fulcrum, it doesn't move that much. But if you push far away from the fulcrum, it moves a lot.
+        There's a formula, torque equals force times distance from the fulcrum.
+        If you look at our formula for leverages though, it doesn't quite look like that.
+
+        Like, this 1/n I guess can be a proportionality constant, but what about the squared? Or what about the 1/n here?
+
+        The change in slope does basically look like the law of the lever though.
+
+        Here's the formula for slope. If we change one of the yi's, the slope changes by delta yi times the xi's distance from the mean, and divided by a constant, the sum of squared deviations of x.
+        If we change one of the yi's that's twice as far from the mean in the x-direction, the slope will change twice as much.
+        """
