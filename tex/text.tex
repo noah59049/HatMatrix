@@ -1,0 +1,34 @@
+\documentclass{article}
+\usepackage{amsmath}
+\begin{document}
+This is the formula for slope we're using:
+$\hat{\beta}_1=\frac{\sum_{i=1}^{n} (x_i-\bar{x})y_i}{\sum_{i=1}^{n} (x_i-\bar{x})^2}$
+
+There are many ways to prove this formula. One is by using the forumla $\hat{\beta} = (X^T X)^{-1}XY$ and taking $\hat{\beta}_1$ from it.
+That derivation is a bit tedious though.
+
+The regression line must go through $(\bar{x}, \bar{y})$. %why? Do I need to prove this?
+
+Suppose we fix the regression line at $(\bar{x}, \bar{y})$ and vary the slope $\hat{\beta}_1$ and see how ${e_i}^2$ changes.
+
+${e_i}^2=(y_i-\hat{y_i})^2$
+
+${e_i}^2=(y_i-(\bar{y}+(x_i-\bar{x})\hat{\beta}_1))^2$
+
+${e_i}^2=((y_i-\bar{y})-(x_i-\bar{x})\hat{\beta}_1)^2$
+
+Now we consider the derivative of ${e_i}^2$ with respect to $\hat{\beta}_1$. We use the Chain Rule for the derivative of a square.
+
+$\frac{\partial {e_i}^2}{\partial \hat{\beta}_1} = 2((y_i-\bar{y})-(x_i-\bar{x})\hat{\beta}_1)\frac{\partial}{\partial \hat{\beta}_1} ((y_i-\bar{y})-(x_i-\bar{x})\hat{\beta}_1)$
+
+$\frac{\partial {e_i}^2}{\partial \hat{\beta}_1} = 2((y_i-\bar{y})-(x_i-\bar{x})\hat{\beta}_1)*(-(x_i-\bar{x}))$
+
+$\frac{\partial {e_i}^2}{\partial \hat{\beta}_1} = 2(-(x_i-\bar{x})(y_i-\bar{y})+(x_i-\bar{x})^2\hat{\beta}_1)$
+
+At the minimum of the sum of squared errors, the sum of all the $\frac{\partial {e_i}^2}{\partial \hat{\beta}_1}$ must be 0.
+
+$\sum_{i=1}^{n}\frac{\partial {e_i}^2}{\partial \hat{\beta}_1} = 2(-\sum_{i=1}^{n}(x_i-\bar{x})(y_i-\bar{y})+\sum_{i=1}^{n}(x_i-\bar{x})^2\hat{\beta}_1)$.
+
+This derivation is not what I wanted.
+
+\end{document}
